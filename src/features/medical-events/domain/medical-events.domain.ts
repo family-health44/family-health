@@ -73,5 +73,5 @@ export function buildEventNoteContent(
   type: MedicalEventType,
   description: string,
 ): string {
-  return `[EVENT:${date}:${type}] ${description}`.trim();
+  return `[EVENT:${date}:${type}] ${description.trim()}`;
 }
