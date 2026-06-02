@@ -1,0 +1,5 @@
+/* src/design-system/theme/global.css */
+/* NativeWind global CSS entry point — imported by metro.config.js */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
