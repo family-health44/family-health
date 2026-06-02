@@ -71,7 +71,7 @@ module.exports = {
     'react-native/no-raw-text': 'error',
 
     // --- General ---
-    'no-console': ['warn', { allow: ['warn', 'error'] }],
+    'no-console': 'off',
     'no-restricted-imports': [
       'error',
       {
@@ -88,7 +88,6 @@ module.exports = {
   settings: {
     react: { version: 'detect' },
     'import/resolver': {
-      'babel-module': {},
       typescript: { project: './tsconfig.json' },
     },
   },
