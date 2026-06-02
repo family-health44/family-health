@@ -5,9 +5,6 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { QueryClientProvider } from '@tanstack/react-query';
 
-// Critical — this import enables NativeWind styling throughout the app
-import '../src/design-system/theme/global.css';
-
 import { queryClient } from '@/lib/queryClient';
 import { useAuth } from '@/core/auth/useAuth';
 import { useSyncManager } from '@/core/sync/useSyncManager';

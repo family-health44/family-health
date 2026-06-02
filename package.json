@@ -33,7 +33,7 @@
     "expo-splash-screen": "~0.27.5",
     "expo-status-bar": "~1.12.1",
     "expo-system-ui": "~3.0.7",
-    "nativewind": "4.0.36",
+    "nativewind": "^2.0.11",
     "react": "18.2.0",
     "react-hook-form": "^7.52.2",
     "react-native": "0.74.3",
