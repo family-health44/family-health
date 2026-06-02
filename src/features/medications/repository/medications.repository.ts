@@ -1,7 +1,7 @@
 // src/features/medications/repository/medications.repository.ts
 // Medications repository — only place Supabase is called for medication data.
 
-import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/supabase';
 import { handleNetworkError } from '@/core/network/errorHandler';
 
 import type { DbMedication } from '@/shared/types/database';
@@ -10,7 +10,7 @@ import type { MedicationStatus } from '../types/medications.types';
 // Fetch all medications for a specific person
 export async function fetchMedicationsByPerson(personId: string): Promise<DbMedication[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('medications')
       .select('id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id')
       .eq('person_id', personId)
@@ -26,7 +26,7 @@ export async function fetchMedicationsByPerson(personId: string): Promise<DbMedi
 // Fetch a single medication by id
 export async function fetchMedicationById(medicationId: string): Promise<DbMedication | null> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('medications')
       .select('id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id')
       .eq('id', medicationId)
@@ -54,7 +54,7 @@ export interface InsertMedicationParams {
 
 export async function insertMedication(params: InsertMedicationParams): Promise<DbMedication> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('medications')
       .insert({
         name: params.name,
@@ -93,7 +93,7 @@ export interface UpdateMedicationParams {
 
 export async function updateMedication(params: UpdateMedicationParams): Promise<DbMedication> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('medications')
       .update({
         name: params.name,
@@ -123,7 +123,7 @@ export async function updateMedicationStatus(
   status: MedicationStatus,
 ): Promise<void> {
   try {
-    const { error } = await supabase
+    const { error } = await db
       .from('medications')
       .update({ status })
       .eq('id', medicationId);

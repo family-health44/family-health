@@ -2,7 +2,6 @@
 // Design token constants — single source of truth for all colour values.
 // Domain layer may import from here. Components should prefer NativeWind classes.
 // These raw values are used for dynamic styling (e.g. person colour assignment).
-
 export const AppColours = {
   background: '#F7F5F0',
 } as const;
@@ -27,11 +26,11 @@ export const PERSON_COLOURS: readonly PersonColourSet[] = [
 
 // Named map for explicit lookups
 export const PERSON_COLOUR_MAP: Readonly<Record<PersonColourKey, PersonColourSet>> = {
-  green: PERSON_COLOURS[0],
-  blue: PERSON_COLOURS[1],
-  red: PERSON_COLOURS[2],
-  purple: PERSON_COLOURS[3],
-  amber: PERSON_COLOURS[4],
+  green:  PERSON_COLOURS[0] as PersonColourSet,
+  blue:   PERSON_COLOURS[1] as PersonColourSet,
+  red:    PERSON_COLOURS[2] as PersonColourSet,
+  purple: PERSON_COLOURS[3] as PersonColourSet,
+  amber:  PERSON_COLOURS[4] as PersonColourSet,
 } as const;
 
 // NativeWind class map — used when dynamic values aren't needed

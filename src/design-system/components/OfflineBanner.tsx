@@ -2,7 +2,8 @@
 // Offline status banner — shown at the top of the app when offline or syncing.
 // Mounts in the root layout so it appears across all screens.
 
-import { View, Text, Animated, useAnimatedValue, useEffect } from 'react-native';
+import { useEffect } from 'react';
+import { View, Text, Animated, useAnimatedValue } from 'react-native';
 
 interface OfflineBannerProps {
   isOnline: boolean;

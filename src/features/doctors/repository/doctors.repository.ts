@@ -1,7 +1,7 @@
 // src/features/doctors/repository/doctors.repository.ts
 // Doctors repository — only place Supabase is called for doctor data.
 
-import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/supabase';
 import { handleNetworkError } from '@/core/network/errorHandler';
 
 import type { DbDoctor } from '@/shared/types/database';
@@ -9,7 +9,7 @@ import type { DbDoctor } from '@/shared/types/database';
 // Fetch all doctors in the family group
 export async function fetchDoctors(): Promise<DbDoctor[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('doctors')
       .select('id, name, type, address, phone, family_group_id')
       .order('name', { ascending: true });
@@ -24,13 +24,13 @@ export async function fetchDoctors(): Promise<DbDoctor[]> {
 // Fetch doctors linked to a specific person via people_doctors join table
 export async function fetchDoctorIdsByPerson(personId: string): Promise<string[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('people_doctors')
       .select('doctor_id')
       .eq('person_id', personId);
 
     if (error) throw error;
-    return (data ?? []).map((row) => row.doctor_id);
+    return (data ?? []).map((row: { doctor_id: string }) => row.doctor_id);
   } catch (error) {
     handleNetworkError(error);
   }
@@ -39,7 +39,7 @@ export async function fetchDoctorIdsByPerson(personId: string): Promise<string[]
 // Fetch a single doctor by id
 export async function fetchDoctorById(doctorId: string): Promise<DbDoctor | null> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('doctors')
       .select('id, name, type, address, phone, family_group_id')
       .eq('id', doctorId)
@@ -62,7 +62,7 @@ export interface InsertDoctorParams {
 
 export async function insertDoctor(params: InsertDoctorParams): Promise<DbDoctor> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('doctors')
       .insert({
         name: params.name,
@@ -92,7 +92,7 @@ export interface UpdateDoctorParams {
 
 export async function updateDoctor(params: UpdateDoctorParams): Promise<DbDoctor> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('doctors')
       .update({
         name: params.name,
@@ -118,7 +118,7 @@ export async function linkDoctorToPerson(
   personId: string,
 ): Promise<void> {
   try {
-    const { error } = await supabase
+    const { error } = await db
       .from('people_doctors')
       .insert({ doctor_id: doctorId, person_id: personId });
     if (error) throw error;
@@ -133,7 +133,7 @@ export async function unlinkDoctorFromPerson(
   personId: string,
 ): Promise<void> {
   try {
-    const { error } = await supabase
+    const { error } = await db
       .from('people_doctors')
       .delete()
       .eq('doctor_id', doctorId)

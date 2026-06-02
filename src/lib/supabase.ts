@@ -23,3 +23,5 @@ export const supabase = createClient<Database>(
 );
 
 export type SupabaseClient = typeof supabase;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const db = supabase as any;

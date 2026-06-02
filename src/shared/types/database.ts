@@ -25,7 +25,7 @@ export interface DbPerson {
   id: string;
   name: string;
   family_group_id: string;
-  colour: string | null;
+  // Note: no colour column in database — colour is assigned by index in domain layer
 }
 
 export interface DbDoctorType {
@@ -55,18 +55,19 @@ export interface DbMedication {
   frequency: string | null;
   reason: string | null;
   status: MedicationStatus;
-  start_date: string | null; // ISO date string
-  end_date: string | null;   // ISO date string
+  start_date: string | null;
+  end_date: string | null;
   person_id: string;
-  prescribed_by: string | null; // doctor_id
+  prescribed_by: string | null;
   family_group_id: string;
 }
 
 export interface DbVisit {
   id: string;
   title: string;
-  visit_date: string;      // ISO date string
-  visit_time: string | null;
+  visit_date: string;
+  // Note: no visit_time column in database — repository injects null at runtime
+  visit_time: null;
   doctor_id: string | null;
   person_id: string;
   family_group_id: string;
@@ -89,7 +90,7 @@ export interface DbTodo {
   id: string;
   title: string;
   notes: string | null;
-  due_date: string | null; // ISO date string
+  due_date: string | null;
   completed: boolean;
   person_id: string | null;
   doctor_id: string | null;
@@ -127,7 +128,6 @@ export type DbTodoUpdate = Partial<Omit<DbTodo, 'id'>>;
 export type DbDocumentUpdate = Partial<Omit<DbDocument, 'id'>>;
 
 // ─── Supabase database type map ───────────────────────────────────────────────
-// Used to type the Supabase client in src/lib/supabase.ts
 
 export interface Database {
   public: {

@@ -13,7 +13,6 @@ const makeDbPerson = (overrides: Partial<DbPerson> = {}): DbPerson => ({
   id: 'person-1',
   name: 'Jane Smith',
   family_group_id: 'group-1',
-  colour: null,
   ...overrides,
 });
 

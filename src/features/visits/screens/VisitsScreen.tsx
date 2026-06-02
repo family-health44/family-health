@@ -94,7 +94,7 @@ export const VisitsScreen = () => {
               }}>
                 {group.label}
               </Text>
-              {group.visits.map((visit) => (
+              {group.visits.map((visit: import('@/features/visits/types/visits.types').Visit) => (
                 <VisitCard key={visit.id} visit={visit} onPress={handleVisitPress} />
               ))}
             </View>

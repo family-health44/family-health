@@ -10,7 +10,8 @@ import { fetchPeople } from '@/features/family/repository/family.repository';
 import { fetchDoctors } from '@/features/doctors/repository/doctors.repository';
 import { mapDbVisitToVisit, groupVisitsForList } from '../domain/visits.domain';
 
-import type { Visit, VisitListGroup } from '../types/visits.types';
+import type { Visit } from '../types/visits.types';
+import type { VisitListGroup } from '../domain/visits.domain';
 
 // Fetches all visits with person + doctor names joined
 async function fetchVisitsWithNames(): Promise<Visit[]> {

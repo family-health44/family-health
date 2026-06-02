@@ -1,14 +1,14 @@
 // src/features/notes/repository/notes.repository.ts
 // Notes repository — only place Supabase is called for note data.
 
-import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/supabase';
 import { handleNetworkError } from '@/core/network/errorHandler';
 
 import type { DbNote } from '@/shared/types/database';
 
 export async function fetchNotesByPerson(personId: string): Promise<DbNote[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('notes')
       .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden')
       .eq('person_id', personId)
@@ -24,7 +24,7 @@ export async function fetchNotesByPerson(personId: string): Promise<DbNote[]> {
 
 export async function fetchNotesByVisit(visitId: string): Promise<DbNote[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('notes')
       .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden')
       .eq('visit_id', visitId)
@@ -40,7 +40,7 @@ export async function fetchNotesByVisit(visitId: string): Promise<DbNote[]> {
 
 export async function fetchNotesByDoctor(doctorId: string): Promise<DbNote[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('notes')
       .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden')
       .eq('doctor_id', doctorId)
@@ -66,7 +66,7 @@ export interface InsertNoteParams {
 
 export async function insertNote(params: InsertNoteParams): Promise<DbNote> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('notes')
       .insert({
         content: params.content,
@@ -98,7 +98,7 @@ export interface UpdateNoteParams {
 
 export async function updateNote(params: UpdateNoteParams): Promise<DbNote> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('notes')
       .update({
         content: params.content,
@@ -120,7 +120,7 @@ export async function updateNote(params: UpdateNoteParams): Promise<DbNote> {
 
 export async function deleteNote(noteId: string): Promise<void> {
   try {
-    const { error } = await supabase
+    const { error } = await db
       .from('notes')
       .delete()
       .eq('id', noteId);

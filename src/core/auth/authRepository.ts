@@ -1,5 +1,5 @@
 // src/core/auth/authRepository.ts
-import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/supabase';
 import { toAppError } from '@/shared/types/errors';
 import { ENV } from '@/core/config/env';
 
@@ -21,7 +21,7 @@ export async function signInWithEmail(credentials: SignInCredentials): Promise<S
   console.log('[Auth] Signing in:', email);
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({ 
+    const { data, error } = await db.auth.signInWithPassword({ 
       email: email.trim(), 
       password 
     });
@@ -47,7 +47,7 @@ export interface CreateFamilyGroupParams {
 export async function createFamilyGroup(params: CreateFamilyGroupParams): Promise<string> {
   const { userId, familyGroupName } = params;
 
-  const { data: group, error: groupError } = await supabase
+  const { data: group, error: groupError } = await db
     .from('family_groups')
     .insert({ name: familyGroupName })
     .select('id')
@@ -56,7 +56,7 @@ export async function createFamilyGroup(params: CreateFamilyGroupParams): Promis
   if (groupError) throw toAppError(groupError);
   if (!group) throw toAppError(new Error('Family group creation returned no data.'));
 
-  const { error: memberError } = await supabase
+  const { error: memberError } = await db
     .from('family_group_members')
     .insert({ user_id: userId, family_group_id: group.id });
 
