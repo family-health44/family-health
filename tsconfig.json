@@ -1,34 +1,40 @@
-{
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-native",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    "target": "ES2020",
-    "lib": ["ES2020"],
-    "skipLibCheck": true
+// .eslintrc.js
+module.exports = {
+  root: true,
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: 'module',
+    ecmaFeatures: { jsx: true },
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.d.ts",
-    "expo-env.d.ts"
+  extends: [
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
   ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build"
-  ]
-}
+  plugins: [
+    '@typescript-eslint',
+    'react',
+    'react-hooks',
+    'react-native',
+  ],
+  rules: {
+    'react/react-in-jsx-scope': 'off',
+    'react/prop-types': 'off',
+    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    'no-console': 'off',
+  },
+  settings: {
+    react: { version: 'detect' },
+  },
+  ignorePatterns: [
+    'node_modules/',
+    'dist/',
+    '.expo/',
+    'coverage/',
+    'babel.config.js',
+    'jest.config.js',
+    'metro.config.js',
+    'tailwind.config.js',
+  ],
+};

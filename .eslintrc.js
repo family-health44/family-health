@@ -85,10 +85,12 @@ module.exports = {
       },
     ],
   },
-  settings: {
+ settings: {
     react: { version: 'detect' },
     'import/resolver': {
-      typescript: { project: './tsconfig.json' },
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
     },
   },
   env: {
