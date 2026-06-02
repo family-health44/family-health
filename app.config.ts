@@ -9,6 +9,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: 'Family Health',
   slug: 'family-health',
+owner: 'rowan44',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
@@ -21,11 +22,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   ios: {
     supportsTablet: false,
-    bundleIdentifier: 'com.familyhealth.app',
+    bundleIdentifier: 'com.rowan44.familyhealth.app',
     buildNumber: '1',
   },
   android: {
-    package: 'com.familyhealth.app',
+    package: 'com.rowan44.familyhealth.app',
     versionCode: 1,
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
