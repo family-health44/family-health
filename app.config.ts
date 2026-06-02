@@ -52,12 +52,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   experiments: {
     typedRoutes: true,
   },
-  extra: {
-    // Injected at build time — EXPO_PUBLIC_ prefix makes them available on the client
-    supabaseUrl: process.env['EXPO_PUBLIC_SUPABASE_URL'],
+extra: {
+    supabaseUrl: 'https://ukqijssyrdmzebdasgcs.supabase.co',
     supabaseAnonKey: process.env['EXPO_PUBLIC_SUPABASE_ANON_KEY'],
     eas: {
-      projectId: process.env['EAS_PROJECT_ID'],
+      projectId: 'ba1462b3-731f-4539-9bbf-dbf563e815e0',
     },
   },
 });
