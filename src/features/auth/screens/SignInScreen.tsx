@@ -43,7 +43,7 @@ export const SignInScreen = () => {
     <ScreenWrapper avoidKeyboard padded>
       {/* Header */}
       <View className="mb-10 mt-8">
-        <Text className="text-3xl font-bold text-[#1A1A1A]">
+        <Text style={{ fontFamily: 'Fraunces', fontSize: 34, fontWeight: '300', color: '#1C1917', lineHeight: 38 }}>
           Family Health
         </Text>
         <Text className="mt-2 text-base text-[#6B6866]">
