@@ -1,5 +1,8 @@
 // app/(app)/visits/[visitId].tsx
-import { View, Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { VisitDetailScreen } from '@/features/visits/screens/VisitDetailScreen';
+
 export default function VisitDetailRoute() {
-  return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Text>Visit Detail — stub</Text></View>;
+  const { visitId } = useLocalSearchParams<{ visitId: string }>();
+  return <VisitDetailScreen visitId={visitId ?? ''} />;
 }
