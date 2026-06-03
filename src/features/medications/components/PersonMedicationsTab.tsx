@@ -1,100 +1,110 @@
 // src/features/medications/components/PersonMedicationsTab.tsx
-// Medications tab for the person detail screen.
-// Lists medications grouped by status. Allows adding and status toggling.
-
+// Medications screen for a person — matches PWA design.
 import { useState } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
-
+import { View, Text, TextInput, FlatList, Pressable } from 'react-native';
+import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EmptyState, ErrorState, LoadingState } from '@/design-system/components/EmptyState';
+import { FAB } from '@/design-system/components/FAB';
+import { Fonts } from '@/design-system/tokens/fonts';
 import { usePersonMedications } from '../hooks/usePersonMedications';
 import { MedicationCard } from './MedicationCard';
 import { AddMedicationModal } from './AddMedicationModal';
-
 import type { PersonColourSet } from '@/design-system/tokens/colours';
 import type { MedicationStatus } from '../types/medications.types';
 
 interface PersonMedicationsTabProps {
   personId: string;
   colourSet: PersonColourSet;
+  personName?: string;
 }
 
-export const PersonMedicationsTab = ({ personId, colourSet }: PersonMedicationsTabProps) => {
+export const PersonMedicationsTab = ({ personId, colourSet, personName }: PersonMedicationsTabProps) => {
+  const insets = useSafeAreaInsets();
   const [showAddModal, setShowAddModal] = useState(false);
+  const [search, setSearch] = useState('');
   const { groups, isLoading, error, addMedication, updateStatus, isAdding } =
     usePersonMedications(personId);
 
   if (isLoading) return <LoadingState message="Loading medications..." />;
   if (error) return <ErrorState message={error.message} />;
 
-  const totalCount = groups.reduce((acc, g) => acc + g.medications.length, 0);
+  const filtered = groups.map((g) => ({
+    ...g,
+    medications: g.medications.filter((m) =>
+      m.name.toLowerCase().includes(search.toLowerCase())
+    ),
+  })).filter((g) => g.medications.length > 0);
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView
-        contentContainerStyle={{ padding: 16, gap: 4, flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {totalCount === 0 ? (
+    <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
+      {/* Header */}
+      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
+        <Pressable
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}
+        >
+          <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
+          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
+        </Pressable>
+        <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32 }}>
+          Medications
+        </Text>
+        {personName ? (
+          <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 2 }}>{personName}</Text>
+        ) : null}
+      </View>
+
+      {/* Search bar */}
+      <View style={{ paddingHorizontal: 16, paddingBottom: 10 }}>
+        <View style={{ backgroundColor: '#EEEAE3', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Text style={{ fontSize: 14, color: '#A8A09A' }}>🔍</Text>
+          <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Search medications..."
+            placeholderTextColor="#A8A09A"
+            style={{ flex: 1, fontSize: 14, color: '#1C1917' }}
+          />
+        </View>
+      </View>
+
+      <FlatList
+        data={filtered}
+        keyExtractor={(item) => item.status}
+        contentContainerStyle={{ padding: 16, paddingTop: 0, flexGrow: 1 }}
+        ListEmptyComponent={
           <EmptyState
             title="No medications yet"
             message="Add a medication to track what this person is taking."
-            actionLabel="Add medication"
-            onAction={() => setShowAddModal(true)}
           />
-        ) : (
-          <>
-            {groups.map((group) => (
-              <View key={group.status} style={{ marginBottom: 16 }}>
-                {/* Group header */}
-                <Text style={{
-                  fontSize: 13,
-                  fontWeight: '600',
-                  color: '#6B6866',
-                  textTransform: 'uppercase',
-                  letterSpacing: 0.8,
-                  marginBottom: 10,
-                }}>
-                  {group.label}
-                </Text>
-
-                {group.medications.map((med) => (
-                  <MedicationCard
-                    key={med.id}
-                    medication={med}
-                    colourSet={colourSet}
-                    onStatusToggle={(id, status: MedicationStatus) => updateStatus(id, status)}
-                  />
-                ))}
-              </View>
+        }
+        renderItem={({ item: group }) => (
+          <View style={{ marginBottom: 16 }}>
+            <Text style={{
+              fontSize: 10,
+              fontWeight: '700',
+              color: '#A8A09A',
+              textTransform: 'uppercase',
+              letterSpacing: 0.8,
+              marginBottom: 8,
+            }}>
+              {group.label}
+            </Text>
+            {group.medications.map((med) => (
+              <MedicationCard
+                key={med.id}
+                medication={med}
+                colourSet={colourSet}
+                onStatusToggle={(id, status: MedicationStatus) => updateStatus(id, status)}
+              />
             ))}
-
-            {/* Add more button */}
-            <Pressable
-              onPress={() => setShowAddModal(true)}
-              accessibilityRole="button"
-              accessibilityLabel="Add medication"
-              style={({ pressed }) => ({
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingVertical: 14,
-                marginTop: 4,
-                borderRadius: 14,
-                borderWidth: 1.5,
-                borderColor: colourSet.border,
-                borderStyle: 'dashed',
-                backgroundColor: pressed ? colourSet.bg : 'transparent',
-                gap: 8,
-              })}
-            >
-              <Text style={{ fontSize: 18, color: colourSet.dot }}>+</Text>
-              <Text style={{ fontSize: 15, fontWeight: '600', color: colourSet.dot }}>
-                Add medication
-              </Text>
-            </Pressable>
-          </>
+          </View>
         )}
-      </ScrollView>
+      />
+
+      <FAB onPress={() => setShowAddModal(true)} accessibilityLabel="Add medication" />
 
       <AddMedicationModal
         visible={showAddModal}
