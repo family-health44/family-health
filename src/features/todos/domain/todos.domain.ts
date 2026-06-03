@@ -96,3 +96,8 @@ export function isTodoOverdue(todo: Todo): boolean {
   if (!todo.dueDate || todo.completed) return false;
   return todo.dueDate < new Date().toISOString().split('T')[0]!;
 }
+export function countOverdueTodos(groups: TodoPersonGroup[]): number {
+  return groups.reduce((total, group) => {
+    return total + group.todos.filter((t) => !t.completed && isTodoOverdue(t)).length;
+  }, 0);
+}

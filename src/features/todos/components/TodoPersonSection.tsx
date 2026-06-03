@@ -1,18 +1,15 @@
 // src/features/todos/components/TodoPersonSection.tsx
 // Coloured section grouping todos for one person.
-// General (unassigned) todos use neutral styling.
-
-import { View, Text } from 'react-native';
-
+// Collapsible — tap header to expand/collapse.
+import { useState } from 'react';
+import { View, Text, Pressable } from 'react-native';
 import { PERSON_COLOURS } from '@/design-system/tokens/colours';
-import { getInitials } from '@/shared/utils/initials';
-import { Avatar } from '@/design-system/components/Avatar';
 import { TodoItem } from './TodoItem';
-
 import type { TodoPersonGroup } from '../types/todos.types';
 
 interface TodoPersonSectionProps {
   group: TodoPersonGroup;
+  showCompleted: boolean;
   onToggle: (todoId: string, completed: boolean) => void;
   onDelete: (todoId: string) => void;
 }
@@ -25,72 +22,67 @@ const NEUTRAL_COLOUR = {
 } as const;
 
 export const TodoPersonSection = ({
-  group, onToggle, onDelete,
+  group, showCompleted, onToggle, onDelete,
 }: TodoPersonSectionProps) => {
+  const [collapsed, setCollapsed] = useState(false);
+
   const isGeneral = group.colourIndex === -1;
   const colourSet = isGeneral
     ? NEUTRAL_COLOUR
     : (PERSON_COLOURS[group.colourIndex % PERSON_COLOURS.length] ?? NEUTRAL_COLOUR);
 
-  const incomplete = group.todos.filter((t) => !t.completed).length;
+  const visibleTodos = showCompleted
+    ? group.todos
+    : group.todos.filter((t) => !t.completed);
+
+  if (visibleTodos.length === 0 && !showCompleted) return null;
 
   return (
-    <View style={{
-      backgroundColor: colourSet.bg,
-      borderColor: colourSet.border,
-      borderWidth: 1,
-      borderRadius: 16,
-      marginBottom: 14,
-      overflow: 'hidden',
-    }}>
-      {/* Section header */}
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 14,
-        paddingVertical: 12,
-        borderBottomWidth: group.todos.length > 0 ? 1 : 0,
-        borderBottomColor: colourSet.border,
-        gap: 10,
-      }}>
-        {!isGeneral && group.personId ? (
-          <Avatar
-            initials={getInitials(group.personName)}
-            colourSet={colourSet}
-            size="sm"
-          />
-        ) : null}
-
+    <View style={{ marginBottom: 8 }}>
+      <Pressable
+        onPress={() => setCollapsed(!collapsed)}
+        accessibilityRole="button"
+        accessibilityLabel={`${group.personName} todos`}
+        accessibilityState={{ expanded: !collapsed }}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: colourSet.bg,
+          borderColor: colourSet.border,
+          borderWidth: 1,
+          borderRadius: 12,
+          paddingHorizontal: 14,
+          paddingVertical: 11,
+          gap: 10,
+        }}
+      >
         <Text style={{ flex: 1, fontSize: 15, fontWeight: '700', color: colourSet.text }}>
           {group.personName}
         </Text>
+        <Text style={{ color: colourSet.text, fontSize: 13, opacity: 0.7 }}>
+          {collapsed ? '∨' : '∧'}
+        </Text>
+      </Pressable>
 
-        {incomplete > 0 && (
-          <View style={{
-            backgroundColor: colourSet.dot,
-            borderRadius: 10,
-            paddingHorizontal: 7,
-            paddingVertical: 2,
-          }}>
-            <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '700' }}>
-              {incomplete}
-            </Text>
-          </View>
-        )}
-      </View>
-
-      {/* Todo items */}
-      <View style={{ paddingHorizontal: 14 }}>
-        {group.todos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            colourSet={isGeneral ? null : colourSet}
-            onToggle={onToggle}
-            onDelete={onDelete}
-          />
-        ))}
-      </View>
+      {!collapsed && (
+        <View style={{ marginTop: 2, marginBottom: 4 }}>
+          {visibleTodos.length > 0 ? (
+            visibleTodos.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                colourSet={isGeneral ? null : colourSet}
+                onToggle={onToggle}
+                onDelete={onDelete}
+              />
+            ))
+          ) : (
+            <View style={{ padding: 12, alignItems: 'center' }}>
+              <Text style={{ fontSize: 12, color: '#A8A09A' }}>No open items</Text>
+            </View>
+          )}
+        </View>
+      )}
     </View>
   );
 };

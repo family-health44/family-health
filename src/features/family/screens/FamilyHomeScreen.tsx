@@ -8,6 +8,9 @@ import { router } from 'expo-router';
 
 import { ScreenWrapper } from '@/design-system/components/ScreenWrapper';
 import { EmptyState, ErrorState, LoadingState } from '@/design-system/components/EmptyState';
+import { FAB } from '@/design-system/components/FAB';
+import { HamburgerButton } from '@/design-system/components/HamburgerButton';
+import { Fonts } from '@/design-system/tokens/fonts';
 import { useFamilyHome } from '../hooks/useFamilyHome';
 import { PersonCard } from '../components/PersonCard';
 import { AddPersonModal } from '../components/AddPersonModal';
@@ -28,7 +31,6 @@ export const FamilyHomeScreen = () => {
     setShowAddModal(false);
   };
 
-  // ── Loading ────────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
       <ScreenWrapper>
@@ -37,7 +39,6 @@ export const FamilyHomeScreen = () => {
     );
   }
 
-  // ── Error ──────────────────────────────────────────────────────────────────
   if (error) {
     return (
       <ScreenWrapper>
@@ -48,6 +49,17 @@ export const FamilyHomeScreen = () => {
 
   return (
     <ScreenWrapper padded={false}>
+      {/* Header */}
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingTop: 12,
+        paddingBottom: 8,
+      }}>
+        <HamburgerButton onPress={() => {/* TODO: open drawer */}} />
+      </View>
+
       <FlatList<Person>
         data={data?.people ?? []}
         keyExtractor={(item) => item.id}
@@ -60,23 +72,24 @@ export const FamilyHomeScreen = () => {
           />
         }
         ListHeaderComponent={
-          <View style={{ marginBottom: 20, marginTop: 8 }}>
-            {/* Family group name */}
-            <Text
-              style={{
-                fontSize: 13,
-                fontWeight: '600',
-                color: '#6B6866',
-                textTransform: 'uppercase',
-                letterSpacing: 0.8,
-                marginBottom: 4,
-              }}
-            >
+          <View style={{ marginBottom: 20, marginTop: 4 }}>
+            <Text style={{
+              fontSize: 12,
+              fontWeight: '600',
+              color: '#A8A09A',
+              textTransform: 'uppercase',
+              letterSpacing: 0.9,
+              marginBottom: 2,
+            }}>
               {data?.familyGroup.name ?? 'Family'}
             </Text>
-            <Text
-              style={{ fontSize: 28, fontWeight: '700', color: '#1A1A1A' }}
-            >
+            <Text style={{
+              fontSize: 33,
+              fontWeight: '300',
+              color: '#1C1917',
+              fontFamily: Fonts.serif,
+              lineHeight: 36,
+            }}>
               Health Records
             </Text>
           </View>
@@ -113,14 +126,17 @@ export const FamilyHomeScreen = () => {
               })}
             >
               <Text style={{ fontSize: 20, color: '#2A6049', lineHeight: 24 }}>+</Text>
-              <Text
-                style={{ fontSize: 15, fontWeight: '600', color: '#2A6049' }}
-              >
+              <Text style={{ fontSize: 15, fontWeight: '600', color: '#2A6049' }}>
                 Add family member
               </Text>
             </Pressable>
           ) : null
         }
+      />
+
+      <FAB
+        onPress={() => setShowAddModal(true)}
+        accessibilityLabel="Add family member"
       />
 
       <AddPersonModal
