@@ -38,12 +38,25 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     'expo-router',
     'expo-secure-store',
-      [
+    [
       '@morrowdigital/watermelondb-expo-plugin',
-      { disableJsi: true },
+      { disableJsi: false },
+    ],
+    [
+      'expo-build-properties',
+      {
+        ios: {
+          extraPods: [
+            {
+              name: 'simdjson',
+              path: '../node_modules/@nozbe/simdjson',
+              modular_headers: true,
+            },
+          ],
+        },
+      },
     ],
   ],
   experiments: {
     typedRoutes: true,
   },
-});
