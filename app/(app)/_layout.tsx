@@ -90,6 +90,7 @@ export default function AppLayout() {
       <Tabs.Screen name="family/[personId]/medications" options={{ href: null }} />
       <Tabs.Screen name="family/[personId]/medical-events" options={{ href: null }} />
       <Tabs.Screen name="visits/[visitId]" options={{ href: null }} />
+      <Tabs.Screen name="family/[personId]/doctor/[doctorId]" options={{ href: null }} />
     </Tabs>
   );
 }

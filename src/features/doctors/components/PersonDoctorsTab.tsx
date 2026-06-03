@@ -1,6 +1,5 @@
 // src/features/doctors/components/PersonDoctorsTab.tsx
 // Doctors screen for a person — matches PWA design.
-// Header with back + serif title, search bar, coloured doctor cards, FAB.
 import { useState } from 'react';
 import { View, Text, TextInput, FlatList, Pressable } from 'react-native';
 import { router } from 'expo-router';
@@ -35,7 +34,7 @@ export const PersonDoctorsTab = ({ personId, personName }: PersonDoctorsTabProps
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
       {/* Header */}
-      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, backgroundColor: '#F7F5F0' }}>
+      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
@@ -66,7 +65,6 @@ export const PersonDoctorsTab = ({ personId, personName }: PersonDoctorsTabProps
         </View>
       </View>
 
-      {/* Doctor list */}
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
@@ -81,6 +79,7 @@ export const PersonDoctorsTab = ({ personId, personName }: PersonDoctorsTabProps
           <DoctorCard
             doctor={item}
             colourIndex={index}
+            onPress={(doctorId) => router.push(`/(app)/family/${personId}/doctor/${doctorId}` as never)}
             onUnlink={unlinkDoctor}
           />
         )}
