@@ -40,20 +40,6 @@ module.exports = ({ config }) => ({
       '@morrowdigital/watermelondb-expo-plugin',
       { disableJsi: false },
     ],
-    [
-      'expo-build-properties',
-      {
-        ios: {
-          extraPods: [
-            {
-              name: 'simdjson',
-              path: '../node_modules/@nozbe/simdjson',
-              modular_headers: true,
-            },
-          ],
-        },
-      },
-    ],
   ],
   experiments: {
     typedRoutes: true,
