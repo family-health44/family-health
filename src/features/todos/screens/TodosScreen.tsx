@@ -8,6 +8,7 @@ import { EmptyState, ErrorState, LoadingState } from '@/design-system/components
 import { FAB } from '@/design-system/components/FAB';
 import { HamburgerButton } from '@/design-system/components/HamburgerButton';
 import { Fonts } from '@/design-system/tokens/fonts';
+import { useDrawer } from '@/design-system/components/DrawerContext';
 import { useTodos } from '../hooks/useTodos';
 import { TodoPersonSection } from '../components/TodoPersonSection';
 import { AddTodoModal } from '../components/AddTodoModal';
@@ -16,6 +17,7 @@ import type { TodoPersonGroup } from '../types/todos.types';
 
 export const TodosScreen = () => {
   const [showAddModal, setShowAddModal] = useState(false);
+  const { openDrawer } = useDrawer();
   const [showCompleted, setShowCompleted] = useState(false);
   const {
     groups, isLoading, isRefreshing, error,
@@ -45,7 +47,7 @@ export const TodosScreen = () => {
           <View style={{ marginBottom: 16 }}>
             {/* Top row: hamburger + show completed */}
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-              <HamburgerButton onPress={() => {/* TODO: open drawer */}} />
+              <HamburgerButton onPress={openDrawer} />
               <View style={{ flex: 1 }} />
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <Text

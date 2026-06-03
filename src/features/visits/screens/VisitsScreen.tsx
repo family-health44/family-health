@@ -9,6 +9,7 @@ import { EmptyState, ErrorState, LoadingState } from '@/design-system/components
 import { FAB } from '@/design-system/components/FAB';
 import { HamburgerButton } from '@/design-system/components/HamburgerButton';
 import { Fonts } from '@/design-system/tokens/fonts';
+import { useDrawer } from '@/design-system/components/DrawerContext';
 import { useVisits } from '../hooks/useVisits';
 import { VisitsViewToggle } from '../components/VisitsViewToggle';
 import { VisitCard } from '../components/VisitCard';
@@ -26,6 +27,7 @@ export const VisitsScreen = () => {
     addVisit, isAdding, refetch,
   } = useVisits();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const { openDrawer } = useDrawer();
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -50,7 +52,7 @@ export const VisitsScreen = () => {
     <ScreenWrapper padded={false}>
       {/* Header */}
       <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8 }}>
-        <HamburgerButton onPress={() => {/* TODO: open drawer */}} />
+        <HamburgerButton onPress={openDrawer} />
         <Text style={{
           fontSize: 33,
           fontWeight: '300',

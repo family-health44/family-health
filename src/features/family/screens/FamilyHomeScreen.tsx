@@ -11,6 +11,7 @@ import { EmptyState, ErrorState, LoadingState } from '@/design-system/components
 import { FAB } from '@/design-system/components/FAB';
 import { HamburgerButton } from '@/design-system/components/HamburgerButton';
 import { Fonts } from '@/design-system/tokens/fonts';
+import { useDrawer } from '@/design-system/components/DrawerContext';
 import { useFamilyHome } from '../hooks/useFamilyHome';
 import { PersonCard } from '../components/PersonCard';
 import { AddPersonModal } from '../components/AddPersonModal';
@@ -19,6 +20,7 @@ import type { Person } from '../types/family.types';
 
 export const FamilyHomeScreen = () => {
   const [showAddModal, setShowAddModal] = useState(false);
+  const { openDrawer } = useDrawer();
   const { data, isLoading, isRefreshing, error, refresh, addPerson, isAddingPerson } =
     useFamilyHome();
 
@@ -57,7 +59,7 @@ export const FamilyHomeScreen = () => {
         paddingTop: 12,
         paddingBottom: 8,
       }}>
-        <HamburgerButton onPress={() => {/* TODO: open drawer */}} />
+        <HamburgerButton onPress={openDrawer} />
       </View>
 
       <FlatList<Person>

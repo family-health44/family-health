@@ -10,6 +10,7 @@ import { queryClient } from '@/lib/queryClient';
 import { useAuth } from '@/core/auth/useAuth';
 import { useSyncManager } from '@/core/sync/useSyncManager';
 import { OfflineBanner } from '@/design-system/components/OfflineBanner';
+import { DrawerProvider } from '@/design-system/components/DrawerContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,17 +30,19 @@ function RootLayoutNav() {
   if (status === 'loading' || !fontsLoaded) return null;
 
   return (
-    <View style={{ flex: 1 }}>
-      <OfflineBanner
-        isOnline={isOnline}
-        isSyncing={isSyncing}
-        pendingCount={pendingCount}
-      />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(app)" />
-      </Stack>
-    </View>
+    <DrawerProvider>
+      <View style={{ flex: 1 }}>
+        <OfflineBanner
+          isOnline={isOnline}
+          isSyncing={isSyncing}
+          pendingCount={pendingCount}
+        />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(app)" />
+        </Stack>
+      </View>
+    </DrawerProvider>
   );
 }
 
