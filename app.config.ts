@@ -38,9 +38,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     'expo-router',
     'expo-secure-store',
-    [
+      [
       '@morrowdigital/watermelondb-expo-plugin',
-      { disableJsi: false },
+      { disableJsi: true },
     ],
   ],
   experiments: {
