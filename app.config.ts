@@ -17,7 +17,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: false,
     bundleIdentifier: 'com.rowan44.familyhealth',
     buildNumber: '1',
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
   },
+   },
   android: {
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
