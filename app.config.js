@@ -36,10 +36,6 @@ module.exports = ({ config }) => ({
   plugins: [
     'expo-router',
     'expo-secure-store',
-    [
-      '@morrowdigital/watermelondb-expo-plugin',
-      { disableJsi: false },
-    ],
   ],
   experiments: {
     typedRoutes: true,
