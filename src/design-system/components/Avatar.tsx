@@ -2,12 +2,8 @@
 // Avatar primitive — displays person initials in their assigned colour.
 // Sizes: sm (32), md (44), lg (64).
 // No business logic — initials are passed in, not computed here.
-
 import { View, Text } from 'react-native';
-
 import type { PersonColourSet } from '@/design-system/tokens/colours';
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 type AvatarSize = 'sm' | 'md' | 'lg';
 
@@ -16,8 +12,6 @@ interface AvatarProps {
   colourSet: PersonColourSet;
   size?: AvatarSize;
 }
-
-// ─── Size maps ────────────────────────────────────────────────────────────────
 
 const sizePx: Record<AvatarSize, number> = {
   sm: 32,
@@ -31,12 +25,9 @@ const fontSizePx: Record<AvatarSize, number> = {
   lg: 24,
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
 export const Avatar = ({ initials, colourSet, size = 'md' }: AvatarProps) => {
   const dimension = sizePx[size];
   const fontSize = fontSizePx[size];
-
   return (
     <View
       accessibilityRole="image"
@@ -44,7 +35,7 @@ export const Avatar = ({ initials, colourSet, size = 'md' }: AvatarProps) => {
       style={{
         width: dimension,
         height: dimension,
-        borderRadius: dimension / 2,
+        borderRadius: dimension * 0.22,
         backgroundColor: colourSet.dot,
         alignItems: 'center',
         justifyContent: 'center',
