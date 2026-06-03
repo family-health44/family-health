@@ -1,81 +1,92 @@
 // src/features/doctors/components/PersonDoctorsTab.tsx
-// Doctors tab content for the person detail screen.
-// Lists doctors assigned to this person, allows adding and unlinking.
-
+// Doctors screen for a person — matches PWA design.
+// Header with back + serif title, search bar, coloured doctor cards, FAB.
 import { useState } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
-
+import { View, Text, TextInput, FlatList, Pressable } from 'react-native';
+import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EmptyState, ErrorState, LoadingState } from '@/design-system/components/EmptyState';
+import { FAB } from '@/design-system/components/FAB';
+import { Fonts } from '@/design-system/tokens/fonts';
 import { usePersonDoctors } from '../hooks/usePersonDoctors';
 import { DoctorCard } from './DoctorCard';
 import { AddDoctorModal } from './AddDoctorModal';
 
-import type { PersonColourSet } from '@/design-system/tokens/colours';
-
 interface PersonDoctorsTabProps {
   personId: string;
-  colourSet: PersonColourSet;
+  personName: string;
 }
 
-export const PersonDoctorsTab = ({ personId, colourSet }: PersonDoctorsTabProps) => {
+export const PersonDoctorsTab = ({ personId, personName }: PersonDoctorsTabProps) => {
+  const insets = useSafeAreaInsets();
   const [showAddModal, setShowAddModal] = useState(false);
+  const [search, setSearch] = useState('');
   const { doctors, isLoading, error, addDoctor, unlinkDoctor, isAdding } =
     usePersonDoctors(personId);
+
+  const filtered = doctors.filter((d) =>
+    d.name.toLowerCase().includes(search.toLowerCase()) ||
+    (d.type ?? '').toLowerCase().includes(search.toLowerCase())
+  );
 
   if (isLoading) return <LoadingState message="Loading doctors..." />;
   if (error) return <ErrorState message={error.message} />;
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView
-        contentContainerStyle={{ padding: 16, gap: 4, flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {doctors.length === 0 ? (
+    <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
+      {/* Header */}
+      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, backgroundColor: '#F7F5F0' }}>
+        <Pressable
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}
+        >
+          <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
+          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
+        </Pressable>
+        <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32 }}>
+          Doctors
+        </Text>
+        <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 2 }}>
+          {personName} · {doctors.length} {doctors.length === 1 ? 'doctor' : 'doctors'}
+        </Text>
+      </View>
+
+      {/* Search bar */}
+      <View style={{ paddingHorizontal: 16, paddingBottom: 10 }}>
+        <View style={{ backgroundColor: '#EEEAE3', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Text style={{ fontSize: 14, color: '#A8A09A' }}>🔍</Text>
+          <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Search doctors..."
+            placeholderTextColor="#A8A09A"
+            style={{ flex: 1, fontSize: 14, color: '#1C1917' }}
+          />
+        </View>
+      </View>
+
+      {/* Doctor list */}
+      <FlatList
+        data={filtered}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ padding: 16, paddingTop: 0, flexGrow: 1 }}
+        ListEmptyComponent={
           <EmptyState
             title="No doctors yet"
             message="Add a doctor to track who looks after this person."
-            actionLabel="Add doctor"
-            onAction={() => setShowAddModal(true)}
           />
-        ) : (
-          <>
-            {doctors.map((doctor) => (
-              <DoctorCard
-                key={doctor.id}
-                doctor={doctor}
-                colourSet={colourSet}
-                onUnlink={unlinkDoctor}
-              />
-            ))}
-
-            {/* Add more button */}
-            <Pressable
-              onPress={() => setShowAddModal(true)}
-              accessibilityRole="button"
-              accessibilityLabel="Add doctor"
-              style={({ pressed }) => ({
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingVertical: 14,
-                marginTop: 4,
-                borderRadius: 14,
-                borderWidth: 1.5,
-                borderColor: colourSet.border,
-                borderStyle: 'dashed',
-                backgroundColor: pressed ? colourSet.bg : 'transparent',
-                gap: 8,
-              })}
-            >
-              <Text style={{ fontSize: 18, color: colourSet.dot }}>+</Text>
-              <Text style={{ fontSize: 15, fontWeight: '600', color: colourSet.dot }}>
-                Add doctor
-              </Text>
-            </Pressable>
-          </>
+        }
+        renderItem={({ item, index }) => (
+          <DoctorCard
+            doctor={item}
+            colourIndex={index}
+            onUnlink={unlinkDoctor}
+          />
         )}
-      </ScrollView>
+      />
+
+      <FAB onPress={() => setShowAddModal(true)} accessibilityLabel="Add doctor" />
 
       <AddDoctorModal
         visible={showAddModal}

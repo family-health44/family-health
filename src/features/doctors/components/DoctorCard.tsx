@@ -1,32 +1,26 @@
 // src/features/doctors/components/DoctorCard.tsx
-// Doctor card — shows name, type badge, phone and address.
-// Used in both the person doctors tab and the main doctors screen.
-
-import { View, Text, Pressable, Linking, Alert } from 'react-native';
-
-import { Badge } from '@/design-system/components/Badge';
-import { formatPhone } from '../domain/doctors.domain';
-
+// Doctor card — coloured card with initials avatar and specialty pill.
+// Matches PWA design: each doctor gets a colour from the palette by index.
+import { View, Text, Pressable, Alert } from 'react-native';
+import { PERSON_COLOURS } from '@/design-system/tokens/colours';
 import type { Doctor } from '../types/doctors.types';
-import type { PersonColourSet } from '@/design-system/tokens/colours';
 
 interface DoctorCardProps {
   doctor: Doctor;
-  colourSet?: PersonColourSet;
+  colourIndex?: number;
   onPress?: (doctorId: string) => void;
   onUnlink?: (doctorId: string) => void;
 }
 
-export const DoctorCard = ({ doctor, colourSet, onPress, onUnlink }: DoctorCardProps) => {
-  const handlePhonePress = async () => {
-    const url = `tel:${doctor.phone}`;
-    const supported = await Linking.canOpenURL(url);
-    if (supported) {
-      await Linking.openURL(url);
-    } else {
-      Alert.alert('Cannot make call', 'Phone calls are not supported on this device.');
-    }
-  };
+export const DoctorCard = ({ doctor, colourIndex = 0, onPress, onUnlink }: DoctorCardProps) => {
+  const colourSet = PERSON_COLOURS[colourIndex % PERSON_COLOURS.length] ?? PERSON_COLOURS[0];
+
+  const initials = doctor.name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 
   const handleUnlink = () => {
     Alert.alert(
@@ -34,84 +28,77 @@ export const DoctorCard = ({ doctor, colourSet, onPress, onUnlink }: DoctorCardP
       `Remove ${doctor.name} from this person's doctors?`,
       [
         { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: () => onUnlink?.(doctor.id),
-        },
+        { text: 'Remove', style: 'destructive', onPress: () => onUnlink?.(doctor.id) },
       ],
     );
   };
 
-  const cardStyle = colourSet
-    ? {
-        backgroundColor: colourSet.bg,
-        borderColor: colourSet.border,
-        borderWidth: 1,
-        borderRadius: 14,
-        padding: 14,
-        marginBottom: 10,
-      }
-    : {
-        backgroundColor: '#FFFFFF',
-        borderColor: '#E8E4DC',
-        borderWidth: 1,
-        borderRadius: 14,
-        padding: 14,
-        marginBottom: 10,
-      };
-
   return (
     <Pressable
       onPress={() => onPress?.(doctor.id)}
-      style={({ pressed }) => ({ ...cardStyle, opacity: pressed ? 0.85 : 1 })}
       accessibilityRole="button"
       accessibilityLabel={`${doctor.name}, ${doctor.type ?? 'Doctor'}`}
+      style={({ pressed }) => ({
+        backgroundColor: colourSet?.bg,
+        borderColor: colourSet?.border,
+        borderWidth: 1.5,
+        borderRadius: 14,
+        padding: 14,
+        marginBottom: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        opacity: pressed ? 0.85 : 1,
+      })}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-        <View style={{ flex: 1, gap: 6 }}>
-          {/* Name */}
-          <Text style={{ fontSize: 16, fontWeight: '600', color: '#1A1A1A' }}>
-            {doctor.name}
-          </Text>
+      {/* Initials avatar */}
+      <View style={{
+        width: 44,
+        height: 44,
+        borderRadius: 10,
+        backgroundColor: colourSet?.dot,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+      }}>
+        <Text style={{ color: 'white', fontSize: 14, fontWeight: '700' }}>
+          {initials}
+        </Text>
+      </View>
 
-          {/* Type badge */}
-          {doctor.type ? (
-            <Badge label={doctor.type} variant="info" />
-          ) : null}
-
-          {/* Phone */}
-          {doctor.phone ? (
-            <Pressable onPress={handlePhonePress} accessibilityRole="link">
-              <Text style={{ fontSize: 14, color: '#2A6049', marginTop: 2 }}>
-                📞 {formatPhone(doctor.phone)}
-              </Text>
-            </Pressable>
-          ) : null}
-
-          {/* Address */}
-          {doctor.address ? (
-            <Text style={{ fontSize: 13, color: '#6B6866', marginTop: 2 }} numberOfLines={2}>
-              📍 {doctor.address}
+      {/* Name + specialty */}
+      <View style={{ flex: 1, gap: 5 }}>
+        <Text style={{ fontSize: 15, fontWeight: '700', color: colourSet?.text }}>
+          {doctor.name}
+        </Text>
+        {doctor.type ? (
+          <View style={{
+            alignSelf: 'flex-start',
+            backgroundColor: colourSet?.border,
+            borderRadius: 20,
+            paddingHorizontal: 8,
+            paddingVertical: 2,
+          }}>
+            <Text style={{ fontSize: 11, fontWeight: '600', color: colourSet?.text }}>
+              {doctor.type}
             </Text>
-          ) : null}
-        </View>
-
-        {/* Unlink button */}
-        {onUnlink ? (
-          <Pressable
-            onPress={handleUnlink}
-            accessibilityRole="button"
-            accessibilityLabel={`Remove ${doctor.name}`}
-            style={({ pressed }) => ({
-              padding: 6,
-              opacity: pressed ? 0.5 : 1,
-            })}
-          >
-            <Text style={{ fontSize: 18, color: '#9B3A4A' }}>×</Text>
-          </Pressable>
+          </View>
         ) : null}
       </View>
+
+      {/* Chevron or unlink */}
+      {onUnlink ? (
+        <Pressable
+          onPress={handleUnlink}
+          accessibilityRole="button"
+          accessibilityLabel={`Remove ${doctor.name}`}
+          style={({ pressed }) => ({ padding: 6, opacity: pressed ? 0.5 : 1 })}
+        >
+          <Text style={{ fontSize: 18, color: '#9B3A4A' }}>×</Text>
+        </Pressable>
+      ) : (
+        <Text style={{ color: colourSet?.border, fontSize: 16 }}>›</Text>
+      )}
     </Pressable>
   );
 };

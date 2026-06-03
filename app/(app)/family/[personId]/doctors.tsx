@@ -1,5 +1,15 @@
 // app/(app)/family/[personId]/doctors.tsx
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { LoadingState } from '@/design-system/components/EmptyState';
+import { usePersonDetail } from '@/features/family/hooks/usePersonDetail';
+import { PersonDoctorsTab } from '@/features/doctors/components/PersonDoctorsTab';
+
 export default function PersonDoctorsRoute() {
-  return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Text>Person Doctors — stub</Text></View>;
+  const { personId } = useLocalSearchParams<{ personId: string }>();
+  const { person, isLoading } = usePersonDetail(personId ?? '');
+  if (isLoading || !person) {
+    return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><LoadingState message="Loading..." /></View>;
+  }
+  return <PersonDoctorsTab personId={person.id} personName={person.name} />;
 }
