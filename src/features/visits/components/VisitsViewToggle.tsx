@@ -1,8 +1,6 @@
 // src/features/visits/components/VisitsViewToggle.tsx
 // Toggle bar for switching between list, week, and month views.
-
 import { View, Text, Pressable } from 'react-native';
-
 import type { VisitsViewMode } from '../types/visits.types';
 
 interface VisitsViewToggleProps {
@@ -19,11 +17,11 @@ const MODES: { key: VisitsViewMode; label: string }[] = [
 export const VisitsViewToggle = ({ activeMode, onModeChange }: VisitsViewToggleProps) => (
   <View style={{
     flexDirection: 'row',
-    backgroundColor: '#EEECE8',
+    backgroundColor: '#EEEAE3',
     borderRadius: 10,
     padding: 3,
     marginHorizontal: 16,
-    marginBottom: 12,
+    marginBottom: 8,
   }}>
     {MODES.map((mode) => {
       const isActive = mode.key === activeMode;
@@ -35,16 +33,21 @@ export const VisitsViewToggle = ({ activeMode, onModeChange }: VisitsViewToggleP
           accessibilityState={{ selected: isActive }}
           style={{
             flex: 1,
-            paddingVertical: 7,
-            borderRadius: 8,
+            paddingVertical: 6,
+            borderRadius: 7,
             alignItems: 'center',
             backgroundColor: isActive ? '#FFFFFF' : 'transparent',
+            shadowColor: isActive ? '#000' : 'transparent',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: isActive ? 0.08 : 0,
+            shadowRadius: 2,
+            elevation: isActive ? 1 : 0,
           }}
         >
           <Text style={{
-            fontSize: 13,
-            fontWeight: isActive ? '600' : '400',
-            color: isActive ? '#1A1A1A' : '#6B6866',
+            fontSize: 12,
+            fontWeight: isActive ? '700' : '600',
+            color: isActive ? '#2A6049' : '#A8A09A',
           }}>
             {mode.label}
           </Text>
