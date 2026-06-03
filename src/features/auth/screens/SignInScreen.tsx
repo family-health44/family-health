@@ -8,6 +8,7 @@ import { View, Text, Pressable } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
+import { Fonts } from '@/design-system/tokens/fonts';
 
 import { ScreenWrapper } from '@/design-system/components/ScreenWrapper';
 import { Input } from '@/design-system/components/Input';
@@ -43,7 +44,7 @@ export const SignInScreen = () => {
     <ScreenWrapper avoidKeyboard padded>
       {/* Header */}
       <View className="mb-10 mt-8">
-        <Text style={{ fontFamily: 'Fraunces', fontSize: 34, fontWeight: '300', color: '#1C1917', lineHeight: 38 }}>
+        <Text style={{ fontFamily: Fonts.serif, fontSize: 34, fontWeight: '300', color: '#1C1917', lineHeight: 38 }}>
           Family Health
         </Text>
         <Text className="mt-2 text-base text-[#6B6866]">
