@@ -1,19 +1,13 @@
 // src/features/appointments/screens/StartAppointmentScreen.tsx
-// Start Appointment screen — capture notes, todos, and medical events
-// during an active visit. All items saved to Supabase on completion.
-// Accessed from a visit detail — visitId and personId passed via route params.
-
+// Live appointment screen — matches PWA design exactly.
 import { useState } from 'react';
 import { View, Text, TextInput, ScrollView, Pressable, Alert } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import { Button } from '@/design-system/components/Button';
 import { ErrorState } from '@/design-system/components/EmptyState';
+import { Fonts } from '@/design-system/tokens/fonts';
 import { MEDICAL_EVENT_CONFIG, MEDICAL_EVENT_TYPES } from '@/features/medical-events/types/medical-events.types';
 import { useActiveAppointment } from '../hooks/useActiveAppointment';
-import { AppointmentCaptureSection } from '../components/AppointmentCaptureSection';
-
 import type { MedicalEventType } from '@/features/medical-events/types/medical-events.types';
 
 export const StartAppointmentScreen = () => {
@@ -34,7 +28,6 @@ export const StartAppointmentScreen = () => {
     setPostNotes, saveAppointment, cancelAppointment,
   } = useActiveAppointment();
 
-  // Start appointment on first render if not already started
   if (!appointment && params.visitId) {
     startAppointment({
       visitId: params.visitId,
@@ -46,16 +39,28 @@ export const StartAppointmentScreen = () => {
     });
   }
 
-  // Event capture state
-  const [eventDate, setEventDate] = useState('');
-  const [eventType, setEventType] = useState<MedicalEventType>('diagnosis');
+  const [eventType, setEventType] = useState<MedicalEventType>('procedure');
   const [eventDescription, setEventDescription] = useState('');
+  const [saveToEvents, setSaveToEvents] = useState(false);
+  const [captureNote, setCaptureNote] = useState('');
+  const [todoText, setTodoText] = useState('');
 
   const handleAddEvent = () => {
-    if (!eventDescription.trim() || !eventDate.trim()) return;
-    addEvent(eventDate.trim(), eventType, eventDescription.trim());
-    setEventDate('');
+    if (!eventDescription.trim()) return;
+    const today = new Date().toISOString().split('T')[0] ?? '';
+    addEvent(today, eventType, eventDescription.trim());
     setEventDescription('');
+  };
+
+  const handleAddTodo = () => {
+    if (!todoText.trim()) return;
+    addTodo(todoText.trim());
+    setTodoText('');
+  };
+
+  const handleFinish = () => {
+    if (captureNote.trim()) addNote(captureNote.trim());
+    saveAppointment();
   };
 
   const handleCancel = () => {
@@ -72,7 +77,7 @@ export const StartAppointmentScreen = () => {
   if (!appointment) {
     return (
       <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
-        <ErrorState message="Could not start appointment. Missing visit details." onRetry={() => router.back()} />
+        <ErrorState message="Could not start appointment." onRetry={() => router.back()} />
       </View>
     );
   }
@@ -81,213 +86,181 @@ export const StartAppointmentScreen = () => {
     <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
       {/* Header */}
       <View style={{
-        backgroundColor: '#2A6049',
-        paddingTop: insets.top + 8,
-        paddingBottom: 16,
+        paddingTop: insets.top + 4,
         paddingHorizontal: 16,
+        paddingBottom: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E3DDD5',
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
       }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 13, color: '#A8C4B8', fontWeight: '500' }}>
-              In progress
-            </Text>
-            <Text style={{ fontSize: 20, fontWeight: '700', color: '#FFFFFF', marginTop: 2 }}>
-              {appointment.personName}
-            </Text>
-            {appointment.doctorName ? (
-              <Text style={{ fontSize: 14, color: '#A8C4B8', marginTop: 2 }}>
-                {appointment.doctorName}
-              </Text>
-            ) : null}
-          </View>
+        <View style={{ flex: 1 }}>
           <Pressable
             onPress={handleCancel}
-            accessibilityRole="button"
-            accessibilityLabel="Cancel appointment"
-            style={({ pressed }) => ({
-              paddingHorizontal: 12, paddingVertical: 6,
-              borderRadius: 8, borderWidth: 1,
-              borderColor: 'rgba(255,255,255,0.3)',
-              opacity: pressed ? 0.6 : 1,
-            })}
+            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}
           >
-            <Text style={{ color: '#FFFFFF', fontSize: 13, fontWeight: '500' }}>Cancel</Text>
+            <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
+            <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
           </Pressable>
+          <Text style={{ fontSize: 22, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 26 }}>
+            {appointment.doctorName ?? 'Appointment'}
+          </Text>
+          <Text style={{ fontSize: 12, color: '#6B6460', marginTop: 2 }}>
+            {appointment.personName} · {appointment.visitDate}
+          </Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingTop: 20 }}>
+          <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#2A6049' }} />
+          <Text style={{ fontSize: 11, fontWeight: '700', color: '#2A6049' }}>Live</Text>
         </View>
       </View>
 
       <ScrollView
-        contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         {error ? (
-          <View style={{
-            backgroundColor: '#F5E8EB', borderColor: '#E0BDC4',
-            borderWidth: 1, borderRadius: 12, padding: 12, marginBottom: 16,
-          }}>
+          <View style={{ backgroundColor: '#F5E8EB', borderColor: '#E0BDC4', borderWidth: 1, borderRadius: 12, padding: 12, marginBottom: 16 }}>
             <Text style={{ color: '#7A2030', fontSize: 14 }}>{error.message}</Text>
           </View>
         ) : null}
 
-        {/* Notes section */}
-        <AppointmentCaptureSection
-          title="Notes"
-          placeholder="Capture a note..."
-          items={appointment.notes.map((n) => ({ id: n.id, label: n.content }))}
-          onAdd={addNote}
-          onRemove={removeNote}
-          multiline
-        />
-
-        {/* To-dos section */}
-        <AppointmentCaptureSection
-          title="To-dos"
-          placeholder="Add a follow-up task..."
-          items={appointment.todos.map((t) => ({ id: t.id, label: t.title }))}
-          onAdd={addTodo}
-          onRemove={removeTodo}
-        />
-
-        {/* Medical events section */}
-        <View style={{ marginBottom: 20 }}>
-          <Text style={{
-            fontSize: 13, fontWeight: '600', color: '#6B6866',
-            textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 10,
-          }}>
-            Medical events
+        {/* BRIEFING */}
+        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>
+          Briefing
+        </Text>
+        <View style={{ backgroundColor: '#E8F4F8', borderWidth: 1, borderColor: '#B8D8EE', borderRadius: 12, padding: 12, marginBottom: 12 }}>
+          <Text style={{ fontSize: 12, fontWeight: '700', color: '#1C1917', marginBottom: 4 }}>Pre-notes</Text>
+          <Text style={{ fontSize: 13, color: '#1C1917', lineHeight: 19 }}>
+            {appointment.personName}'s appointment
           </Text>
-
-          {/* Event type chips */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 8 }}>
-            <View style={{ flexDirection: 'row', gap: 6 }}>
-              {MEDICAL_EVENT_TYPES.map((type) => (
-                <Pressable
-                  key={type}
-                  onPress={() => setEventType(type)}
-                  style={{
-                    paddingHorizontal: 10, paddingVertical: 5,
-                    borderRadius: 16, borderWidth: 1,
-                    borderColor: eventType === type ? '#2A6049' : '#C8C4BC',
-                    backgroundColor: eventType === type ? '#E6F0EC' : 'transparent',
-                  }}
-                >
-                  <Text style={{
-                    fontSize: 12,
-                    color: eventType === type ? '#1A4D35' : '#4A4744',
-                    fontWeight: eventType === type ? '600' : '400',
-                  }}>
-                    {MEDICAL_EVENT_CONFIG[type].label}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </ScrollView>
-
-          {/* Date + description + add button */}
-          <View style={{ gap: 8 }}>
-            <TextInput
-              value={eventDate}
-              onChangeText={setEventDate}
-              placeholder="Date (YYYY-MM-DD)"
-              placeholderTextColor="#9E9B95"
-              keyboardType="numbers-and-punctuation"
-              style={{
-                backgroundColor: '#FFFFFF', borderRadius: 12,
-                borderWidth: 1, borderColor: '#C8C4BC',
-                paddingHorizontal: 14, paddingVertical: 10,
-                fontSize: 15, color: '#1A1A1A',
-              }}
-            />
-            <View style={{ flexDirection: 'row', gap: 8 }}>
-              <TextInput
-                value={eventDescription}
-                onChangeText={setEventDescription}
-                placeholder="Description..."
-                placeholderTextColor="#9E9B95"
-                autoCapitalize="sentences"
-                style={{
-                  flex: 1, backgroundColor: '#FFFFFF', borderRadius: 12,
-                  borderWidth: 1, borderColor: '#C8C4BC',
-                  paddingHorizontal: 14, paddingVertical: 10,
-                  fontSize: 15, color: '#1A1A1A',
-                }}
-              />
-              <Pressable
-                onPress={handleAddEvent}
-                style={({ pressed }) => ({
-                  backgroundColor: '#2A6049', borderRadius: 12,
-                  paddingHorizontal: 16, paddingVertical: 10,
-                  alignItems: 'center', justifyContent: 'center',
-                  opacity: pressed ? 0.8 : 1,
-                })}
-              >
-                <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 15 }}>Add</Text>
-              </Pressable>
-            </View>
-          </View>
-
-          {/* Captured events */}
-          {appointment.events.map((e) => (
-            <View key={e.id} style={{
-              flexDirection: 'row', alignItems: 'flex-start',
-              backgroundColor: '#FFFFFF', borderRadius: 10,
-              borderWidth: 1, borderColor: '#E8E4DC',
-              padding: 12, marginTop: 6, gap: 10,
-            }}>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 12, color: '#6B6866', marginBottom: 2 }}>
-                  {MEDICAL_EVENT_CONFIG[e.eventType].label} · {e.eventDate}
-                </Text>
-                <Text style={{ fontSize: 14, color: '#1A1A1A' }}>{e.description}</Text>
-              </View>
-              <Pressable
-                onPress={() => removeEvent(e.id)}
-                hitSlop={8}
-                style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-              >
-                <Text style={{ fontSize: 18, color: '#9B3A4A' }}>×</Text>
-              </Pressable>
-            </View>
-          ))}
         </View>
 
-        {/* Post-visit notes */}
-        <View style={{ marginBottom: 24 }}>
-          <Text style={{
-            fontSize: 13, fontWeight: '600', color: '#6B6866',
-            textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 10,
-          }}>
-            Post-visit summary
-          </Text>
+        {/* FULL HISTORY */}
+        <Pressable style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#E3DDD5', marginBottom: 16 }}>
+          <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, flex: 1 }}>Full History</Text>
+          <Text style={{ fontSize: 12, color: '#A8A09A' }}>0 items ›</Text>
+        </Pressable>
+
+        {/* CAPTURE NOW */}
+        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 }}>
+          Capture Now
+        </Text>
+        <Text style={{ fontSize: 12, color: '#A8A09A', marginBottom: 8 }}>
+          Saved as post-visit notes for this appointment.
+        </Text>
+        <TextInput
+          value={captureNote}
+          onChangeText={setCaptureNote}
+          placeholder="Start typing your notes..."
+          placeholderTextColor="#A8A09A"
+          multiline
+          numberOfLines={4}
+          style={{
+            backgroundColor: 'white',
+            borderWidth: 1,
+            borderColor: '#E3DDD5',
+            borderRadius: 12,
+            padding: 12,
+            fontSize: 14,
+            color: '#1C1917',
+            minHeight: 80,
+            textAlignVertical: 'top',
+            marginBottom: 16,
+          }}
+        />
+
+        {/* MEDICAL EVENT */}
+        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>
+          Medical Event
+        </Text>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, padding: 12, marginBottom: 16 }}>
+          {/* Type pills */}
+          <View style={{ flexDirection: 'row', gap: 6, marginBottom: 10 }}>
+            {MEDICAL_EVENT_TYPES.map((type) => (
+              <Pressable
+                key={type}
+                onPress={() => setEventType(type)}
+                style={{
+                  flex: 1,
+                  paddingVertical: 6,
+                  borderRadius: 20,
+                  borderWidth: 1.5,
+                  borderColor: eventType === type ? '#B0C8E8' : '#E3DDD5',
+                  backgroundColor: eventType === type ? '#EAF0F8' : 'transparent',
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ fontSize: 11, fontWeight: '700', color: eventType === type ? '#1A3254' : '#A8A09A' }}>
+                  {MEDICAL_EVENT_CONFIG[type].label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+          {/* Description input */}
           <TextInput
-            value={appointment.postNotes}
-            onChangeText={setPostNotes}
-            placeholder="Overall summary, outcomes, next steps..."
-            placeholderTextColor="#9E9B95"
-            autoCapitalize="sentences"
-            multiline
-            numberOfLines={4}
-            style={{
-              backgroundColor: '#FFFFFF', borderRadius: 12,
-              borderWidth: 1, borderColor: '#C8C4BC',
-              paddingHorizontal: 14, paddingVertical: 12,
-              fontSize: 15, color: '#1A1A1A',
-              minHeight: 100, textAlignVertical: 'top',
-            }}
+            value={eventDescription}
+            onChangeText={setEventDescription}
+            placeholder="e.g. Tonsillectomy, Ear infection..."
+            placeholderTextColor="#A8A09A"
+            style={{ backgroundColor: '#F7F5F0', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 8, padding: 10, fontSize: 13, color: '#1C1917', marginBottom: 8 }}
+          />
+          {/* Save to events checkbox */}
+          <Pressable
+            onPress={() => setSaveToEvents(!saveToEvents)}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+          >
+            <View style={{ width: 16, height: 16, borderWidth: 1.5, borderColor: saveToEvents ? '#2A6049' : '#E3DDD5', borderRadius: 3, backgroundColor: saveToEvents ? '#2A6049' : 'white', alignItems: 'center', justifyContent: 'center' }}>
+              {saveToEvents && <Text style={{ color: 'white', fontSize: 9 }}>✓</Text>}
+            </View>
+            <Text style={{ fontSize: 12, color: '#1C1917' }}>
+              Save to Medical Events for {appointment.personName}
+            </Text>
+          </Pressable>
+        </View>
+
+        {/* TO DO */}
+        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>
+          To Do
+        </Text>
+        {appointment.todos.map((t) => (
+          <View key={t.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 10, padding: 10, marginBottom: 4 }}>
+            <View style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 1.5, borderColor: '#2A6049', flexShrink: 0 }} />
+            <Text style={{ flex: 1, fontSize: 13, color: '#1C1917' }}>{t.title}</Text>
+            <Pressable onPress={() => removeTodo(t.id)} hitSlop={8}>
+              <Text style={{ fontSize: 16, color: '#9B3A4A' }}>×</Text>
+            </Pressable>
+          </View>
+        ))}
+        <View style={{ flexDirection: 'row', gap: 8, borderWidth: 1.5, borderColor: '#E3DDD5', borderStyle: 'dashed', borderRadius: 10, padding: 10, alignItems: 'center', marginBottom: 16 }}>
+          <View style={{ width: 16, height: 16, borderRadius: 8, borderWidth: 1.5, borderColor: '#2A6049', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Text style={{ color: '#2A6049', fontSize: 10 }}>+</Text>
+          </View>
+          <TextInput
+            value={todoText}
+            onChangeText={setTodoText}
+            onSubmitEditing={handleAddTodo}
+            placeholder="Add To Do..."
+            placeholderTextColor="#A8A09A"
+            returnKeyType="done"
+            style={{ flex: 1, fontSize: 13, color: '#1C1917' }}
           />
         </View>
-
-        {/* Save button */}
-        <Button
-          label="Save appointment"
-          variant="primary"
-          size="lg"
-          isFullWidth
-          isLoading={isSaving}
-          onPress={saveAppointment}
-        />
       </ScrollView>
+
+      {/* Finish & Save */}
+      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16, backgroundColor: '#F7F5F0', borderTopWidth: 1, borderTopColor: '#E3DDD5' }}>
+        <Pressable
+          onPress={handleFinish}
+          style={({ pressed }) => ({ backgroundColor: pressed ? '#1A4D35' : '#2A6049', borderRadius: 10, padding: 14, alignItems: 'center' })}
+        >
+          <Text style={{ color: 'white', fontSize: 15, fontWeight: '600' }}>
+            {isSaving ? 'Saving...' : 'Finish & Save'}
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 };
