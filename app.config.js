@@ -2,6 +2,7 @@ module.exports = ({ config }) => ({
   ...config,
   name: 'Family Health',
   slug: 'family-health',
+  scheme: 'family-health',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
