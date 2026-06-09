@@ -1,18 +1,7 @@
 // src/core/auth/useAuth.ts
-// React hook — single source of truth for auth state across the app.
-// Resolves session on mount, subscribes to auth state changes, exposes
-// loading state so layouts can delay rendering until auth is known.
-// Imported by root layout and any component that needs session data.
-
 import { useState, useEffect, useCallback } from 'react';
-
-import {
-  getCurrentSession,
-  onAuthStateChange,
-  signOut as signOutFromSession,
-} from './sessionManager';
+import { getCurrentSession, onAuthStateChange, signOut as signOutFromSession } from './sessionManager';
 import { toAppError } from '@/shared/types/errors';
-
 import type { Session } from '@supabase/supabase-js';
 import type { AppError } from '@/shared/types/errors';
 
@@ -33,20 +22,27 @@ export function useAuth(): UseAuthReturn {
   useEffect(() => {
     let mounted = true;
 
-    // Step 1 — resolve existing session from SecureStore + validate with server
+    // Timeout — if session resolution takes more than 5 seconds, treat as unauthenticated
+    const timeout = setTimeout(() => {
+      if (mounted && status === 'loading') {
+        setStatus('unauthenticated');
+      }
+    }, 5000);
+
     getCurrentSession()
       .then((resolvedSession) => {
         if (!mounted) return;
+        clearTimeout(timeout);
         setSession(resolvedSession);
         setStatus(resolvedSession ? 'authenticated' : 'unauthenticated');
       })
       .catch((err: unknown) => {
         if (!mounted) return;
+        clearTimeout(timeout);
         setError(toAppError(err));
         setStatus('unauthenticated');
       });
 
-    // Step 2 — subscribe to future auth state changes (sign in, sign out, token refresh)
     const unsubscribe = onAuthStateChange(({ session: newSession }) => {
       if (!mounted) return;
       setSession(newSession);
@@ -56,6 +52,7 @@ export function useAuth(): UseAuthReturn {
 
     return () => {
       mounted = false;
+      clearTimeout(timeout);
       unsubscribe();
     };
   }, []);
@@ -63,7 +60,6 @@ export function useAuth(): UseAuthReturn {
   const signOut = useCallback(async (): Promise<void> => {
     try {
       await signOutFromSession();
-      // Auth state listener above will update session + status automatically
     } catch (err) {
       setError(toAppError(err));
     }
