@@ -45,7 +45,7 @@ export const SignInScreen = () => {
       {/* Header */}
       <View className="mb-10 mt-8">
         <Text style={{ fontFamily: Fonts.serif, fontSize: 34, fontWeight: '300', color: '#1C1917', lineHeight: 38 }}>
-          Family Health ✓
+          Family Health
         </Text>
         <Text className="mt-2 text-base text-[#6B6866]">
           Sign in to your account
