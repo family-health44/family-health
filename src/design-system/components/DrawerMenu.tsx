@@ -36,6 +36,7 @@ export const DrawerMenu = ({ visible, onClose }: DrawerMenuProps) => {
     }
   }, [visible, slideAnim, fadeAnim]);
 
+  // All hooks above — safe to return null here
   if (!visible) return null;
 
   const menuItems = [
