@@ -1,7 +1,7 @@
 // app/_layout.tsx
 import '../global.css';
 import { useEffect } from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import { Stack, router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
@@ -37,7 +37,13 @@ function RootLayoutNav() {
   }, [status]);
 
   if (status === 'loading' || !fontsLoaded) {
-    return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }} />;
+    return (
+      <View style={{ flex: 1, backgroundColor: '#F7F5F0', alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 16, color: '#2A6049' }}>Loading...</Text>
+        <Text style={{ fontSize: 12, color: '#666', marginTop: 8 }}>status: {status}</Text>
+        <Text style={{ fontSize: 12, color: '#666' }}>fonts: {fontsLoaded ? 'yes' : 'no'}</Text>
+      </View>
+    );
   }
 
   return (
