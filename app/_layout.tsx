@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
 import { useAuth } from '@/core/auth/useAuth';
@@ -27,7 +28,9 @@ function RootLayoutNav() {
     }
   }, [status, fontsLoaded]);
 
-  if (status === 'loading' || !fontsLoaded) return null;
+  if (status === 'loading' || !fontsLoaded) {
+    return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }} />;
+  }
 
   return (
     <DrawerProvider>
@@ -48,8 +51,10 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <RootLayoutNav />
-    </QueryClientProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <RootLayoutNav />
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }

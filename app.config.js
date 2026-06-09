@@ -15,6 +15,7 @@ module.exports = ({ config }) => ({
   ios: {
     supportsTablet: false,
     bundleIdentifier: 'com.rowan44.familyhealth',
+    developmentTeam: 'U63S68M7JJ',
     buildNumber: '1',
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
