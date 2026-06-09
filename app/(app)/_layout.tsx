@@ -74,10 +74,6 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
 }
 
 export default function AppLayout() {
-  const { status } = useAuth();
-  useEffect(() => {
-    if (status === 'unauthenticated') router.replace('/(auth)/sign-in');
-  }, [status]);
   return (
     <Tabs tabBar={(props) => <CustomTabBar {...props} />} screenOptions={{ headerShown: false }}>
       <Tabs.Screen name="family/index" options={{ title: 'Family' }} />
