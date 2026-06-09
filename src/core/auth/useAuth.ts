@@ -21,35 +21,28 @@ export function useAuth(): UseAuthReturn {
 
   useEffect(() => {
     let mounted = true;
+    let settled = false;
 
-    // Hard timeout - if auth takes more than 3 seconds, go to sign-in
+    const settle = (newSession: Session | null, err?: AppError) => {
+      if (!mounted || settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      console.log('[useAuth] Settled:', newSession ? 'authenticated' : 'unauthenticated');
+      if (err) setError(err);
+      setSession(newSession);
+      setStatus(newSession ? 'authenticated' : 'unauthenticated');
+    };
+
     const timeout = setTimeout(() => {
-      if (mounted) {
-        console.log('[useAuth] Timeout reached - forcing unauthenticated');
-        setStatus('unauthenticated');
-      }
+      console.log('[useAuth] Hard timeout - forcing unauthenticated');
+      settle(null);
     }, 3000);
 
     console.log('[useAuth] Starting session check');
 
-    Promise.race([
-      getCurrentSession(),
-      new Promise<null>((resolve) => setTimeout(() => resolve(null), 2500))
-    ])
-      .then((resolvedSession) => {
-        if (!mounted) return;
-        clearTimeout(timeout);
-        console.log('[useAuth] Session resolved:', resolvedSession ? 'authenticated' : 'unauthenticated');
-        setSession(resolvedSession);
-        setStatus(resolvedSession ? 'authenticated' : 'unauthenticated');
-      })
-      .catch((err: unknown) => {
-        if (!mounted) return;
-        clearTimeout(timeout);
-        console.log('[useAuth] Session error:', err);
-        setError(toAppError(err));
-        setStatus('unauthenticated');
-      });
+    getCurrentSession()
+      .then((resolvedSession) => settle(resolvedSession))
+      .catch((err: unknown) => settle(null, toAppError(err)));
 
     const unsubscribe = onAuthStateChange(({ session: newSession }) => {
       if (!mounted) return;
