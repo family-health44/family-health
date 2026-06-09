@@ -1,8 +1,8 @@
 // app/_layout.tsx
 import '../global.css';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { View } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -18,7 +18,6 @@ SplashScreen.preventAutoHideAsync();
 function RootLayoutNav() {
   const { status } = useAuth();
   const { isOnline, isSyncing, pendingCount } = useSyncManager();
-  const hasNavigated = useRef(false);
   const [fontsLoaded] = useFonts({
     'Fraunces': require('../assets/fonts/Fraunces-Variable.ttf'),
   });
@@ -26,17 +25,6 @@ function RootLayoutNav() {
   useEffect(() => {
     if (status !== 'loading' && fontsLoaded) {
       SplashScreen.hideAsync();
-    }
-  }, [status, fontsLoaded]);
-
-  useEffect(() => {
-    if (status === 'loading' || !fontsLoaded) return;
-    if (hasNavigated.current) return;
-    hasNavigated.current = true;
-    if (status === 'unauthenticated') {
-      router.replace('/(auth)/sign-in');
-    } else if (status === 'authenticated') {
-      router.replace('/(app)/family');
     }
   }, [status, fontsLoaded]);
 
@@ -53,6 +41,7 @@ function RootLayoutNav() {
           pendingCount={pendingCount}
         />
         <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(app)" />
         </Stack>

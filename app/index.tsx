@@ -1,7 +1,19 @@
 // app/index.tsx
-// Root redirect — sends users to sign-in on app launch.
-import { Redirect } from 'expo-router';
+import { useEffect } from 'react';
+import { View } from 'react-native';
+import { router } from 'expo-router';
+import { useAuth } from '@/core/auth/useAuth';
 
 export default function Index() {
-  return <Redirect href="/(auth)/sign-in" />;
+  const { status } = useAuth();
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.replace('/(app)/family');
+    } else if (status === 'unauthenticated') {
+      router.replace('/(auth)/sign-in');
+    }
+  }, [status]);
+
+  return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }} />;
 }
