@@ -22,23 +22,31 @@ export function useAuth(): UseAuthReturn {
   useEffect(() => {
     let mounted = true;
 
-    // Timeout — if session resolution takes more than 5 seconds, treat as unauthenticated
+    // Hard timeout - if auth takes more than 3 seconds, go to sign-in
     const timeout = setTimeout(() => {
-      if (mounted && status === 'loading') {
+      if (mounted) {
+        console.log('[useAuth] Timeout reached - forcing unauthenticated');
         setStatus('unauthenticated');
       }
-    }, 5000);
+    }, 3000);
 
-    getCurrentSession()
+    console.log('[useAuth] Starting session check');
+
+    Promise.race([
+      getCurrentSession(),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 2500))
+    ])
       .then((resolvedSession) => {
         if (!mounted) return;
         clearTimeout(timeout);
+        console.log('[useAuth] Session resolved:', resolvedSession ? 'authenticated' : 'unauthenticated');
         setSession(resolvedSession);
         setStatus(resolvedSession ? 'authenticated' : 'unauthenticated');
       })
       .catch((err: unknown) => {
         if (!mounted) return;
         clearTimeout(timeout);
+        console.log('[useAuth] Session error:', err);
         setError(toAppError(err));
         setStatus('unauthenticated');
       });
