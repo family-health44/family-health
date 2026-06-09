@@ -2,7 +2,7 @@
 import '../global.css';
 import { useEffect } from 'react';
 import { View } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -27,6 +27,14 @@ function RootLayoutNav() {
       SplashScreen.hideAsync();
     }
   }, [status, fontsLoaded]);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.replace('/(auth)/sign-in');
+    } else if (status === 'authenticated') {
+      router.replace('/(app)/family');
+    }
+  }, [status]);
 
   if (status === 'loading' || !fontsLoaded) {
     return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }} />;
