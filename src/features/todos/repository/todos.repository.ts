@@ -1,32 +1,41 @@
 // src/features/todos/repository/todos.repository.ts
-// Todos repository — only place Supabase is called for todo data.
-
 import { db } from '@/lib/supabase';
 import { handleNetworkError } from '@/core/network/errorHandler';
-
 import type { DbTodo } from '@/shared/types/database';
-
-export async function fetchTodos(): Promise<DbTodo[]> {
-  try {
-    const { data, error } = await db
-      .from('todos')
-      .select('id, title, notes, due_date, completed, person_id, doctor_id, visit_id, family_group_id')
-      .order('completed', { ascending: true })
-      .order('due_date', { ascending: true, nullsFirst: false });
-
-    if (error) throw error;
-    return data ?? [];
-  } catch (error) {
-    handleNetworkError(error);
-  }
-}
+import type { Todo } from '../types/todos.types';
 
 export interface InsertTodoParams {
   title: string;
   notes: string | null;
   dueDate: string | null;
   personId: string | null;
+  doctorId?: string | null;
+  visitId?: string | null;
   familyGroupId: string;
+}
+
+export function mapDbTodoToTodo(db: DbTodo): Todo {
+  return {
+    id: db.id,
+    title: db.title,
+    notes: db.notes,
+    dueDate: db.due_date,
+    completed: db.completed,
+    personId: db.person_id,
+    familyGroupId: db.family_group_id,
+  };
+}
+
+export async function fetchTodosByFamilyGroup(familyGroupId: string): Promise<DbTodo[]> {
+  try {
+    const { data, error } = await db
+      .from('todos')
+      .select('id, title, notes, due_date, completed, person_id, doctor_id, visit_id, family_group_id')
+      .eq('family_group_id', familyGroupId)
+      .order('due_date', { ascending: true, nullsFirst: false });
+    if (error) throw error;
+    return data ?? [];
+  } catch (error) { handleNetworkError(error); }
 }
 
 export async function insertTodo(params: InsertTodoParams): Promise<DbTodo> {
@@ -39,44 +48,35 @@ export async function insertTodo(params: InsertTodoParams): Promise<DbTodo> {
         due_date: params.dueDate,
         completed: false,
         person_id: params.personId,
+        doctor_id: params.doctorId ?? null,
+        visit_id: params.visitId ?? null,
         family_group_id: params.familyGroupId,
       })
       .select('id, title, notes, due_date, completed, person_id, doctor_id, visit_id, family_group_id')
       .single();
-
     if (error) throw error;
     if (!data) throw new Error('Insert returned no data.');
     return data;
-  } catch (error) {
-    handleNetworkError(error);
-  }
+  } catch (error) { handleNetworkError(error); }
 }
 
-export async function updateTodoCompleted(
-  todoId: string,
-  completed: boolean,
-): Promise<void> {
+export async function updateTodoCompleted(todoId: string, completed: boolean): Promise<DbTodo> {
   try {
-    const { error } = await db
+    const { data, error } = await db
       .from('todos')
       .update({ completed })
-      .eq('id', todoId);
-
+      .eq('id', todoId)
+      .select('id, title, notes, due_date, completed, person_id, doctor_id, visit_id, family_group_id')
+      .single();
     if (error) throw error;
-  } catch (error) {
-    handleNetworkError(error);
-  }
+    if (!data) throw new Error('Update returned no data.');
+    return data;
+  } catch (error) { handleNetworkError(error); }
 }
 
 export async function deleteTodo(todoId: string): Promise<void> {
   try {
-    const { error } = await db
-      .from('todos')
-      .delete()
-      .eq('id', todoId);
-
+    const { error } = await db.from('todos').delete().eq('id', todoId);
     if (error) throw error;
-  } catch (error) {
-    handleNetworkError(error);
-  }
+  } catch (error) { handleNetworkError(error); }
 }

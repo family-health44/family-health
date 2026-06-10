@@ -1,4 +1,3 @@
-// app/(app)/family/[personId]/medical-events.tsx
 import { View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { LoadingState } from '@/design-system/components/EmptyState';
@@ -8,8 +7,6 @@ import { PersonMedicalEventsTab } from '@/features/medical-events/components/Per
 export default function PersonMedicalEventsRoute() {
   const { personId } = useLocalSearchParams<{ personId: string }>();
   const { person, isLoading } = usePersonDetail(personId ?? '');
-  if (isLoading || !person) {
-    return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><LoadingState message="Loading..." /></View>;
-  }
-  return <PersonMedicalEventsTab personId={person.id} colourSet={person.colourSet} />;
+  if (isLoading || !person) return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><LoadingState message="Loading..." /></View>;
+  return <PersonMedicalEventsTab personId={person.id} colourSet={person.colourSet} personName={person.name} />;
 }
