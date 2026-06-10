@@ -5,7 +5,6 @@ import { useAuth } from '@/core/auth/useAuth';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
-
   const tabConfig = [
     {
       name: 'family/index',
@@ -25,8 +24,8 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
       icon: (active: boolean) => (
         <View style={{ width: 22, height: 22, opacity: active ? 1 : 0.35 }}>
           <View style={{ width: 22, height: 22, backgroundColor: '#1C1917', borderRadius: 3, alignItems: 'center', justifyContent: 'center' }}>
-            
-            <View style={{ width: 14, height: 2, backgroundColor: 'white', transform: [{ rotate: '-45deg' }, { translateX: 2 }, { translateY: -2 }], borderRadius: 1 }} />
+            <View style={{ position: 'absolute', width: 5, height: 2, backgroundColor: 'white', borderRadius: 1, transform: [{ rotate: '40deg' }, { translateX: -3 }, { translateY: 2 }] }} />
+            <View style={{ position: 'absolute', width: 10, height: 2, backgroundColor: 'white', borderRadius: 1, transform: [{ rotate: '-52deg' }, { translateX: 2 }, { translateY: -1 }] }} />
           </View>
         </View>
       ),
