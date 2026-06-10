@@ -32,6 +32,7 @@ export interface ActiveAppointment {
   doctorId: string | null;
   doctorName: string | null;
   visitDate: string;
+  preNotes: string | null;
   notes: AppointmentNote[];
   todos: AppointmentTodo[];
   events: AppointmentEvent[];

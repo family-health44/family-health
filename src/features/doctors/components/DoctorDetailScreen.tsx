@@ -40,7 +40,10 @@ const CollapsibleSection = ({
           backgroundColor: bg,
           borderWidth: 1.5,
           borderColor: border,
-          borderRadius: collapsed ? 12 : 12,
+          borderTopLeftRadius: 12,
+          borderTopRightRadius: 12,
+          borderBottomLeftRadius: collapsed ? 12 : 0,
+          borderBottomRightRadius: collapsed ? 12 : 0,
           paddingHorizontal: 14,
           paddingVertical: 11,
         }}

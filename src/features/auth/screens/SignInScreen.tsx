@@ -1,7 +1,6 @@
 // src/features/auth/screens/SignInScreen.tsx
 // Sign-in screen — thin UI wired to useSignIn hook.
 // React Hook Form + Zod for validation. No business logic here.
-// Approx 80 lines of JSX — within the screen size limit.
 
 import { useEffect } from 'react';
 import { View, Text, Pressable } from 'react-native';
@@ -30,7 +29,6 @@ export const SignInScreen = () => {
     defaultValues: { email: '', password: '' },
   });
 
-  // Clear server-side error when user starts typing again
   useEffect(() => {
     if (error) clearError();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -42,13 +40,16 @@ export const SignInScreen = () => {
 
   return (
     <ScreenWrapper avoidKeyboard padded>
-      {/* Header */}
-      <View className="mb-10 mt-8">
-        <Text style={{ fontFamily: Fonts.serif, fontSize: 34, fontWeight: '300', color: '#1C1917', lineHeight: 38 }}>
-          Family Health
+      {/* Stacked logo title */}
+      <View style={{ alignItems: 'center', marginBottom: 40, marginTop: 32 }}>
+        <Text style={{ fontFamily: Fonts.serif, fontSize: 44, fontWeight: '300', color: '#1C1917', lineHeight: 46 }}>
+          Family
         </Text>
-        <Text className="mt-2 text-base text-[#6B6866]">
-          Sign in to your account
+        <Text style={{ fontFamily: Fonts.serif, fontSize: 44, fontWeight: '300', color: '#2A6049', lineHeight: 46, marginTop: -4 }}>
+          Health
+        </Text>
+        <Text style={{ fontSize: 13, color: '#A8A09A', marginTop: 10 }}>
+          Your family's health, all in one place
         </Text>
       </View>
 
@@ -124,7 +125,7 @@ export const SignInScreen = () => {
       {/* Onboarding link */}
       <View className="mt-8 flex-row items-center justify-center gap-1">
         <Text className="text-sm text-[#6B6866]">
-          {"Don't have a family group yet?"}
+          {"Don't have a family group?"}
         </Text>
         <Pressable
           onPress={() => router.push('/(auth)/onboarding')}

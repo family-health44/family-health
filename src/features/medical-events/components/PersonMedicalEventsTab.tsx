@@ -80,7 +80,10 @@ export const PersonMedicalEventsTab = ({
                     backgroundColor: sectionColour?.bg,
                     borderWidth: 1.5,
                     borderColor: sectionColour?.border,
-                    borderRadius: isCollapsed ? 12 : 12,
+                    borderTopLeftRadius: 12,
+                    borderTopRightRadius: 12,
+                    borderBottomLeftRadius: isCollapsed ? 12 : 0,
+                    borderBottomRightRadius: isCollapsed ? 12 : 0,
                     paddingHorizontal: 14,
                     paddingVertical: 11,
                   }}

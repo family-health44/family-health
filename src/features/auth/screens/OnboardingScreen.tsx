@@ -5,17 +5,21 @@
 import { View, Text } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Fonts } from '@/design-system/tokens/fonts';
 
 import { ScreenWrapper } from '@/design-system/components/ScreenWrapper';
 import { Input } from '@/design-system/components/Input';
 import { Button } from '@/design-system/components/Button';
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { useOnboarding } from '../hooks/useOnboarding';
 import { onboardingSchema } from '../types/auth.types';
+import { useAuth } from '@/core/auth/useAuth';
 
 import type { OnboardingFormValues } from '../types/auth.types';
 
 export const OnboardingScreen = () => {
   const { isLoading, error, createFamily, clearError } = useOnboarding();
+  const { signOut } = useAuth();
 
   const {
     control,
@@ -33,12 +37,13 @@ export const OnboardingScreen = () => {
   return (
     <ScreenWrapper avoidKeyboard padded>
       {/* Header */}
-      <View className="mb-10 mt-8">
-        <Text className="text-3xl font-bold text-[#1A1A1A]">
-          Welcome
+      <View style={{ alignItems: 'center', marginBottom: 32, marginTop: 32 }}>
+        <Text style={{ fontSize: 44, marginBottom: 12 }}>👨‍👩‍👧‍👦</Text>
+        <Text style={{ fontFamily: Fonts.serif, fontSize: 28, fontWeight: '300', color: '#1C1917' }}>
+          Welcome!
         </Text>
-        <Text className="mt-2 text-base text-[#6B6866]">
-          {"Let's set up your family health record. What would you like to call your family?"}
+        <Text style={{ fontSize: 13, color: '#A8A09A', marginTop: 8, lineHeight: 20, textAlign: 'center' }}>
+          {"Let's set up your family group."}
         </Text>
       </View>
 
@@ -49,7 +54,7 @@ export const OnboardingScreen = () => {
           name="familyGroupName"
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
-              label="Family name"
+              label="Family Group Name"
               isRequired
               placeholder="e.g. The Smith Family"
               autoCapitalize="words"
@@ -62,7 +67,6 @@ export const OnboardingScreen = () => {
               }}
               onBlur={onBlur}
               error={errors.familyGroupName?.message}
-              helperText="You can change this later in Settings."
             />
           )}
         />
@@ -79,13 +83,22 @@ export const OnboardingScreen = () => {
         ) : null}
 
         <Button
-          label="Create family"
+          label="Create Family Group"
           variant="primary"
           size="lg"
           isFullWidth
           isLoading={isLoading}
           onPress={handleSubmit(onSubmit)}
         />
+
+        {/* Sign out link */}
+        <PressableBase
+          onPress={signOut}
+          accessibilityRole="button"
+          style={(pressed) => ({ alignItems: 'center', paddingVertical: 4, opacity: pressed ? 0.6 : 1 })}
+        >
+          <Text style={{ fontSize: 13, color: '#A8A09A' }}>Sign out</Text>
+        </PressableBase>
       </View>
     </ScreenWrapper>
   );

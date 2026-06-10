@@ -11,5 +11,5 @@ export default function PersonDoctorsRoute() {
   if (isLoading || !person) {
     return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><LoadingState message="Loading..." /></View>;
   }
-  return <PersonDoctorsTab personId={person.id} personName={person.name} />;
+  return <PersonDoctorsTab personId={person.id} personName={person.name} colourSet={person.colourSet} />;
 }

@@ -1,20 +1,22 @@
 // src/features/doctors/components/DoctorCard.tsx
 // Doctor card — coloured card with initials avatar and specialty pill.
-// Matches PWA design: each doctor gets a colour from the palette by index.
+// Uses person's colourSet directly if provided, otherwise falls back to index.
 import { PressableBase } from '@/design-system/components/PressableBase';
-import { View, Text, Pressable, Alert } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import { PERSON_COLOURS } from '@/design-system/tokens/colours';
+import type { PersonColourSet } from '@/design-system/tokens/colours';
 import type { Doctor } from '../types/doctors.types';
 
 interface DoctorCardProps {
   doctor: Doctor;
+  colourSet?: PersonColourSet;
   colourIndex?: number;
   onPress?: (doctorId: string) => void;
   onUnlink?: (doctorId: string) => void;
 }
 
-export const DoctorCard = ({ doctor, colourIndex = 0, onPress, onUnlink }: DoctorCardProps) => {
-  const colourSet = PERSON_COLOURS[colourIndex % PERSON_COLOURS.length] ?? PERSON_COLOURS[0];
+export const DoctorCard = ({ doctor, colourSet: colourSetProp, colourIndex = 0, onPress, onUnlink }: DoctorCardProps) => {
+  const colourSet = colourSetProp ?? PERSON_COLOURS[colourIndex % PERSON_COLOURS.length] ?? PERSON_COLOURS[0];
 
   const initials = doctor.name
     .split(' ')
@@ -52,49 +54,19 @@ export const DoctorCard = ({ doctor, colourIndex = 0, onPress, onUnlink }: Docto
         opacity: pressed ? 0.85 : 1,
       })}
     >
-      {/* Initials avatar */}
-      <View style={{
-        width: 44,
-        height: 44,
-        borderRadius: 10,
-        backgroundColor: colourSet?.dot,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-      }}>
-        <Text style={{ color: 'white', fontSize: 14, fontWeight: '700' }}>
-          {initials}
-        </Text>
+      <View style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: colourSet?.dot, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <Text style={{ color: 'white', fontSize: 14, fontWeight: '700' }}>{initials}</Text>
       </View>
-
-      {/* Name + specialty */}
       <View style={{ flex: 1, gap: 5 }}>
-        <Text style={{ fontSize: 15, fontWeight: '700', color: colourSet?.text }}>
-          {doctor.name}
-        </Text>
+        <Text style={{ fontSize: 15, fontWeight: '700', color: colourSet?.text }}>{doctor.name}</Text>
         {doctor.type ? (
-          <View style={{
-            alignSelf: 'flex-start',
-            backgroundColor: colourSet?.border,
-            borderRadius: 20,
-            paddingHorizontal: 8,
-            paddingVertical: 2,
-          }}>
-            <Text style={{ fontSize: 11, fontWeight: '600', color: colourSet?.text }}>
-              {doctor.type}
-            </Text>
+          <View style={{ alignSelf: 'flex-start', backgroundColor: colourSet?.border, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 2 }}>
+            <Text style={{ fontSize: 11, fontWeight: '600', color: colourSet?.text }}>{doctor.type}</Text>
           </View>
         ) : null}
       </View>
-
-      {/* Chevron or unlink */}
       {onUnlink ? (
-        <PressableBase
-          onPress={handleUnlink}
-          accessibilityRole="button"
-          accessibilityLabel={`Remove ${doctor.name}`}
-          style={(pressed) => ({ padding: 6, opacity: pressed ? 0.5 : 1 })}
-        >
+        <PressableBase onPress={handleUnlink} accessibilityRole="button" accessibilityLabel={`Remove ${doctor.name}`} style={(pressed) => ({ padding: 6, opacity: pressed ? 0.5 : 1 })}>
           <Text style={{ fontSize: 18, color: '#9B3A4A' }}>×</Text>
         </PressableBase>
       ) : (

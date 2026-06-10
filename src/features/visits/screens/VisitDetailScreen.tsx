@@ -1,9 +1,7 @@
 // src/features/visits/screens/VisitDetailScreen.tsx
 // Visit detail screen — matches PWA design.
-// Shows hero card, details table, pre-notes, calendar/document actions,
-// and Start Appointment button.
 import { PressableBase } from '@/design-system/components/PressableBase';
-import { View, Text, Pressable, ScrollView, Linking, Alert } from 'react-native';
+import { View, Text, ScrollView, Linking, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
@@ -81,7 +79,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
         </Text>
         <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
           <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EDE8' }}>
-            <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Date & Time</Text>
+            <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Date</Text>
             <Text style={{ fontSize: 13, color: '#1C1917', fontWeight: '500' }}>
               {formatDate(visit.visitDate)}{visit.visitTime ? ` at ${visit.visitTime}` : ''}
             </Text>
@@ -136,7 +134,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
           accessibilityRole="button"
           style={(pressed) => ({ backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10 })}
         >
-          <Text style={{ fontSize: 18 }}>📎</Text>
+          <Text style={{ fontSize: 18 }}>📄</Text>
           <Text style={{ fontSize: 14, fontWeight: '500', color: '#2C5282' }}>Add Document</Text>
         </PressableBase>
       </ScrollView>
@@ -145,7 +143,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
       {isUpcoming && (
         <View style={{ position: 'absolute', bottom: 24, left: 16, right: 16 }}>
           <PressableBase
-            onPress={() => router.push(`/(app)/appointments?visitId=${visit.id}` as never)}
+            onPress={() => router.push(`/(app)/appointments?visitId=${visit.id}&personId=${visit.personId ?? ''}&personName=${encodeURIComponent(visit.personName ?? '')}&doctorName=${encodeURIComponent(visit.doctorName ?? '')}&visitDate=${visit.visitDate}&preNotes=${encodeURIComponent(visit.preNotes ?? '')}` as never)}
             accessibilityRole="button"
             style={(pressed) => ({
               backgroundColor: pressed ? '#1A4D35' : '#2A6049',

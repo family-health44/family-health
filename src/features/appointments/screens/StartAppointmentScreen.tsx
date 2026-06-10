@@ -2,7 +2,7 @@
 // Live appointment screen — matches PWA design exactly.
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
-import { View, Text, TextInput, ScrollView, Pressable, Alert } from 'react-native';
+import { View, Text, TextInput, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ErrorState } from '@/design-system/components/EmptyState';
@@ -20,6 +20,7 @@ export const StartAppointmentScreen = () => {
     doctorId?: string;
     doctorName?: string;
     visitDate: string;
+    preNotes?: string;
   }>();
 
   const {
@@ -37,6 +38,7 @@ export const StartAppointmentScreen = () => {
       doctorId: params.doctorId ?? null,
       doctorName: params.doctorName ?? null,
       visitDate: params.visitDate ?? '',
+      preNotes: params.preNotes ? decodeURIComponent(params.preNotes) : null,
     });
   }
 
@@ -135,7 +137,7 @@ export const StartAppointmentScreen = () => {
         <View style={{ backgroundColor: '#E8F4F8', borderWidth: 1, borderColor: '#B8D8EE', borderRadius: 12, padding: 12, marginBottom: 12 }}>
           <Text style={{ fontSize: 12, fontWeight: '700', color: '#1C1917', marginBottom: 4 }}>Pre-notes</Text>
           <Text style={{ fontSize: 13, color: '#1C1917', lineHeight: 19 }}>
-            {appointment.personName}'s appointment
+            {appointment.preNotes?.trim() ? appointment.preNotes : 'No pre-notes for this appointment.'}
           </Text>
         </View>
 

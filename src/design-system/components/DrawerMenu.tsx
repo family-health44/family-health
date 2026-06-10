@@ -37,8 +37,6 @@ export const DrawerMenu = ({ visible, onClose }: DrawerMenuProps) => {
     }
   }, [visible, slideAnim, fadeAnim]);
 
-  // All hooks above — safe to return null here
-  if (!visible) return null;
 
   const menuItems = [
     { key: 'settings', label: 'Settings', emoji: '⚙️', onPress: () => { onClose(); router.push('/(app)/settings' as never); } },
@@ -46,7 +44,7 @@ export const DrawerMenu = ({ visible, onClose }: DrawerMenuProps) => {
   ];
 
   return (
-    <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
+    <View style={StyleSheet.absoluteFillObject} pointerEvents={visible ? 'box-none' : 'none'}>
       {/* Dark overlay */}
       <Animated.View
         style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.45)', opacity: fadeAnim }]}
