@@ -1,5 +1,6 @@
 // src/features/visits/components/VisitCard.tsx
 // Visit card — coloured per person, used in list and calendar views.
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { View, Text, Pressable } from 'react-native';
 import { PERSON_COLOURS } from '@/design-system/tokens/colours';
 import { formatDate } from '@/shared/utils/dates';
@@ -18,11 +19,11 @@ export const VisitCard = ({ visit, onPress, compact = false, isPast = false }: V
 
   if (compact) {
     return (
-      <Pressable
+      <PressableBase
         onPress={() => onPress?.(visit.id)}
         accessibilityRole="button"
         accessibilityLabel={visit.title}
-        style={({ pressed }) => ({
+        style={(pressed) => ({
           backgroundColor: colourSet?.bg ?? '#E8EFF8',
           borderRadius: 4,
           paddingHorizontal: 5,
@@ -34,16 +35,16 @@ export const VisitCard = ({ visit, onPress, compact = false, isPast = false }: V
         <Text numberOfLines={1} style={{ fontSize: 10, color: colourSet?.text ?? '#1A3A6B', fontWeight: '600' }}>
           {visit.title}
         </Text>
-      </Pressable>
+      </PressableBase>
     );
   }
 
   return (
-    <Pressable
+    <PressableBase
       onPress={() => onPress?.(visit.id)}
       accessibilityRole="button"
       accessibilityLabel={`${visit.title} on ${formatDate(visit.visitDate)}`}
-      style={({ pressed }) => ({
+      style={(pressed) => ({
         backgroundColor: colourSet?.bg ?? '#E8EFF8',
         borderColor: colourSet?.border ?? '#C0CFDF',
         borderWidth: 1.5,
@@ -78,6 +79,6 @@ export const VisitCard = ({ visit, onPress, compact = false, isPast = false }: V
           {formatDate(visit.visitDate)}
         </Text>
       </View>
-    </Pressable>
+    </PressableBase>
   );
 };

@@ -1,6 +1,7 @@
 // src/design-system/components/DrawerMenu.tsx
 // Slide-in hamburger menu — overlays from the left.
 // Matches PWA design: app title, user email, menu items.
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { useEffect, useRef } from 'react';
 import { View, Text, Pressable, Animated, Dimensions, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
@@ -50,7 +51,7 @@ export const DrawerMenu = ({ visible, onClose }: DrawerMenuProps) => {
       <Animated.View
         style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.45)', opacity: fadeAnim }]}
       >
-        <Pressable style={StyleSheet.absoluteFillObject} onPress={onClose} accessibilityLabel="Close menu" />
+        <PressableBase style={StyleSheet.absoluteFillObject} onPress={onClose} accessibilityLabel="Close menu"></PressableBase>
       </Animated.View>
 
       {/* Drawer panel */}
@@ -68,12 +69,12 @@ export const DrawerMenu = ({ visible, onClose }: DrawerMenuProps) => {
         {/* Menu items */}
         <View style={{ paddingHorizontal: 12 }}>
           {menuItems.map((item) => (
-            <Pressable
+            <PressableBase
               key={item.key}
               onPress={item.onPress}
               accessibilityRole="button"
               accessibilityLabel={item.label}
-              style={({ pressed }) => ({
+              style={(pressed) => ({
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 12,
@@ -87,7 +88,7 @@ export const DrawerMenu = ({ visible, onClose }: DrawerMenuProps) => {
               <Text style={{ fontSize: 15, fontWeight: '500', color: item.danger ? '#9B3A4A' : '#1C1917' }}>
                 {item.label}
               </Text>
-            </Pressable>
+            </PressableBase>
           ))}
         </View>
       </Animated.View>

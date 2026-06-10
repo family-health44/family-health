@@ -2,6 +2,7 @@
 // Month calendar — full grid Mon–Sun, today highlighted, visits shown as dots.
 // Tapping a day with visits shows them below the grid.
 
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 
@@ -48,23 +49,23 @@ export const MonthCalendarView = ({ visits, onVisitPress }: MonthCalendarViewPro
         flexDirection: 'row', alignItems: 'center',
         paddingHorizontal: 16, paddingBottom: 12,
       }}>
-        <Pressable
+        <PressableBase
           onPress={goToPrevMonth}
           accessibilityLabel="Previous month"
-          style={({ pressed }) => ({ padding: 8, opacity: pressed ? 0.5 : 1 })}
+          style={(pressed) => ({ padding: 8, opacity: pressed ? 0.5 : 1 })}
         >
           <Text style={{ fontSize: 20, color: '#2A6049' }}>‹</Text>
-        </Pressable>
+        </PressableBase>
         <Text style={{ flex: 1, textAlign: 'center', fontSize: 15, fontWeight: '600', color: '#1A1A1A' }}>
           {MONTH_NAMES[month]} {year}
         </Text>
-        <Pressable
+        <PressableBase
           onPress={goToNextMonth}
           accessibilityLabel="Next month"
-          style={({ pressed }) => ({ padding: 8, opacity: pressed ? 0.5 : 1 })}
+          style={(pressed) => ({ padding: 8, opacity: pressed ? 0.5 : 1 })}
         >
           <Text style={{ fontSize: 20, color: '#2A6049' }}>›</Text>
-        </Pressable>
+        </PressableBase>
       </View>
 
       {/* Day-of-week headers */}
@@ -87,7 +88,7 @@ export const MonthCalendarView = ({ visits, onVisitPress }: MonthCalendarViewPro
           const hasVisits = day.visits.length > 0;
 
           return (
-            <Pressable
+            <PressableBase
               key={day.date}
               onPress={() => handleDayPress(day)}
               accessibilityRole="button"
@@ -121,7 +122,7 @@ export const MonthCalendarView = ({ visits, onVisitPress }: MonthCalendarViewPro
                   marginTop: 1,
                 }} />
               )}
-            </Pressable>
+            </PressableBase>
           );
         })}
       </View>

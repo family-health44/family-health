@@ -1,5 +1,6 @@
 // src/features/todos/components/TodoItem.tsx
 // Single todo row — checkbox toggle, title, due date badge, delete on long press.
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { View, Text, Pressable, Alert } from 'react-native';
 import { formatRelativeDate } from '@/shared/utils/dates';
 import { isTodoOverdue } from '../domain/todos.domain';
@@ -30,14 +31,14 @@ export const TodoItem = ({ todo, colourSet, onToggle, onDelete }: TodoItemProps)
   const checkboxColour = colourSet?.dot ?? '#2A6049';
 
   return (
-    <Pressable
+    <PressableBase
       onPress={() => onToggle(todo.id, !todo.completed)}
       onLongPress={handleLongPress}
       accessibilityRole="checkbox"
       accessibilityState={{ checked: todo.completed }}
       accessibilityLabel={`${todo.title}${todo.completed ? ', completed' : ''}`}
       accessibilityHint="Double tap to toggle, long press to delete"
-      style={({ pressed }) => ({
+      style={(pressed) => ({
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 9,
@@ -95,6 +96,6 @@ export const TodoItem = ({ todo, colourSet, onToggle, onDelete }: TodoItemProps)
           {isOverdue ? '⚠ ' : ''}{formatRelativeDate(todo.dueDate)}
         </Text>
       ) : null}
-    </Pressable>
+    </PressableBase>
   );
 };

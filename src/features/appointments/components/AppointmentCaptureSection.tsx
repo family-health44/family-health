@@ -3,6 +3,7 @@
 // Used for notes, todos, and medical events during an appointment.
 // No business logic — purely presentational with callbacks.
 
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
 
@@ -71,11 +72,11 @@ export const AppointmentCaptureSection = ({
           }}
           accessibilityLabel={placeholder}
         />
-        <Pressable
+        <PressableBase
           onPress={handleAdd}
           accessibilityRole="button"
           accessibilityLabel={`Add ${title}`}
-          style={({ pressed }) => ({
+          style={(pressed) => ({
             backgroundColor: '#2A6049',
             borderRadius: 12,
             paddingHorizontal: 16,
@@ -87,7 +88,7 @@ export const AppointmentCaptureSection = ({
           })}
         >
           <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 15 }}>Add</Text>
-        </Pressable>
+        </PressableBase>
       </View>
 
       {/* Captured items */}
@@ -106,15 +107,15 @@ export const AppointmentCaptureSection = ({
           <Text style={{ flex: 1, fontSize: 14, color: '#1A1A1A', lineHeight: 20 }}>
             {item.label}
           </Text>
-          <Pressable
+          <PressableBase
             onPress={() => onRemove(item.id)}
             accessibilityRole="button"
             accessibilityLabel="Remove item"
             hitSlop={8}
-            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+            style={(pressed) => ({ opacity: pressed ? 0.5 : 1 })}
           >
             <Text style={{ fontSize: 18, color: '#9B3A4A' }}>×</Text>
-          </Pressable>
+          </PressableBase>
         </View>
       ))}
     </View>

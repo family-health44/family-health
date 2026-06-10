@@ -2,6 +2,7 @@
 // Person detail screen — single scrollable page with menu layout.
 // Matches index.html design: plain header above coloured hero block,
 // 3 quick action buttons, then menu list navigating to sub-screens.
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { ScrollView, View, Text, Pressable } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -60,19 +61,19 @@ export const PersonDetailScreen = () => {
         justifyContent: 'space-between',
         backgroundColor: '#F7F5F0',
       }}>
-        <Pressable
+        <PressableBase
           onPress={() => router.back()}
           accessibilityRole="button"
           accessibilityLabel="Go back"
-          style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}
+          style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}
         >
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
           <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Family</Text>
-        </Pressable>
-        <Pressable
+        </PressableBase>
+        <PressableBase
           accessibilityRole="button"
           accessibilityLabel="Edit person"
-          style={({ pressed }) => ({
+          style={(pressed) => ({
             width: 32, height: 32, borderRadius: 16,
             backgroundColor: '#EEEAE3',
             alignItems: 'center', justifyContent: 'center',
@@ -80,7 +81,7 @@ export const PersonDetailScreen = () => {
           })}
         >
           <Text style={{ fontSize: 14, color: '#6B6460' }}>✎</Text>
-        </Pressable>
+        </PressableBase>
       </View>
 
       {/* Coloured hero block */}
@@ -110,11 +111,11 @@ export const PersonDetailScreen = () => {
         {/* Quick action buttons */}
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 14 }}>
           {quickActions.map((action) => (
-            <Pressable
+            <PressableBase
               key={action.key}
               accessibilityRole="button"
               accessibilityLabel={action.label}
-              style={({ pressed }) => ({
+              style={(pressed) => ({
                 flex: 1,
                 backgroundColor: pressed ? '#F0EDE8' : 'white',
                 borderWidth: 1,
@@ -129,7 +130,7 @@ export const PersonDetailScreen = () => {
               <Text style={{ fontSize: 10, fontWeight: '600', color: '#1C1917' }}>
                 {action.label}
               </Text>
-            </Pressable>
+            </PressableBase>
           ))}
         </View>
 
@@ -142,12 +143,12 @@ export const PersonDetailScreen = () => {
           overflow: 'hidden',
         }}>
           {menuItems.map((item, index) => (
-            <Pressable
+            <PressableBase
               key={item.key}
               onPress={() => item.route ? router.push(item.route as never) : null}
               accessibilityRole="button"
               accessibilityLabel={item.label}
-              style={({ pressed }) => ({
+              style={(pressed) => ({
                 flexDirection: 'row',
                 alignItems: 'center',
                 padding: 14,
@@ -168,7 +169,7 @@ export const PersonDetailScreen = () => {
                 {item.label}
               </Text>
               <Text style={{ color: '#A8A09A', fontSize: 14 }}>›</Text>
-            </Pressable>
+            </PressableBase>
           ))}
         </View>
       </ScrollView>

@@ -2,6 +2,7 @@
 // Week calendar — Mon to Sun, today highlighted, visits shown as compact cards.
 // Navigation arrows move to previous/next week.
 
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 
@@ -50,27 +51,27 @@ export const WeekCalendarView = ({ visits, onVisitPress }: WeekCalendarViewProps
         paddingBottom: 12,
         gap: 8,
       }}>
-        <Pressable
+        <PressableBase
           onPress={goToPrevWeek}
           accessibilityLabel="Previous week"
-          style={({ pressed }) => ({ padding: 8, opacity: pressed ? 0.5 : 1 })}
+          style={(pressed) => ({ padding: 8, opacity: pressed ? 0.5 : 1 })}
         >
           <Text style={{ fontSize: 20, color: '#2A6049' }}>‹</Text>
-        </Pressable>
+        </PressableBase>
 
-        <Pressable onPress={goToToday} style={{ flex: 1, alignItems: 'center' }}>
+        <PressableBase onPress={goToToday} style={{ flex: 1, alignItems: 'center' }}>
           <Text style={{ fontSize: 14, fontWeight: '600', color: '#1A1A1A' }}>
             {weekLabel}
           </Text>
-        </Pressable>
+        </PressableBase>
 
-        <Pressable
+        <PressableBase
           onPress={goToNextWeek}
           accessibilityLabel="Next week"
-          style={({ pressed }) => ({ padding: 8, opacity: pressed ? 0.5 : 1 })}
+          style={(pressed) => ({ padding: 8, opacity: pressed ? 0.5 : 1 })}
         >
           <Text style={{ fontSize: 20, color: '#2A6049' }}>›</Text>
-        </Pressable>
+        </PressableBase>
       </View>
 
       {/* Day columns */}

@@ -1,6 +1,7 @@
 // src/features/doctors/components/DoctorDetailScreen.tsx
 // Doctor detail screen — hero card with More Info toggle,
 // collapsible Visits, Notes, and Medications Prescribed sections.
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
 import { View, Text, Pressable, ScrollView, Linking, Alert } from 'react-native';
 import { router } from 'expo-router';
@@ -31,7 +32,7 @@ const CollapsibleSection = ({
   const [collapsed, setCollapsed] = useState(false);
   return (
     <View style={{ marginBottom: 10 }}>
-      <Pressable
+      <PressableBase
         onPress={() => setCollapsed(!collapsed)}
         style={{
           flexDirection: 'row',
@@ -46,7 +47,7 @@ const CollapsibleSection = ({
       >
         <Text style={{ flex: 1, fontSize: 13, fontWeight: '700', color: text }}>{title}</Text>
         <Text style={{ color: border, fontSize: 13 }}>{collapsed ? '∨' : '∧'}</Text>
-      </Pressable>
+      </PressableBase>
       {!collapsed && (
         <View style={{
           backgroundColor: 'white',
@@ -90,14 +91,14 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
     <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
       {/* Header */}
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Pressable
+        <PressableBase
           onPress={() => router.back()}
           accessibilityRole="button"
-          style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}
+          style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}
         >
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
           <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Doctors</Text>
-        </Pressable>
+        </PressableBase>
         <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEEAE3', alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ fontSize: 14, color: '#6B6460' }}>✎</Text>
         </View>
@@ -114,14 +115,14 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
               <Text style={{ fontSize: 16, fontWeight: '700', color: '#1C1917' }}>{doctor.name}</Text>
               {doctor.type ? <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 2 }}>{doctor.type}</Text> : null}
             </View>
-            <Pressable
+            <PressableBase
               onPress={() => setShowMoreInfo(!showMoreInfo)}
-              style={({ pressed }) => ({ backgroundColor: '#EEEAE3', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5, opacity: pressed ? 0.7 : 1 })}
+              style={(pressed) => ({ backgroundColor: '#EEEAE3', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5, opacity: pressed ? 0.7 : 1 })}
             >
               <Text style={{ fontSize: 11, fontWeight: '600', color: '#2A6049' }}>
                 {showMoreInfo ? 'Less Info ↑' : 'More Info ↓'}
               </Text>
-            </Pressable>
+            </PressableBase>
           </View>
 
           {/* Expanded info */}
@@ -134,10 +135,10 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
                 </View>
               ) : null}
               {doctor.phone ? (
-                <Pressable onPress={handlePhone} style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: '#F0EDE8' }}>
+                <PressableBase onPress={handlePhone} style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: '#F0EDE8' }}>
                   <Text style={{ fontSize: 12, color: '#A8A09A', width: 60 }}>Phone</Text>
                   <Text style={{ fontSize: 12, color: '#2A6049', flex: 1, textAlign: 'right' }}>{doctor.phone}</Text>
-                </Pressable>
+                </PressableBase>
               ) : null}
             </View>
           )}

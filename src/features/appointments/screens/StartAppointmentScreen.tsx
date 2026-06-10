@@ -1,5 +1,6 @@
 // src/features/appointments/screens/StartAppointmentScreen.tsx
 // Live appointment screen — matches PWA design exactly.
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
 import { View, Text, TextInput, ScrollView, Pressable, Alert } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
@@ -96,13 +97,13 @@ export const StartAppointmentScreen = () => {
         justifyContent: 'space-between',
       }}>
         <View style={{ flex: 1 }}>
-          <Pressable
+          <PressableBase
             onPress={handleCancel}
-            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}
+            style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}
           >
             <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
             <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
-          </Pressable>
+          </PressableBase>
           <Text style={{ fontSize: 22, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 26 }}>
             {appointment.doctorName ?? 'Appointment'}
           </Text>
@@ -139,10 +140,10 @@ export const StartAppointmentScreen = () => {
         </View>
 
         {/* FULL HISTORY */}
-        <Pressable style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#E3DDD5', marginBottom: 16 }}>
+        <PressableBase style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#E3DDD5', marginBottom: 16 }}>
           <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, flex: 1 }}>Full History</Text>
           <Text style={{ fontSize: 12, color: '#A8A09A' }}>0 items ›</Text>
-        </Pressable>
+        </PressableBase>
 
         {/* CAPTURE NOW */}
         <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 }}>
@@ -180,7 +181,7 @@ export const StartAppointmentScreen = () => {
           {/* Type pills */}
           <View style={{ flexDirection: 'row', gap: 6, marginBottom: 10 }}>
             {MEDICAL_EVENT_TYPES.map((type) => (
-              <Pressable
+              <PressableBase
                 key={type}
                 onPress={() => setEventType(type)}
                 style={{
@@ -196,7 +197,7 @@ export const StartAppointmentScreen = () => {
                 <Text style={{ fontSize: 11, fontWeight: '700', color: eventType === type ? '#1A3254' : '#A8A09A' }}>
                   {MEDICAL_EVENT_CONFIG[type].label}
                 </Text>
-              </Pressable>
+              </PressableBase>
             ))}
           </View>
           {/* Description input */}
@@ -208,7 +209,7 @@ export const StartAppointmentScreen = () => {
             style={{ backgroundColor: '#F7F5F0', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 8, padding: 10, fontSize: 13, color: '#1C1917', marginBottom: 8 }}
           />
           {/* Save to events checkbox */}
-          <Pressable
+          <PressableBase
             onPress={() => setSaveToEvents(!saveToEvents)}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
           >
@@ -218,7 +219,7 @@ export const StartAppointmentScreen = () => {
             <Text style={{ fontSize: 12, color: '#1C1917' }}>
               Save to Medical Events for {appointment.personName}
             </Text>
-          </Pressable>
+          </PressableBase>
         </View>
 
         {/* TO DO */}
@@ -229,9 +230,9 @@ export const StartAppointmentScreen = () => {
           <View key={t.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 10, padding: 10, marginBottom: 4 }}>
             <View style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 1.5, borderColor: '#2A6049', flexShrink: 0 }} />
             <Text style={{ flex: 1, fontSize: 13, color: '#1C1917' }}>{t.title}</Text>
-            <Pressable onPress={() => removeTodo(t.id)} hitSlop={8}>
+            <PressableBase onPress={() => removeTodo(t.id)} hitSlop={8}>
               <Text style={{ fontSize: 16, color: '#9B3A4A' }}>×</Text>
-            </Pressable>
+            </PressableBase>
           </View>
         ))}
         <View style={{ flexDirection: 'row', gap: 8, borderWidth: 1.5, borderColor: '#E3DDD5', borderStyle: 'dashed', borderRadius: 10, padding: 10, alignItems: 'center', marginBottom: 16 }}>
@@ -252,14 +253,14 @@ export const StartAppointmentScreen = () => {
 
       {/* Finish & Save */}
       <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16, backgroundColor: '#F7F5F0', borderTopWidth: 1, borderTopColor: '#E3DDD5' }}>
-        <Pressable
+        <PressableBase
           onPress={handleFinish}
-          style={({ pressed }) => ({ backgroundColor: pressed ? '#1A4D35' : '#2A6049', borderRadius: 10, padding: 14, alignItems: 'center' })}
+          style={(pressed) => ({ backgroundColor: pressed ? '#1A4D35' : '#2A6049', borderRadius: 10, padding: 14, alignItems: 'center' })}
         >
           <Text style={{ color: 'white', fontSize: 15, fontWeight: '600' }}>
             {isSaving ? 'Saving...' : 'Finish & Save'}
           </Text>
-        </Pressable>
+        </PressableBase>
       </View>
     </View>
   );

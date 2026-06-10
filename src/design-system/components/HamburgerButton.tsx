@@ -1,25 +1,25 @@
-// src/design-system/components/HamburgerButton.tsx
-// Hamburger menu button — shown top-left on Family, To Do, Visits tabs.
-// Opens the drawer/side menu when pressed.
+import { useState } from 'react';
 import { Pressable, View, StyleSheet } from 'react-native';
-
 interface HamburgerButtonProps {
   onPress: () => void;
 }
-
-export const HamburgerButton = ({ onPress }: HamburgerButtonProps) => (
-  <Pressable
-    onPress={onPress}
-    accessibilityRole="button"
-    accessibilityLabel="Open menu"
-    style={({ pressed }) => [styles.button, pressed && styles.pressed]}
-  >
-    <View style={styles.line} />
-    <View style={styles.line} />
-    <View style={styles.line} />
-  </Pressable>
-);
-
+export const HamburgerButton = ({ onPress }: HamburgerButtonProps) => {
+  const [pressed, setPressed] = useState(false);
+  return (
+    <Pressable
+      onPress={onPress}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      accessibilityRole="button"
+      accessibilityLabel="Open menu"
+      style={[styles.button, pressed && styles.pressed]}
+    >
+      <View style={styles.line} />
+      <View style={styles.line} />
+      <View style={styles.line} />
+    </Pressable>
+  );
+};
 const styles = StyleSheet.create({
   button: {
     width: 36,

@@ -1,6 +1,7 @@
 // src/features/medical-events/components/MedicalEventCard.tsx
 // Displays a single medical event with type badge, date, description, and doctor.
 
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { View, Text, Pressable, Alert } from 'react-native';
 
 import { Badge } from '@/design-system/components/Badge';
@@ -37,12 +38,12 @@ export const MedicalEventCard = ({
   };
 
   return (
-    <Pressable
+    <PressableBase
       onLongPress={handleLongPress}
       accessibilityRole="button"
       accessibilityLabel={`${config.label} on ${formatDate(event.eventDate)}: ${event.description}`}
       accessibilityHint="Long press to delete"
-      style={({ pressed }) => ({
+      style={(pressed) => ({
         backgroundColor: colourSet?.bg ?? '#FFFFFF',
         borderColor: colourSet?.border ?? '#E8E4DC',
         borderWidth: 1,
@@ -73,6 +74,6 @@ export const MedicalEventCard = ({
           {event.doctorName}
         </Text>
       ) : null}
-    </Pressable>
+    </PressableBase>
   );
 };

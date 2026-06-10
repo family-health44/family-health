@@ -2,6 +2,7 @@
 // Medication card — name, dosage, frequency, reason, prescribed by, status badge.
 // Status can be toggled active ↔ inactive directly from the card.
 
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { View, Text, Pressable } from 'react-native';
 
 import { Badge } from '@/design-system/components/Badge';
@@ -36,9 +37,9 @@ export const MedicationCard = ({
   };
 
   return (
-    <Pressable
+    <PressableBase
       onPress={() => onPress?.(medication.id)}
-      style={({ pressed }) => ({
+      style={(pressed) => ({
         ...cardStyle,
         borderWidth: 1,
         borderRadius: 14,
@@ -65,7 +66,7 @@ export const MedicationCard = ({
 
         {/* Status badge — tappable to toggle active/inactive */}
         {medication.status !== 'completed' && onStatusToggle ? (
-          <Pressable
+          <PressableBase
             onPress={handleStatusToggle}
             accessibilityRole="button"
             accessibilityLabel={`Mark as ${medication.status === 'active' ? 'inactive' : 'active'}`}
@@ -75,7 +76,7 @@ export const MedicationCard = ({
               label={statusLabel(medication.status)}
               variant={statusToBadgeVariant(medication.status)}
             />
-          </Pressable>
+          </PressableBase>
         ) : (
           <Badge
             label={statusLabel(medication.status)}
@@ -105,6 +106,6 @@ export const MedicationCard = ({
           </Text>
         ) : null}
       </View>
-    </Pressable>
+    </PressableBase>
   );
 };

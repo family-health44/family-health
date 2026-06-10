@@ -1,24 +1,24 @@
-// src/design-system/components/FAB.tsx
-// Floating action button — green circle with + sign.
-// Fixed position above the bottom nav bar.
+import { useState } from 'react';
 import { Pressable, Text, StyleSheet } from 'react-native';
-
 interface FABProps {
   onPress: () => void;
   accessibilityLabel?: string;
 }
-
-export const FAB = ({ onPress, accessibilityLabel = 'Add' }: FABProps) => (
-  <Pressable
-    onPress={onPress}
-    accessibilityRole="button"
-    accessibilityLabel={accessibilityLabel}
-    style={({ pressed }) => [styles.fab, pressed && styles.pressed]}
-  >
-    <Text style={styles.plus}>+</Text>
-  </Pressable>
-);
-
+export const FAB = ({ onPress, accessibilityLabel = 'Add' }: FABProps) => {
+  const [pressed, setPressed] = useState(false);
+  return (
+    <Pressable
+      onPress={onPress}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      style={[styles.fab, pressed && styles.pressed]}
+    >
+      <Text style={styles.plus}>+</Text>
+    </Pressable>
+  );
+};
 const styles = StyleSheet.create({
   fab: {
     position: 'absolute',

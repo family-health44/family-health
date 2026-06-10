@@ -5,6 +5,8 @@ import { useAuth } from '@/core/auth/useAuth';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
+  console.log("ROUTES:", JSON.stringify(state.routes.map(r => r.name)));
+
   const tabConfig = [
     {
       name: 'family/index',

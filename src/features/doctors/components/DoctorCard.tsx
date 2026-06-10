@@ -1,6 +1,7 @@
 // src/features/doctors/components/DoctorCard.tsx
 // Doctor card — coloured card with initials avatar and specialty pill.
 // Matches PWA design: each doctor gets a colour from the palette by index.
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { View, Text, Pressable, Alert } from 'react-native';
 import { PERSON_COLOURS } from '@/design-system/tokens/colours';
 import type { Doctor } from '../types/doctors.types';
@@ -34,11 +35,11 @@ export const DoctorCard = ({ doctor, colourIndex = 0, onPress, onUnlink }: Docto
   };
 
   return (
-    <Pressable
+    <PressableBase
       onPress={() => onPress?.(doctor.id)}
       accessibilityRole="button"
       accessibilityLabel={`${doctor.name}, ${doctor.type ?? 'Doctor'}`}
-      style={({ pressed }) => ({
+      style={(pressed) => ({
         backgroundColor: colourSet?.bg,
         borderColor: colourSet?.border,
         borderWidth: 1.5,
@@ -88,17 +89,17 @@ export const DoctorCard = ({ doctor, colourIndex = 0, onPress, onUnlink }: Docto
 
       {/* Chevron or unlink */}
       {onUnlink ? (
-        <Pressable
+        <PressableBase
           onPress={handleUnlink}
           accessibilityRole="button"
           accessibilityLabel={`Remove ${doctor.name}`}
-          style={({ pressed }) => ({ padding: 6, opacity: pressed ? 0.5 : 1 })}
+          style={(pressed) => ({ padding: 6, opacity: pressed ? 0.5 : 1 })}
         >
           <Text style={{ fontSize: 18, color: '#9B3A4A' }}>×</Text>
-        </Pressable>
+        </PressableBase>
       ) : (
         <Text style={{ color: colourSet?.border, fontSize: 16 }}>›</Text>
       )}
-    </Pressable>
+    </PressableBase>
   );
 };

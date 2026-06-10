@@ -2,6 +2,7 @@
 // Visit detail screen — matches PWA design.
 // Shows hero card, details table, pre-notes, calendar/document actions,
 // and Start Appointment button.
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { View, Text, Pressable, ScrollView, Linking, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -45,14 +46,14 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
-        <Pressable
+        <PressableBase
           onPress={() => router.back()}
           accessibilityRole="button"
-          style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}
+          style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}
         >
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
           <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Visits</Text>
-        </Pressable>
+        </PressableBase>
         <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEEAE3', alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ fontSize: 14, color: '#6B6460' }}>✎</Text>
         </View>
@@ -122,31 +123,31 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
         ) : null}
 
         {/* Action buttons */}
-        <Pressable
+        <PressableBase
           onPress={handleAddToCalendar}
           accessibilityRole="button"
-          style={({ pressed }) => ({ backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 })}
+          style={(pressed) => ({ backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 })}
         >
           <Text style={{ fontSize: 18 }}>📅</Text>
           <Text style={{ fontSize: 14, fontWeight: '500', color: '#2C5282' }}>Add to Google / iOS Calendar</Text>
-        </Pressable>
+        </PressableBase>
 
-        <Pressable
+        <PressableBase
           accessibilityRole="button"
-          style={({ pressed }) => ({ backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10 })}
+          style={(pressed) => ({ backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10 })}
         >
           <Text style={{ fontSize: 18 }}>📎</Text>
           <Text style={{ fontSize: 14, fontWeight: '500', color: '#2C5282' }}>Add Document</Text>
-        </Pressable>
+        </PressableBase>
       </ScrollView>
 
       {/* Start Appointment button */}
       {isUpcoming && (
         <View style={{ position: 'absolute', bottom: 24, left: 16, right: 16 }}>
-          <Pressable
+          <PressableBase
             onPress={() => router.push(`/(app)/appointments?visitId=${visit.id}` as never)}
             accessibilityRole="button"
-            style={({ pressed }) => ({
+            style={(pressed) => ({
               backgroundColor: pressed ? '#1A4D35' : '#2A6049',
               borderRadius: 24,
               padding: 16,
@@ -158,7 +159,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
           >
             <Text style={{ fontSize: 16, color: 'white' }}>▶</Text>
             <Text style={{ fontSize: 16, fontWeight: '600', color: 'white' }}>Start Appointment</Text>
-          </Pressable>
+          </PressableBase>
         </View>
       )}
     </View>

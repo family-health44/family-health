@@ -3,6 +3,7 @@
 // EVENT segments display as styled chips, SECTION segments as headers.
 // Long-press to edit or delete.
 
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { View, Text, Pressable, Alert } from 'react-native';
 
 import { Badge } from '@/design-system/components/Badge';
@@ -81,12 +82,12 @@ export const NoteCard = ({ note, onEdit, onDelete }: NoteCardProps) => {
   };
 
   return (
-    <Pressable
+    <PressableBase
       onLongPress={handleLongPress}
       onPress={() => onEdit(note)}
       accessibilityRole="button"
       accessibilityLabel="Note — tap to edit, long press for options"
-      style={({ pressed }) => ({
+      style={(pressed) => ({
         backgroundColor: '#FFFFFF',
         borderColor: '#E8E4DC',
         borderWidth: 1,
@@ -110,6 +111,6 @@ export const NoteCard = ({ note, onEdit, onDelete }: NoteCardProps) => {
           <NoteSegmentView key={index} segment={segment} />
         ))}
       </View>
-    </Pressable>
+    </PressableBase>
   );
 };

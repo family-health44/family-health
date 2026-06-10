@@ -2,6 +2,7 @@
 // Overview tab — summary tiles + notes section.
 // Notes section is self-contained — fetches its own data.
 
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 
 import { PersonNotesSection } from '@/features/notes/components/PersonNotesSection';
@@ -17,11 +18,11 @@ interface OverviewTileProps {
 }
 
 const OverviewTile = ({ label, count, colourSet, onPress }: OverviewTileProps) => (
-  <Pressable
+  <PressableBase
     onPress={onPress}
     accessibilityRole="button"
     accessibilityLabel={`View ${label}`}
-    style={({ pressed }) => ({
+    style={(pressed) => ({
       flex: 1,
       backgroundColor: pressed ? colourSet.border : '#FFFFFF',
       borderRadius: 14,
@@ -39,7 +40,7 @@ const OverviewTile = ({ label, count, colourSet, onPress }: OverviewTileProps) =
     <Text style={{ fontSize: 13, fontWeight: '500', color: colourSet.text, opacity: 0.8 }}>
       {label}
     </Text>
-  </Pressable>
+  </PressableBase>
 );
 
 interface PersonOverviewTabProps {

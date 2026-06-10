@@ -2,6 +2,7 @@
 // Coloured header for the person detail screen.
 // Shows avatar, name, and back navigation. No business logic.
 
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { View, Text, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -30,11 +31,11 @@ export const PersonHeader = ({ person, onBack }: PersonHeaderProps) => {
       }}
     >
       {/* Back button */}
-      <Pressable
+      <PressableBase
         onPress={onBack}
         accessibilityRole="button"
         accessibilityLabel="Go back"
-        style={({ pressed }) => ({
+        style={(pressed) => ({
           flexDirection: 'row',
           alignItems: 'center',
           gap: 4,
@@ -47,7 +48,7 @@ export const PersonHeader = ({ person, onBack }: PersonHeaderProps) => {
         <Text style={{ fontSize: 15, color: colourSet.dot, fontWeight: '500' }}>
           Family
         </Text>
-      </Pressable>
+      </PressableBase>
 
       {/* Person info */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>

@@ -1,5 +1,6 @@
 // src/features/doctors/components/PersonDoctorsTab.tsx
 // Doctors screen for a person — matches PWA design.
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
 import { View, Text, TextInput, FlatList, Pressable } from 'react-native';
 import { router } from 'expo-router';
@@ -35,14 +36,14 @@ export const PersonDoctorsTab = ({ personId, personName }: PersonDoctorsTabProps
     <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
       {/* Header */}
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
-        <Pressable
+        <PressableBase
           onPress={() => router.back()}
           accessibilityRole="button"
-          style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}
+          style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}
         >
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
           <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
-        </Pressable>
+        </PressableBase>
         <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32 }}>
           Doctors
         </Text>

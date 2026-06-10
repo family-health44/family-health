@@ -1,69 +1,38 @@
-// src/features/family/components/PersonCard.tsx
-// PersonCard — displays a family member with their colour scheme.
-// Tappable — navigates to person detail screen.
-// No business logic — purely presentational.
-
+import { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
-
 import { Avatar } from '@/design-system/components/Avatar';
-
 import type { Person } from '../types/family.types';
-
 interface PersonCardProps {
   person: Person;
   onPress: (personId: string) => void;
 }
-
 export const PersonCard = ({ person, onPress }: PersonCardProps) => {
   const { colourSet } = person;
-
+  const [pressed, setPressed] = useState(false);
   return (
     <Pressable
       onPress={() => onPress(person.id)}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
       accessibilityRole="button"
       accessibilityLabel={`View ${person.name}'s health records`}
-      style={({ pressed }) => ({
-        backgroundColor: colourSet.bg,
+      style={{
+        backgroundColor: pressed ? colourSet.border : colourSet.bg,
         borderColor: colourSet.border,
-        borderWidth: 1,
+        borderWidth: 1.5,
         borderRadius: 16,
         padding: 16,
-        opacity: pressed ? 0.85 : 1,
         marginBottom: 12,
-      })}
+      }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-        {/* Avatar */}
-        <Avatar
-          initials={person.initials}
-          colourSet={colourSet}
-          size="md"
-        />
-
-        {/* Name + chevron */}
+        <Avatar initials={person.initials} colourSet={colourSet} size="md" />
         <View style={{ flex: 1 }}>
-          <Text
-            style={{
-              fontSize: 17,
-              fontWeight: '600',
-              color: colourSet.text,
-            }}
-          >
+          <Text style={{ fontSize: 17, fontWeight: '600', color: colourSet.text }}>
             {person.name}
           </Text>
         </View>
-
-        {/* Chevron */}
-        <View
-          style={{
-            width: 24,
-            height: 24,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text style={{ color: colourSet.border, fontSize: 18 }}>›</Text>
-        </View>
+        <Text style={{ color: colourSet.border, fontSize: 18 }}>›</Text>
       </View>
     </Pressable>
   );

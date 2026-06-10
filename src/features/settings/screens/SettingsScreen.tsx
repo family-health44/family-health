@@ -1,6 +1,7 @@
 // src/features/settings/screens/SettingsScreen.tsx
 // Settings screen — accessed via hamburger menu.
 // Matches PWA design: account, display, danger zone sections.
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
 import { View, Text, Pressable, ScrollView, Alert } from 'react-native';
 import { router } from 'expo-router';
@@ -53,14 +54,14 @@ export const SettingsScreen = () => {
     <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
       {/* Header */}
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-        <Pressable
+        <PressableBase
           onPress={() => router.back()}
           accessibilityRole="button"
-          style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}
+          style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}
         >
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
           <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
-        </Pressable>
+        </PressableBase>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4 }}>
@@ -75,29 +76,29 @@ export const SettingsScreen = () => {
             <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Email</Text>
             <Text style={{ fontSize: 13, color: '#1C1917' }}>{session?.user?.email ?? '—'}</Text>
           </View>
-          <Pressable
+          <PressableBase
             onPress={handleSignOut}
             accessibilityRole="button"
-            style={({ pressed }) => ({ padding: 14, opacity: pressed ? 0.6 : 1 })}
+            style={(pressed) => ({ padding: 14, opacity: pressed ? 0.6 : 1 })}
           >
             <Text style={{ fontSize: 14, fontWeight: '500', color: '#9B3A4A' }}>
               {isSigningOut ? 'Signing out…' : 'Sign out'}
             </Text>
-          </Pressable>
+          </PressableBase>
         </View>
 
         {/* Display section */}
         <SectionLabel label="Display" />
         <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
-          <Pressable
+          <PressableBase
             onPress={() => setLargeText(!largeText)}
-            style={({ pressed }) => ({ padding: 14, borderBottomWidth: 1, borderBottomColor: '#F0EDE8', flexDirection: 'row', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}
+            style={(pressed) => ({ padding: 14, borderBottomWidth: 1, borderBottomColor: '#F0EDE8', flexDirection: 'row', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}
           >
             <Text style={{ fontSize: 14, flex: 1, color: '#1C1917' }}>Large text</Text>
             <View style={{ width: 40, height: 22, borderRadius: 11, backgroundColor: largeText ? '#2A6049' : '#EEEAE3', justifyContent: 'center', paddingHorizontal: 2 }}>
               <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: 'white', alignSelf: largeText ? 'flex-end' : 'flex-start', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.15, shadowRadius: 2, elevation: 2 }} />
             </View>
-          </Pressable>
+          </PressableBase>
           <View style={{ padding: 14, flexDirection: 'row', alignItems: 'center' }}>
             <Text style={{ fontSize: 14, flex: 1, color: '#1C1917' }}>Dark mode</Text>
             <View style={{ backgroundColor: '#EEEAE3', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 }}>
@@ -109,14 +110,14 @@ export const SettingsScreen = () => {
         {/* Danger zone */}
         <SectionLabel label="Danger Zone" />
         <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden' }}>
-          <Pressable
+          <PressableBase
             onPress={handleDeleteAccount}
             accessibilityRole="button"
-            style={({ pressed }) => ({ padding: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: pressed ? 0.6 : 1 })}
+            style={(pressed) => ({ padding: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: pressed ? 0.6 : 1 })}
           >
             <Text style={{ fontSize: 14, fontWeight: '500', color: '#9B3A4A' }}>Delete account</Text>
             <Text style={{ color: '#A8A09A', fontSize: 14 }}>›</Text>
-          </Pressable>
+          </PressableBase>
         </View>
       </ScrollView>
     </View>

@@ -1,5 +1,6 @@
 // src/features/medical-events/components/PersonMedicalEventsTab.tsx
 // Medical events screen — collapsible coloured sections per event type.
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { router } from 'expo-router';
@@ -42,14 +43,14 @@ export const PersonMedicalEventsTab = ({
     <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
       {/* Header */}
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
-        <Pressable
+        <PressableBase
           onPress={() => router.back()}
           accessibilityRole="button"
-          style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}
+          style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}
         >
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
           <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
-        </Pressable>
+        </PressableBase>
         <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32 }}>
           Medical Events
         </Text>
@@ -71,7 +72,7 @@ export const PersonMedicalEventsTab = ({
             return (
               <View key={group.type} style={{ marginBottom: 10 }}>
                 {/* Collapsible header */}
-                <Pressable
+                <PressableBase
                   onPress={() => setCollapsed((prev) => ({ ...prev, [group.type]: !isCollapsed }))}
                   style={{
                     flexDirection: 'row',
@@ -90,7 +91,7 @@ export const PersonMedicalEventsTab = ({
                   <Text style={{ color: sectionColour?.border, fontSize: 13 }}>
                     {isCollapsed ? '∨' : '∧'}
                   </Text>
-                </Pressable>
+                </PressableBase>
 
                 {/* Events */}
                 {!isCollapsed && (

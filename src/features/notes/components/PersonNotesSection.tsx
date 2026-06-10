@@ -3,6 +3,7 @@
 // Shows notes list with add/edit modal. Fetches its own doctors and medications
 // for the linking UI so it's self-contained.
 
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 
@@ -72,11 +73,11 @@ export const PersonNotesSection = ({ personId, colourSet }: PersonNotesSectionPr
         }}>
           Notes
         </Text>
-        <Pressable
+        <PressableBase
           onPress={() => { setEditingNote(null); setShowModal(true); }}
           accessibilityRole="button"
           accessibilityLabel="Add note"
-          style={({ pressed }) => ({
+          style={(pressed) => ({
             backgroundColor: colourSet.dot,
             borderRadius: 16,
             paddingHorizontal: 12,
@@ -85,7 +86,7 @@ export const PersonNotesSection = ({ personId, colourSet }: PersonNotesSectionPr
           })}
         >
           <Text style={{ color: '#FFFFFF', fontSize: 13, fontWeight: '600' }}>+ Add</Text>
-        </Pressable>
+        </PressableBase>
       </View>
 
       {notes.length === 0 ? (

@@ -3,6 +3,7 @@
 // Supports optional person colour theming via colourSet prop.
 // No business logic — purely presentational.
 
+import { PressableBase } from "@/design-system/components/PressableBase";
 import { View, Pressable, type ViewProps, type PressableProps } from 'react-native';
 
 import type { PersonColourSet } from '@/design-system/tokens/colours';
@@ -15,7 +16,8 @@ interface CardProps extends ViewProps {
   colourSet?: PersonColourSet;
 }
 
-interface PressableCardProps extends Omit<PressableProps, 'style'> {
+import type { PressableBaseProps } from "@/design-system/components/PressableBase";
+interface PressableCardProps extends Omit<PressableBaseProps, 'style'> {
   children: React.ReactNode;
   colourSet?: PersonColourSet;
 }
@@ -63,8 +65,8 @@ export const PressableCard = ({
 }: PressableCardProps) => {
   if (colourSet) {
     return (
-      <Pressable
-        style={({ pressed }) => ({
+      <PressableBase
+        style={(pressed) => ({
           backgroundColor: colourSet.bg,
           borderColor: colourSet.border,
           borderWidth: 1,
@@ -76,17 +78,17 @@ export const PressableCard = ({
         {...pressableProps}
       >
         {children}
-      </Pressable>
+      </PressableBase>
     );
   }
 
   return (
-    <Pressable
+    <PressableBase
       className="rounded-2xl border border-[#E8E4DC] bg-white p-4 active:opacity-80"
       accessibilityRole="button"
       {...pressableProps}
     >
       {children}
-    </Pressable>
+    </PressableBase>
   );
 };
