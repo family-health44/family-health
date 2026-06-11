@@ -27,18 +27,14 @@ export function useAuth(): UseAuthReturn {
       if (!mounted || settled) return;
       settled = true;
       clearTimeout(timeout);
-      console.log('[useAuth] Settled:', newSession ? 'authenticated' : 'unauthenticated');
       if (err) setError(err);
       setSession(newSession);
       setStatus(newSession ? 'authenticated' : 'unauthenticated');
     };
 
     const timeout = setTimeout(() => {
-      console.log('[useAuth] Hard timeout - forcing unauthenticated');
       settle(null);
     }, 3000);
-
-    console.log('[useAuth] Starting session check');
 
     getCurrentSession()
       .then((resolvedSession) => settle(resolvedSession))

@@ -1,7 +1,6 @@
 // src/core/auth/authRepository.ts
 import { db } from '@/lib/supabase';
 import { toAppError } from '@/shared/types/errors';
-import { ENV } from '@/core/config/env';
 
 import type { Session } from '@supabase/supabase-js';
 
@@ -17,24 +16,17 @@ export interface SignInResult {
 export async function signInWithEmail(credentials: SignInCredentials): Promise<SignInResult> {
   const { email, password } = credentials;
 
-  console.log('[Auth] URL:', ENV.supabaseUrl);
-  console.log('[Auth] Signing in:', email);
-
   try {
-    const { data, error } = await db.auth.signInWithPassword({ 
-      email: email.trim(), 
-      password 
+    const { data, error } = await db.auth.signInWithPassword({
+      email: email.trim(),
+      password,
     });
-
-    console.log('[Auth] Error:', JSON.stringify(error));
-    console.log('[Auth] Data:', data?.session ? 'session exists' : 'no session');
 
     if (error) throw toAppError(error);
     if (!data.session) throw toAppError(new Error('No session returned.'));
 
     return { session: data.session };
   } catch (err) {
-    console.log('[Auth] Caught error:', JSON.stringify(err));
     throw toAppError(err);
   }
 }
