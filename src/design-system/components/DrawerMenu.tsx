@@ -40,7 +40,7 @@ export const DrawerMenu = ({ visible, onClose }: DrawerMenuProps) => {
 
   const menuItems = [
     { key: 'settings', label: 'Settings', emoji: '⚙️', onPress: () => { onClose(); router.push('/(app)/settings' as never); } },
-    { key: 'signout', label: 'Sign Out', emoji: '🚪', onPress: () => { onClose(); signOut(); }, danger: true },
+    { key: 'signout', label: 'Sign Out', emoji: '🚪', onPress: async () => { onClose(); await signOut(); router.replace('/(auth)/sign-in'); }, danger: true },
   ];
 
   return (

@@ -3,6 +3,7 @@
 // Thin UI wired to useOnboarding hook. No business logic.
 
 import { View, Text } from 'react-native';
+import { router } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Fonts } from '@/design-system/tokens/fonts';
@@ -93,7 +94,7 @@ export const OnboardingScreen = () => {
 
         {/* Sign out link */}
         <PressableBase
-          onPress={signOut}
+          onPress={async () => { await signOut(); router.replace('/(auth)/sign-in'); }}
           accessibilityRole="button"
           style={(pressed) => ({ alignItems: 'center', paddingVertical: 4, opacity: pressed ? 0.6 : 1 })}
         >
