@@ -1,4 +1,5 @@
 // src/features/todos/components/AddTodoModal.tsx
+import { useState } from 'react';
 import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,13 +30,42 @@ interface AddTodoModalProps {
   onDismiss: () => void;
 }
 
+const InlinePicker = ({ label, options, value, onChange }: {
+  label: string;
+  options: { id: string | null; label: string }[];
+  value: string | null | undefined;
+  onChange: (id: string | null) => void;
+}) => {
+  const [open, setOpen] = useState(false);
+  const selected = options.find((o) => o.id === (value ?? null));
+  return (
+    <View style={{ gap: 6 }}>
+      <Text style={{ fontSize: 14, fontWeight: '600', color: '#3D3D3D' }}>{label}</Text>
+      <Pressable onPress={() => setOpen(!open)} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderWidth: 1, borderColor: open ? '#2A6049' : '#E3DDD5', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12 }}>
+        <Text style={{ flex: 1, fontSize: 14, color: selected?.id ? '#1C1917' : '#A8A09A' }}>{selected?.label ?? 'Select...'}</Text>
+        <Text style={{ color: '#A8A09A', fontSize: 12 }}>{open ? '▲' : '▼'}</Text>
+      </Pressable>
+      {open && (
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#2A6049', borderRadius: 10, overflow: 'hidden' }}>
+          {options.map((opt, i) => (
+            <Pressable key={opt.id ?? 'none'} onPress={() => { onChange(opt.id); setOpen(false); }} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 11, paddingHorizontal: 14, borderBottomWidth: i < options.length - 1 ? 1 : 0, borderBottomColor: '#F0EDE8', backgroundColor: (value ?? null) === opt.id ? '#E6F0EC' : 'white' }}>
+              <Text style={{ flex: 1, fontSize: 14, color: (value ?? null) === opt.id ? '#1A4D35' : '#1C1917', fontWeight: (value ?? null) === opt.id ? '600' : '400' }}>{opt.label}</Text>
+              {(value ?? null) === opt.id && <Text style={{ color: '#2A6049', fontSize: 14 }}>✓</Text>}
+            </Pressable>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+};
+
 export const AddTodoModal = ({ visible, isLoading, defaultPersonId, doctors = [], visits = [], onAdd, onDismiss }: AddTodoModalProps) => {
   const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { title: '', notes: '', dueDate: '', doctorId: null, visitId: null },
   });
-  const selectedDoctorId = watch('doctorId');
-  const selectedVisitId = watch('visitId');
+  const doctorId = watch('doctorId');
+  const visitId = watch('visitId');
 
   const onSubmit = async (values: FormValues) => {
     await onAdd({ title: values.title, notes: values.notes ?? null, dueDate: values.dueDate ?? null, personId: defaultPersonId ?? null, doctorId: values.doctorId ?? null, visitId: values.visitId ?? null });
@@ -43,14 +73,8 @@ export const AddTodoModal = ({ visible, isLoading, defaultPersonId, doctors = []
     onDismiss();
   };
 
-  const DropdownRow = ({ label, selected, onSelect }: { label: string; selected: boolean; onSelect: () => void }) => (
-    <Pressable onPress={onSelect} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 14, borderBottomWidth: 1, borderBottomColor: '#F0EDE8', backgroundColor: selected ? '#E6F0EC' : 'white' }}>
-      <View style={{ width: 18, height: 18, borderRadius: 9, borderWidth: 2, borderColor: selected ? '#2A6049' : '#C8C4BC', backgroundColor: selected ? '#2A6049' : 'white', alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
-        {selected && <Text style={{ color: 'white', fontSize: 10 }}>✓</Text>}
-      </View>
-      <Text style={{ fontSize: 14, color: selected ? '#1A4D35' : '#1C1917', fontWeight: selected ? '600' : '400', flex: 1 }}>{label}</Text>
-    </Pressable>
-  );
+  const doctorOptions = [{ id: null, label: 'None' }, ...doctors.map((d) => ({ id: d.id, label: d.name + (d.type ? ` — ${d.type}` : '') }))];
+  const visitOptions = [{ id: null, label: 'None' }, ...visits.map((v) => ({ id: v.id, label: `${v.title} — ${v.visitDate}` }))];
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onDismiss}>
@@ -71,22 +95,10 @@ export const AddTodoModal = ({ visible, isLoading, defaultPersonId, doctors = []
                   <Input label="Due date" placeholder="YYYY-MM-DD (optional)" keyboardType="numbers-and-punctuation" value={value} onChangeText={onChange} onBlur={onBlur} />
                 )} />
                 {doctors.length > 0 && (
-                  <View style={{ gap: 6 }}>
-                    <Text style={{ fontSize: 14, fontWeight: '600', color: '#3D3D3D' }}>Link to doctor (optional)</Text>
-                    <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden' }}>
-                      <DropdownRow label="None" selected={!selectedDoctorId} onSelect={() => setValue('doctorId', null)} />
-                      {doctors.map((doc) => <DropdownRow key={doc.id} label={doc.name + (doc.type ? ` — ${doc.type}` : '')} selected={selectedDoctorId === doc.id} onSelect={() => setValue('doctorId', doc.id)} />)}
-                    </View>
-                  </View>
+                  <InlinePicker label="Link to doctor (optional)" options={doctorOptions} value={doctorId} onChange={(id) => setValue('doctorId', id)} />
                 )}
                 {visits.length > 0 && (
-                  <View style={{ gap: 6 }}>
-                    <Text style={{ fontSize: 14, fontWeight: '600', color: '#3D3D3D' }}>Link to visit (optional)</Text>
-                    <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden' }}>
-                      <DropdownRow label="None" selected={!selectedVisitId} onSelect={() => setValue('visitId', null)} />
-                      {visits.map((v) => <DropdownRow key={v.id} label={`${v.title} — ${v.visitDate}`} selected={selectedVisitId === v.id} onSelect={() => setValue('visitId', v.id)} />)}
-                    </View>
-                  </View>
+                  <InlinePicker label="Link to visit (optional)" options={visitOptions} value={visitId} onChange={(id) => setValue('visitId', id)} />
                 )}
                 <View style={{ gap: 12, marginTop: 8 }}>
                   <Button label="Add to-do" variant="primary" size="lg" isFullWidth isLoading={isLoading} onPress={handleSubmit(onSubmit)} />

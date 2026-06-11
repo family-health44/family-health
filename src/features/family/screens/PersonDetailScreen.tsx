@@ -46,17 +46,17 @@ export const PersonDetailScreen = () => {
 
   const { colourSet } = person;
 
-  const menuItems: Array<{ key: string; label: string; emoji: string; bg: string; route: string | null; comingSoon?: boolean }> = [
-    { key: 'doctors', label: 'Doctors', emoji: '👨‍⚕️', bg: '#E8EFF8', route: `/(app)/family/${person.id}/doctors` },
-    { key: 'medications', label: 'Medications', emoji: '💊', bg: '#E6F0EC', route: `/(app)/family/${person.id}/medications` },
-    { key: 'medical-events', label: 'Medical Events', emoji: '🏥', bg: '#F5E8EB', route: `/(app)/family/${person.id}/medical-events` },
-    { key: 'info-card', label: 'Info Card', emoji: '🪪', bg: '#F5EBE0', route: null, comingSoon: true },
-    { key: 'documents', label: 'Documents', emoji: '📄', bg: '#EEE8F7', route: null, comingSoon: true },
+  const menuItems = [
+    { key: 'doctors',        label: 'Doctors',        emoji: '👨‍⚕️', bg: '#E8EFF8', route: `/(app)/family/${person.id}/doctors` },
+    { key: 'medications',    label: 'Medications',    emoji: '💊',   bg: '#E6F0EC', route: `/(app)/family/${person.id}/medications` },
+    { key: 'medical-events', label: 'Medical Events', emoji: '🏥',  bg: '#F5E8EB', route: `/(app)/family/${person.id}/medical-events` },
+    { key: 'info-card',      label: 'Info Card',      emoji: '🪪',   bg: '#F5EBE0', route: `/(app)/family/${person.id}/info-card` },
+    { key: 'documents',      label: 'Documents',      emoji: '📄',  bg: '#EEE8F7', route: `/(app)/family/${person.id}/documents` },
   ];
 
   const quickActions = [
-    { key: 'note', label: 'Add Note', emoji: '📝', onPress: () => setShowNoteModal(true) },
-    { key: 'todo', label: 'Add To Do', emoji: '✅', onPress: () => setShowTodoModal(true) },
+    { key: 'note',  label: 'Add Note',  emoji: '📝', onPress: () => setShowNoteModal(true) },
+    { key: 'todo',  label: 'Add To Do', emoji: '✅', onPress: () => setShowTodoModal(true) },
     { key: 'visit', label: 'Add Visit', emoji: '📅', onPress: () => setShowVisitModal(true) },
   ];
 
@@ -65,9 +65,9 @@ export const PersonDetailScreen = () => {
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#F7F5F0' }}>
         <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Family</Text>
+          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
         </PressableBase>
-        <PressableBase onPress={handleEditName} accessibilityRole="button" accessibilityLabel="Edit person" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEEAE3', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
+        <PressableBase onPress={handleEditName} accessibilityRole="button" accessibilityLabel="Edit person name" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEEAE3', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
           <Text style={{ fontSize: 14, color: '#6B6460' }}>✎</Text>
         </PressableBase>
       </View>
@@ -93,21 +93,14 @@ export const PersonDetailScreen = () => {
             </PressableBase>
           ))}
         </View>
-
         <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 14, overflow: 'hidden' }}>
           {menuItems.map((item, index) => (
-            <PressableBase key={item.key} onPress={() => item.route ? router.push(item.route as never) : null} accessibilityRole="button" accessibilityLabel={item.label} style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', padding: 14, borderBottomWidth: index < menuItems.length - 1 ? 1 : 0, borderBottomColor: '#F0EDE8', backgroundColor: pressed && item.route ? '#F7F5F0' : 'white', gap: 12 })}>
+            <PressableBase key={item.key} onPress={() => router.push(item.route as never)} accessibilityRole="button" accessibilityLabel={item.label} style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', padding: 14, borderBottomWidth: index < menuItems.length - 1 ? 1 : 0, borderBottomColor: '#F0EDE8', backgroundColor: pressed ? '#F7F5F0' : 'white', gap: 12 })}>
               <View style={{ width: 34, height: 34, borderRadius: 9, backgroundColor: item.bg, alignItems: 'center', justifyContent: 'center' }}>
                 <Text style={{ fontSize: 16 }}>{item.emoji}</Text>
               </View>
               <Text style={{ flex: 1, fontSize: 14, fontWeight: '600', color: '#1C1917' }}>{item.label}</Text>
-              {item.comingSoon ? (
-                <View style={{ backgroundColor: '#EEEAE3', borderRadius: 6, paddingHorizontal: 7, paddingVertical: 2 }}>
-                  <Text style={{ fontSize: 10, color: '#A8A09A', fontWeight: '500' }}>Soon</Text>
-                </View>
-              ) : (
-                <Text style={{ color: '#A8A09A', fontSize: 14 }}>›</Text>
-              )}
+              <Text style={{ color: '#A8A09A', fontSize: 14 }}>›</Text>
             </PressableBase>
           ))}
         </View>

@@ -50,7 +50,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
           style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}
         >
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Visits</Text>
+          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
         </PressableBase>
         <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEEAE3', alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ fontSize: 14, color: '#6B6460' }}>✎</Text>

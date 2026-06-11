@@ -2,7 +2,7 @@ import { View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { LoadingState } from '@/design-system/components/EmptyState';
 import { usePersonDetail } from '@/features/family/hooks/usePersonDetail';
-import { DoctorDetailScreen } from '@/features/doctors/components/DoctorDetailScreen';
+import { DoctorDetailScreen } from '@/features/doctors/screens/DoctorDetailScreen';
 
 export default function DoctorDetailRoute() {
   const { personId, doctorId } = useLocalSearchParams<{ personId: string; doctorId: string }>();

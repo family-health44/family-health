@@ -47,7 +47,7 @@ export const PersonMedicationsTab = ({ personId, colourSet, personName }: Person
           style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}
         >
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>{personName ?? 'Back'}</Text>
+          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
         </PressableBase>
         <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32 }}>
           Medications

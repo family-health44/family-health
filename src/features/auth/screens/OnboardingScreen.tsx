@@ -38,7 +38,7 @@ export const OnboardingScreen = () => {
     <ScreenWrapper avoidKeyboard padded>
       {/* Header */}
       <View style={{ alignItems: 'center', marginBottom: 32, marginTop: 32 }}>
-        <Text style={{ fontSize: 44, marginBottom: 12 }}>👨‍👩‍👧‍👦</Text>
+        <Text style={{ fontSize: 44, marginBottom: 12 }}>🏡</Text>
         <Text style={{ fontFamily: Fonts.serif, fontSize: 28, fontWeight: '300', color: '#1C1917' }}>
           Welcome!
         </Text>

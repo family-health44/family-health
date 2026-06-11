@@ -37,7 +37,7 @@ export const PersonMedicalEventsTab = ({ personId, colourSet, personName }: Pers
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
         <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}>
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>{personName ?? 'Back'}</Text>
+          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
         </PressableBase>
         <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32 }}>Medical Events</Text>
         {personName ? <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 2 }}>{personName}</Text> : null}

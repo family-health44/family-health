@@ -14,24 +14,26 @@ export interface InsertTodoParams {
   familyGroupId: string;
 }
 
-export function mapDbTodoToTodo(db: DbTodo): Todo {
+export function mapDbTodoToTodo(row: DbTodo, personName: string | null = null): Todo {
   return {
-    id: db.id,
-    title: db.title,
-    notes: db.notes,
-    dueDate: db.due_date,
-    completed: db.completed,
-    personId: db.person_id,
-    familyGroupId: db.family_group_id,
+    id: row.id,
+    title: row.title,
+    notes: row.notes,
+    dueDate: row.due_date,
+    completed: row.completed,
+    personId: row.person_id,
+    personName,
+    doctorId: row.doctor_id,
+    visitId: row.visit_id,
+    familyGroupId: row.family_group_id,
   };
 }
 
-export async function fetchTodosByFamilyGroup(familyGroupId: string): Promise<DbTodo[]> {
+export async function fetchTodos(): Promise<DbTodo[]> {
   try {
     const { data, error } = await db
       .from('todos')
       .select('id, title, notes, due_date, completed, person_id, doctor_id, visit_id, family_group_id')
-      .eq('family_group_id', familyGroupId)
       .order('due_date', { ascending: true, nullsFirst: false });
     if (error) throw error;
     return data ?? [];

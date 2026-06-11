@@ -36,7 +36,7 @@ export const FamilyHomeScreen = () => {
           refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor="#2A6049" />}
           ListHeaderComponent={
             <View style={{ marginBottom: 20, marginTop: 4 }}>
-              <Text style={{ fontSize: 33, fontWeight: '300', color: '#1C1917', fontFamily: Fonts.serif, lineHeight: 36 }}>
+              <Text style={{ fontSize: 33, fontWeight: '700', color: '#1C1917', fontFamily: Fonts.serif, lineHeight: 36 }}>
                 {data?.familyGroup.name ?? 'Family'}
               </Text>
             </View>
