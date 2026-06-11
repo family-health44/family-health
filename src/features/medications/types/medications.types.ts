@@ -1,7 +1,7 @@
 // src/features/medications/types/medications.types.ts
 // Domain types for the medications feature.
 
-export type MedicationStatus = 'active' | 'inactive' | 'completed';
+export type MedicationStatus = 'active' | 'as_needed' | 'inactive' | 'completed';
 
 export interface Medication {
   id: string;
