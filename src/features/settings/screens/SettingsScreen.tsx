@@ -10,6 +10,7 @@ import { useFamilyHomeQuery } from '@/features/family/queries/family.queries';
 import { db } from '@/lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/queryClient';
+import { InviteFamilyMemberSection } from '@/features/invites/components/InviteFamilyMemberSection';
 
 export const SettingsScreen = () => {
   const insets = useSafeAreaInsets();
@@ -98,6 +99,8 @@ export const SettingsScreen = () => {
             </PressableBase>
           )}
         </View>
+
+        <InviteFamilyMemberSection />
 
         <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Account</Text>
         <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>

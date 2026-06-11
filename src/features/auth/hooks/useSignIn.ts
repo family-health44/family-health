@@ -31,10 +31,9 @@ export function useSignIn(): UseSignInReturn {
 
     try {
       await signInWithEmail({ email: values.email, password: values.password });
-      // Auth state listener in useAuth will update session automatically.
-      // Navigate into the app — the (auth) layout guard handles the redirect
-      // but we push explicitly for a snappier transition.
-      router.replace('/(app)/family');
+      // Route to the root index, which runs the bootstrap gate to decide
+      // between the main app, the accept-invite screen, or onboarding.
+      router.replace('/');
     } catch (err) {
       setError(isAppError(err) ? err : toAppError(err));
     } finally {
