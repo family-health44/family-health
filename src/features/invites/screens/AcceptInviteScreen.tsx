@@ -75,7 +75,7 @@ export const AcceptInviteScreen = () => {
         </PressableBase>
 
         <PressableBase
-          onPress={signOut}
+          onPress={async () => { await signOut(); router.replace('/(auth)/sign-in'); }}
           accessibilityRole="button"
           style={(pressed) => ({ alignItems: 'center', paddingVertical: 6, opacity: pressed ? 0.6 : 1 })}
         >

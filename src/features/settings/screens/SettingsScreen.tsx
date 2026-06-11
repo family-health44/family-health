@@ -26,7 +26,7 @@ export const SettingsScreen = () => {
   const handleSignOut = () => {
     Alert.alert('Sign out', 'Are you sure you want to sign out?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign out', style: 'destructive', onPress: async () => { setIsSigningOut(true); await signOut(); } },
+      { text: 'Sign out', style: 'destructive', onPress: async () => { setIsSigningOut(true); await signOut(); router.replace('/(auth)/sign-in'); } },
     ]);
   };
 

@@ -1,21 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 import { ENV } from '@/core/config/env';
+import { secureStorageAdapter } from '@/core/auth/secureStorage';
 import type { Database } from '@/shared/types/database';
-
-const memoryStorage: Record<string, string> = {};
 
 export const supabase = createClient<Database>(
   ENV.supabaseUrl.replace(/\/$/, ''),
   ENV.supabaseAnonKey.trim(),
   {
     auth: {
-      storage: {
-        getItem: (key: string) => memoryStorage[key] ?? null,
-        setItem: (key: string, value: string) => { memoryStorage[key] = value; },
-        removeItem: (key: string) => { delete memoryStorage[key]; },
-      },
+      // Persist the session to encrypted device storage (Keychain/Keystore) so it
+      // survives app restarts and force-quits. Without this the session lives only
+      // in memory and is lost on quit, causing "Auth session missing!" errors.
+      storage: secureStorageAdapter,
       autoRefreshToken: true,
-      persistSession: false,
+      persistSession: true,
       detectSessionInUrl: false,
       flowType: 'implicit',
     },
