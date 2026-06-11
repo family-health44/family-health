@@ -58,7 +58,8 @@ export function groupMedicalEventsByType(
     map.set(event.eventType, [...existing, event]);
   }
 
-  return MEDICAL_EVENT_TYPES.filter((type) => map.has(type)).map((type) => ({
+  const DISPLAY_TYPES: MedicalEventType[] = ['procedure', 'diagnosis', 'illness'];
+  return DISPLAY_TYPES.map((type) => ({
     type,
     label: MEDICAL_EVENT_CONFIG[type].label,
     events: [...(map.get(type) ?? [])].sort((a, b) =>

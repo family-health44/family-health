@@ -20,7 +20,7 @@ const SPECIALTY_COLOUR_MAP: Record<string, number> = {
   'dentist': 2, 'dental': 2, 'orthodontist': 2,
   'physiotherapist': 3, 'physiotherapy': 3, 'physio': 3,
   'optometrist': 4, 'ophthalmologist': 4, 'eye doctor': 4,
-  'occupational therapist': 0, 'ot': 0,
+  'occupational therapist': 2, 'ot': 2,
   'speech therapist': 1, 'speech pathologist': 1,
   'psychologist': 2, 'psychiatrist': 2, 'counsellor': 2,
   'neurologist': 3, 'cardiologist': 3,

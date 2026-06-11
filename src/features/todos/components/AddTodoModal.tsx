@@ -74,7 +74,15 @@ export const AddTodoModal = ({ visible, isLoading, defaultPersonId, doctors = []
   };
 
   const doctorOptions = [{ id: null, label: 'None' }, ...doctors.map((d) => ({ id: d.id, label: d.name + (d.type ? ` — ${d.type}` : '') }))];
-  const visitOptions = [{ id: null, label: 'None' }, ...visits.map((v) => ({ id: v.id, label: `${v.title} — ${v.visitDate}` }))];
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] ?? '';
+  const recentVisits = visits.filter((v) => v.visitDate >= sevenDaysAgo);
+  const visitOptions = [
+    { id: null, label: 'None' },
+    ...recentVisits.map((v) => ({
+      id: v.id,
+      label: `${v.title} · ${new Date(v.visitDate + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}`,
+    })),
+  ];
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onDismiss}>

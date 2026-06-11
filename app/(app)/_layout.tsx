@@ -76,19 +76,12 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
 export default function AppLayout() {
   return (
     <Tabs tabBar={(props) => <CustomTabBar {...props} />} screenOptions={{ headerShown: false }}>
-      <Tabs.Screen name="family/index" options={{ title: 'Family' }} />
+      <Tabs.Screen name="family" options={{ title: 'Family' }} />
       <Tabs.Screen name="todos/index" options={{ title: 'To Do' }} />
       <Tabs.Screen name="visits/index" options={{ title: 'Visits' }} />
       <Tabs.Screen name="settings/index" options={{ href: null }} />
       <Tabs.Screen name="appointments/index" options={{ href: null }} />
-      <Tabs.Screen name="family/[personId]/index" options={{ href: null }} />
-      <Tabs.Screen name="family/[personId]/doctors" options={{ href: null }} />
-      <Tabs.Screen name="family/[personId]/medications" options={{ href: null }} />
-      <Tabs.Screen name="family/[personId]/medical-events" options={{ href: null }} />
       <Tabs.Screen name="visits/[visitId]" options={{ href: null }} />
-      <Tabs.Screen name="family/[personId]/doctor/[doctorId]" options={{ href: null }} />
-      <Tabs.Screen name="family/[personId]/info-card" options={{ href: null }} />
-      <Tabs.Screen name="family/[personId]/documents" options={{ href: null }} />
     </Tabs>
   );
 }
