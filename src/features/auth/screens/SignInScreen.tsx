@@ -63,9 +63,9 @@ export const SignInScreen = () => {
       </View>
 
       <View className="mt-8 flex-row items-center justify-center gap-1">
-        <Text className="text-sm text-[#6B6866]">{"Don't have a family group?"}</Text>
-        <Pressable onPress={() => router.push('/(auth)/onboarding')} accessibilityRole="link">
-          <Text className="text-sm font-semibold text-[#2A6049]">Get started</Text>
+        <Text className="text-sm text-[#6B6866]">{"Don't have an account?"}</Text>
+        <Pressable onPress={() => router.push('/(auth)/sign-up' as never)} accessibilityRole="link">
+          <Text className="text-sm font-semibold text-[#2A6049]">Sign up</Text>
         </Pressable>
       </View>
     </ScreenWrapper>

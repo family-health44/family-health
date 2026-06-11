@@ -31,6 +31,35 @@ export async function signInWithEmail(credentials: SignInCredentials): Promise<S
   }
 }
 
+export interface SignUpCredentials {
+  email: string;
+  password: string;
+}
+
+export interface SignUpResult {
+  // When email confirmation is ON, Supabase returns a user but no session —
+  // the user must confirm via the emailed link before they can sign in.
+  needsEmailConfirmation: boolean;
+}
+
+export async function signUpWithEmail(credentials: SignUpCredentials): Promise<SignUpResult> {
+  const { email, password } = credentials;
+
+  try {
+    const { data, error } = await db.auth.signUp({
+      email: email.trim().toLowerCase(),
+      password,
+    });
+
+    if (error) throw toAppError(error);
+
+    // No session means email confirmation is required.
+    return { needsEmailConfirmation: !data.session };
+  } catch (err) {
+    throw toAppError(err);
+  }
+}
+
 export interface CreateFamilyGroupParams {
   userId: string;
   familyGroupName: string;
