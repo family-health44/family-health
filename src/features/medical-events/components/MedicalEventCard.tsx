@@ -1,25 +1,21 @@
 // src/features/medical-events/components/MedicalEventCard.tsx
-// Displays a single medical event with type badge, date, description, and doctor.
+// Cards always use white background — they live inside coloured section containers
+// and must not clash with the section header colour.
 
 import { PressableBase } from '@/design-system/components/PressableBase';
-import { View, Text, Pressable, Alert } from 'react-native';
-
+import { View, Text, Alert } from 'react-native';
 import { Badge } from '@/design-system/components/Badge';
 import { formatDate } from '@/shared/utils/dates';
 import { MEDICAL_EVENT_CONFIG } from '../types/medical-events.types';
-
 import type { MedicalEvent } from '../types/medical-events.types';
-import type { PersonColourSet } from '@/design-system/tokens/colours';
 
 interface MedicalEventCardProps {
   event: MedicalEvent;
-  colourSet?: PersonColourSet;
   onDelete: (noteId: string) => void;
+  isLast?: boolean;
 }
 
-export const MedicalEventCard = ({
-  event, colourSet, onDelete,
-}: MedicalEventCardProps) => {
+export const MedicalEventCard = ({ event, onDelete, isLast = false }: MedicalEventCardProps) => {
   const config = MEDICAL_EVENT_CONFIG[event.eventType];
 
   const handleLongPress = () => {
@@ -28,11 +24,7 @@ export const MedicalEventCard = ({
       `Delete this ${config.label.toLowerCase()} record? This cannot be undone.`,
       [
         { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => onDelete(event.id),
-        },
+        { text: 'Delete', style: 'destructive', onPress: () => onDelete(event.id) },
       ],
     );
   };
@@ -44,31 +36,24 @@ export const MedicalEventCard = ({
       accessibilityLabel={`${config.label} on ${formatDate(event.eventDate)}: ${event.description}`}
       accessibilityHint="Long press to delete"
       style={(pressed) => ({
-        backgroundColor: colourSet?.bg ?? '#FFFFFF',
-        borderColor: colourSet?.border ?? '#E8E4DC',
-        borderWidth: 1,
-        borderRadius: 14,
+        backgroundColor: '#FFFFFF',
+        borderBottomWidth: isLast ? 0 : 1,
+        borderBottomColor: '#F0EDE8',
         padding: 14,
-        marginBottom: 10,
-        opacity: pressed ? 0.85 : 1,
+        opacity: pressed ? 0.75 : 1,
       })}
     >
-      {/* Header row */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
         <Badge label={config.label} variant={config.badgeVariant} />
         <Text style={{ fontSize: 13, color: '#6B6866', marginLeft: 'auto' }}>
           {formatDate(event.eventDate)}
         </Text>
       </View>
-
-      {/* Description */}
       {event.description ? (
         <Text style={{ fontSize: 14, color: '#1A1A1A', lineHeight: 20 }}>
           {event.description}
         </Text>
       ) : null}
-
-      {/* Doctor */}
       {event.doctorName ? (
         <Text style={{ fontSize: 13, color: '#6B6866', marginTop: 6 }}>
           {event.doctorName}

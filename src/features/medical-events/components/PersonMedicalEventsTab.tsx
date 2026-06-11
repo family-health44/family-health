@@ -1,3 +1,4 @@
+// src/features/medical-events/components/PersonMedicalEventsTab.tsx
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
@@ -9,21 +10,21 @@ import { Fonts } from '@/design-system/tokens/fonts';
 import { usePersonMedicalEvents } from '../hooks/usePersonMedicalEvents';
 import { MedicalEventCard } from './MedicalEventCard';
 import { AddMedicalEventModal } from './AddMedicalEventModal';
-import type { PersonColourSet } from '@/design-system/tokens/colours';
 
 interface PersonMedicalEventsTabProps {
   personId: string;
-  colourSet: PersonColourSet;
   personName?: string;
 }
 
+// Section header colours — these are the coloured accordion headers.
+// Cards inside use plain white to avoid clashing with the header hue.
 const SECTION_COLOURS = [
-  { bg: '#EAF0F8', border: '#B0C8E8', text: '#1A3254' },
-  { bg: '#EEF4E8', border: '#C2D9A8', text: '#243F0A' },
-  { bg: '#FAEAEA', border: '#F0B8B8', text: '#7A2030' },
+  { bg: '#EAF0F8', border: '#B0C8E8', text: '#1A3254' }, // blue
+  { bg: '#EEF4E8', border: '#C2D9A8', text: '#243F0A' }, // green
+  { bg: '#FAEAEA', border: '#F0B8B8', text: '#7A2030' }, // red
 ];
 
-export const PersonMedicalEventsTab = ({ personId, colourSet, personName }: PersonMedicalEventsTabProps) => {
+export const PersonMedicalEventsTab = ({ personId, personName }: PersonMedicalEventsTabProps) => {
   const insets = useSafeAreaInsets();
   const [showAddModal, setShowAddModal] = useState(false);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
@@ -70,8 +71,13 @@ export const PersonMedicalEventsTab = ({ personId, colourSet, personName }: Pers
                       <Text style={{ fontSize: 12, color: '#A8A09A', fontStyle: 'italic' }}>No {group.label.toLowerCase()} recorded yet</Text>
                     </View>
                   ) : (
-                    group.events.map((event) => (
-                      <MedicalEventCard key={event.id} event={event} colourSet={colourSet} onDelete={deleteEvent} />
+                    group.events.map((event, i) => (
+                      <MedicalEventCard
+                        key={event.id}
+                        event={event}
+                        onDelete={deleteEvent}
+                        isLast={i === group.events.length - 1}
+                      />
                     ))
                   )}
                 </View>

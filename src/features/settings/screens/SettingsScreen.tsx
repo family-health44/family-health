@@ -40,7 +40,8 @@ export const SettingsScreen = () => {
     try {
       const { error } = await db.from('family_groups').update({ name: familyName.trim() }).eq('id', data.familyGroup.id);
       if (error) throw error;
-      queryClient.invalidateQueries({ queryKey: queryKeys.family.group() });
+      // Invalidate the family query — familyGroup.name lives in the family.people() cache
+      await queryClient.invalidateQueries({ queryKey: queryKeys.family.people() });
       setEditingName(false);
     } catch {
       Alert.alert('Error', 'Could not save family name.');
@@ -68,7 +69,6 @@ export const SettingsScreen = () => {
       <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4 }}>
         <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32, marginBottom: 8 }}>Settings</Text>
 
-        {/* Family section */}
         <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Family</Text>
         <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
           {editingName ? (
@@ -99,7 +99,6 @@ export const SettingsScreen = () => {
           )}
         </View>
 
-        {/* Account section */}
         <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Account</Text>
         <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
           <View style={{ padding: 14, borderBottomWidth: 1, borderBottomColor: '#F0EDE8', flexDirection: 'row', alignItems: 'center' }}>
@@ -111,7 +110,6 @@ export const SettingsScreen = () => {
           </PressableBase>
         </View>
 
-        {/* Display section */}
         <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Display</Text>
         <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
           <PressableBase onPress={() => setLargeText(!largeText)} style={(pressed) => ({ padding: 14, borderBottomWidth: 1, borderBottomColor: '#F0EDE8', flexDirection: 'row', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
@@ -128,7 +126,6 @@ export const SettingsScreen = () => {
           </View>
         </View>
 
-        {/* Danger zone */}
         <Text style={{ fontSize: 10, fontWeight: '700', color: '#9B3A4A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Danger Zone</Text>
         <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden' }}>
           <PressableBase onPress={handleDeleteAccount} accessibilityRole="button" style={(pressed) => ({ padding: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: pressed ? 0.6 : 1 })}>

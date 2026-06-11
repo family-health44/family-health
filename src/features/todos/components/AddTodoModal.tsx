@@ -59,6 +59,19 @@ const InlinePicker = ({ label, options, value, onChange }: {
   );
 };
 
+function formatVisitDate(dateStr: string): string {
+  if (!dateStr) return '';
+  try {
+    // Parse as local date to avoid timezone shifts
+    const [year, month, day] = dateStr.split('-').map(Number);
+    if (!year || !month || !day) return dateStr;
+    const d = new Date(year, month - 1, day);
+    return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch {
+    return dateStr;
+  }
+}
+
 export const AddTodoModal = ({ visible, isLoading, defaultPersonId, doctors = [], visits = [], onAdd, onDismiss }: AddTodoModalProps) => {
   const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -74,13 +87,14 @@ export const AddTodoModal = ({ visible, isLoading, defaultPersonId, doctors = []
   };
 
   const doctorOptions = [{ id: null, label: 'None' }, ...doctors.map((d) => ({ id: d.id, label: d.name + (d.type ? ` — ${d.type}` : '') }))];
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] ?? '';
-  const recentVisits = visits.filter((v) => v.visitDate >= sevenDaysAgo);
+
+  // All visits sorted newest first
+  const sortedVisits = [...visits].sort((a, b) => b.visitDate.localeCompare(a.visitDate));
   const visitOptions = [
     { id: null, label: 'None' },
-    ...recentVisits.map((v) => ({
+    ...sortedVisits.map((v) => ({
       id: v.id,
-      label: `${v.title} · ${new Date(v.visitDate + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}`,
+      label: `${v.title} · ${formatVisitDate(v.visitDate)}`,
     })),
   ];
 

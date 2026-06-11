@@ -8,5 +8,5 @@ export default function PersonMedicalEventsRoute() {
   const { personId } = useLocalSearchParams<{ personId: string }>();
   const { person, isLoading } = usePersonDetail(personId ?? '');
   if (isLoading || !person) return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><LoadingState message="Loading..." /></View>;
-  return <PersonMedicalEventsTab personId={person.id} colourSet={person.colourSet} personName={person.name} />;
+  return <PersonMedicalEventsTab personId={person.id} personName={person.name} />;
 }
