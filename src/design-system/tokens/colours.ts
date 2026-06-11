@@ -67,7 +67,7 @@ export const PERSON_COLOUR_MAP: Readonly<Record<PersonColourKey, PersonColourSet
 } as const;
 
 // NativeWind class map — used when dynamic values aren't needed
-export const PERSON_COLOUR_CLASSES: Readonly
+export const PERSON_COLOUR_CLASSES: Readonly<
   Record<PersonColourKey, { bg: string; border: string; text: string; dot: string }>
 > = {
   green: {
