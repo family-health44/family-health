@@ -43,7 +43,11 @@ export const signUpSchema = z
     password: z
       .string()
       .min(1, 'Password is required')
-      .min(6, 'Password must be at least 6 characters'),
+      .min(8, 'Password must be at least 8 characters')
+      .regex(/[a-z]/, 'Include at least one lowercase letter')
+      .regex(/[A-Z]/, 'Include at least one uppercase letter')
+      .regex(/[0-9]/, 'Include at least one number')
+      .regex(/[!@#$%^&*()_+\-=\[\]{};':"|<>?,./`~]/, 'Include at least one symbol'),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
   })
   .refine((data) => data.password === data.confirmPassword, {
