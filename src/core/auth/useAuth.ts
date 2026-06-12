@@ -4,6 +4,7 @@ import { getCurrentSession, onAuthStateChange, signOut as signOutFromSession } f
 import { toAppError } from '@/shared/types/errors';
 import type { Session } from '@supabase/supabase-js';
 import type { AppError } from '@/shared/types/errors';
+import { db } from '@/lib/supabase';
 
 export type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
 
@@ -12,6 +13,7 @@ export interface UseAuthReturn {
   status: AuthStatus;
   error: AppError | null;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 export function useAuth(): UseAuthReturn {
@@ -62,5 +64,20 @@ export function useAuth(): UseAuthReturn {
     }
   }, []);
 
-  return { session, status, error, signOut };
+  // Account deletion is handled entirely server-side by the 'delete-user' edge
+  // function, which runs with the service-role key. It verifies the caller's JWT,
+  // then deletes the family group (if sole member — cascades to all data) or just
+  // the membership (if others remain), then deletes the auth user. The client only
+  // invokes it and signs out; it never touches data tables directly.
+  const deleteAccount = useCallback(async (): Promise<void> => {
+    try {
+      const { error: fnError } = await db.functions.invoke('delete-user');
+      if (fnError) throw fnError;
+      await signOutFromSession();
+    } catch (err) {
+      throw toAppError(err);
+    }
+  }, []);
+
+  return { session, status, error, signOut, deleteAccount };
 }

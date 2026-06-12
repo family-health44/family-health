@@ -1,7 +1,7 @@
 // src/features/settings/screens/SettingsScreen.tsx
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
-import { View, Text, ScrollView, Alert, TextInput } from 'react-native';
+import { View, Text, ScrollView, Alert, TextInput, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/core/auth/useAuth';
@@ -14,7 +14,7 @@ import { InviteFamilyMemberSection } from '@/features/invites/components/InviteF
 
 export const SettingsScreen = () => {
   const insets = useSafeAreaInsets();
-  const { session, signOut } = useAuth();
+  const { session, signOut, deleteAccount } = useAuth();
   const { data } = useFamilyHomeQuery();
   const queryClient = useQueryClient();
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -22,6 +22,7 @@ export const SettingsScreen = () => {
   const [editingName, setEditingName] = useState(false);
   const [familyName, setFamilyName] = useState('');
   const [isSavingName, setIsSavingName] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   const handleSignOut = () => {
     Alert.alert('Sign out', 'Are you sure you want to sign out?', [
@@ -54,12 +55,47 @@ export const SettingsScreen = () => {
   const handleDeleteAccount = () => {
     Alert.alert('Delete account', 'This will permanently delete your account and all family health data. This cannot be undone.', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete account', style: 'destructive', onPress: () => {} },
+      {
+        text: 'Delete account',
+        style: 'destructive',
+        onPress: () => {
+          // Second confirmation — Apple guideline 5.1.1(v) wants clear intent.
+          Alert.alert(
+            'Are you absolutely sure?',
+            'All records, visits, medications, and documents will be deleted forever.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              {
+                text: 'Yes, delete everything',
+                style: 'destructive',
+                onPress: async () => {
+                  setIsDeletingAccount(true);
+                  try {
+                    await deleteAccount();
+                    router.replace('/(auth)/sign-in');
+                  } catch {
+                    setIsDeletingAccount(false);
+                    Alert.alert('Could not delete account', 'Please try again or contact support.');
+                  }
+                },
+              },
+            ],
+          );
+        },
+      },
     ]);
   };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
+      {isDeletingAccount && (
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 99, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ backgroundColor: 'white', borderRadius: 16, padding: 24, alignItems: 'center', gap: 12 }}>
+            <ActivityIndicator size="large" color="#9B3A4A" />
+            <Text style={{ fontSize: 14, color: '#1C1917' }}>Deleting account…</Text>
+          </View>
+        </View>
+      )}
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
