@@ -1,8 +1,9 @@
 // src/features/medications/components/PersonMedicationsTab.tsx
 // Medications screen for a person — matches PWA design.
+
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
-import { View, Text, TextInput, FlatList, Pressable } from 'react-native';
+import { View, Text, TextInput, FlatList } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EmptyState, ErrorState, LoadingState } from '@/design-system/components/EmptyState';
@@ -11,8 +12,9 @@ import { Fonts } from '@/design-system/tokens/fonts';
 import { usePersonMedications } from '../hooks/usePersonMedications';
 import { MedicationCard } from './MedicationCard';
 import { AddMedicationModal } from './AddMedicationModal';
+import { EditMedicationModal } from './EditMedicationModal';
 import type { PersonColourSet } from '@/design-system/tokens/colours';
-import type { MedicationStatus } from '../types/medications.types';
+import type { Medication, MedicationStatus } from '../types/medications.types';
 
 interface PersonMedicationsTabProps {
   personId: string;
@@ -22,34 +24,54 @@ interface PersonMedicationsTabProps {
 
 export const PersonMedicationsTab = ({ personId, colourSet, personName }: PersonMedicationsTabProps) => {
   const insets = useSafeAreaInsets();
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [search, setSearch] = useState('');
-  const { groups, isLoading, error, addMedication, updateStatus, isAdding } =
-    usePersonMedications(personId);
+  const [showAddModal, setShowAddModal]       = useState(false);
+  const [editingMedication, setEditingMedication] = useState<Medication | null>(null);
+  const [search, setSearch]                   = useState('');
+
+  const {
+    groups, isLoading, error,
+    addMedication, updateMedication, updateStatus,
+    isAdding, isUpdating,
+  } = usePersonMedications(personId);
 
   if (isLoading) return <LoadingState message="Loading medications..." />;
-  if (error) return <ErrorState message={error.message} />;
+  if (error)     return <ErrorState message={error.message} />;
 
-  const filtered = groups.map((g) => ({
-    ...g,
-    medications: g.medications.filter((m) =>
-      m.name.toLowerCase().includes(search.toLowerCase())
-    ),
-  })).filter((g) => g.medications.length > 0);
+  const filtered = groups
+    .map((g) => ({
+      ...g,
+      medications: g.medications.filter((m) =>
+        m.name.toLowerCase().includes(search.toLowerCase()),
+      ),
+    }))
+    .filter((g) => g.medications.length > 0);
+
+  // Flat lookup so we can find the full Medication object by id on tap.
+  const allMeds = groups.flatMap((g) => g.medications);
+  const handleCardPress = (medicationId: string) => {
+    const med = allMeds.find((m) => m.id === medicationId) ?? null;
+    setEditingMedication(med);
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
-      {/* Header */}
+      {/* ── Header ─────────────────────────────────────────────────────── */}
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
         <PressableBase
           onPress={() => router.back()}
           accessibilityRole="button"
-          style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}
+          style={(pressed: boolean) => ({
+            opacity: pressed ? 0.6 : 1,
+            flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4,
+          })}
         >
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
           <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
         </PressableBase>
-        <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32 }}>
+        <Text style={{
+          fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif,
+          color: '#1C1917', lineHeight: 32,
+        }}>
           Medications
         </Text>
         {personName ? (
@@ -57,9 +79,13 @@ export const PersonMedicationsTab = ({ personId, colourSet, personName }: Person
         ) : null}
       </View>
 
-      {/* Search bar */}
+      {/* ── Search ─────────────────────────────────────────────────────── */}
       <View style={{ paddingHorizontal: 16, paddingBottom: 10 }}>
-        <View style={{ backgroundColor: '#EEEAE3', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <View style={{
+          backgroundColor: '#EEEAE3', borderRadius: 10,
+          paddingHorizontal: 12, paddingVertical: 8,
+          flexDirection: 'row', alignItems: 'center', gap: 8,
+        }}>
           <Text style={{ fontSize: 14, color: '#A8A09A' }}>🔍</Text>
           <TextInput
             value={search}
@@ -71,6 +97,7 @@ export const PersonMedicationsTab = ({ personId, colourSet, personName }: Person
         </View>
       </View>
 
+      {/* ── List ───────────────────────────────────────────────────────── */}
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.status}
@@ -84,12 +111,8 @@ export const PersonMedicationsTab = ({ personId, colourSet, personName }: Person
         renderItem={({ item: group }) => (
           <View style={{ marginBottom: 16 }}>
             <Text style={{
-              fontSize: 10,
-              fontWeight: '700',
-              color: '#A8A09A',
-              textTransform: 'uppercase',
-              letterSpacing: 0.8,
-              marginBottom: 8,
+              fontSize: 10, fontWeight: '700', color: '#A8A09A',
+              textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8,
             }}>
               {group.label}
             </Text>
@@ -99,6 +122,7 @@ export const PersonMedicationsTab = ({ personId, colourSet, personName }: Person
                 medication={med}
                 colourSet={colourSet}
                 onStatusToggle={(id, status: MedicationStatus) => updateStatus(id, status)}
+                onPress={handleCardPress}
               />
             ))}
           </View>
@@ -107,12 +131,25 @@ export const PersonMedicationsTab = ({ personId, colourSet, personName }: Person
 
       <FAB onPress={() => setShowAddModal(true)} accessibilityLabel="Add medication" />
 
+      {/* ── Add modal ──────────────────────────────────────────────────── */}
       <AddMedicationModal
         visible={showAddModal}
         isLoading={isAdding}
         personId={personId}
         onAdd={addMedication}
         onDismiss={() => setShowAddModal(false)}
+      />
+
+      {/* ── Edit modal ─────────────────────────────────────────────────── */}
+      <EditMedicationModal
+        visible={editingMedication !== null}
+        isLoading={isUpdating}
+        medication={editingMedication}
+        onSave={async (params) => {
+          await updateMedication(params);
+          setEditingMedication(null);
+        }}
+        onDismiss={() => setEditingMedication(null)}
       />
     </View>
   );

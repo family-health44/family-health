@@ -1,7 +1,8 @@
-// src/features/medications/components/AddMedicationModal.tsx
-// Modal for adding a new medication. React Hook Form + Zod. No business logic.
+// src/features/medications/components/EditMedicationModal.tsx
+// Modal for editing an existing medication. Opens when a card is tapped.
+// React Hook Form + Zod. Same status picker pattern as AddMedicationModal.
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,8 +11,8 @@ import { z } from 'zod';
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
 
-import type { MedicationStatus } from '../types/medications.types';
-import type { InsertMedicationParams } from '../repository/medications.repository';
+import type { Medication, MedicationStatus } from '../types/medications.types';
+import type { UpdateMedicationParams } from '../repository/medications.repository';
 
 // ── Status picker config ────────────────────────────────────────────────────
 type PickerStatus = Exclude<MedicationStatus, 'completed'>;
@@ -21,6 +22,12 @@ const PICKER_OPTIONS: { value: PickerStatus; label: string }[] = [
   { value: 'as_needed', label: 'As Needed' },
   { value: 'inactive',  label: 'Inactive' },
 ];
+
+// Legacy 'completed' rows default to 'inactive' in the picker; all other
+// values pass through. The picker never writes 'completed' back.
+function toPickerStatus(s: MedicationStatus): PickerStatus {
+  return s === 'completed' ? 'inactive' : s;
+}
 
 // ── Zod schema ──────────────────────────────────────────────────────────────
 const schema = z.object({
@@ -33,19 +40,18 @@ const schema = z.object({
 });
 
 type FormValues = z.infer<typeof schema>;
-type AddMedicationInput = Omit<InsertMedicationParams, 'familyGroupId'>;
 
-interface AddMedicationModalProps {
+interface EditMedicationModalProps {
   visible: boolean;
   isLoading: boolean;
-  personId: string;
-  onAdd: (input: AddMedicationInput) => Promise<void>;
+  medication: Medication | null;
+  onSave: (params: UpdateMedicationParams) => Promise<void>;
   onDismiss: () => void;
 }
 
-export const AddMedicationModal = ({
-  visible, isLoading, personId, onAdd, onDismiss,
-}: AddMedicationModalProps) => {
+export const EditMedicationModal = ({
+  visible, isLoading, medication, onSave, onDismiss,
+}: EditMedicationModalProps) => {
   const [statusOpen, setStatusOpen] = useState(false);
 
   const {
@@ -57,28 +63,42 @@ export const AddMedicationModal = ({
     },
   });
 
+  // Populate form whenever the target medication changes (modal opens for a card).
+  useEffect(() => {
+    if (medication) {
+      reset({
+        name:      medication.name,
+        dosage:    medication.dosage     ?? '',
+        frequency: medication.frequency  ?? '',
+        reason:    medication.reason     ?? '',
+        startDate: medication.startDate  ?? '',
+        status:    toPickerStatus(medication.status),
+      });
+      setStatusOpen(false);
+    }
+  }, [medication, reset]);
+
   const selectedStatus = watch('status') as PickerStatus;
   const selectedLabel  = PICKER_OPTIONS.find((o) => o.value === selectedStatus)?.label ?? 'Active';
 
   const onSubmit = async (values: FormValues) => {
-    await onAdd({
-      name:        values.name,
-      dosage:      values.dosage      ?? null,
-      frequency:   values.frequency   ?? null,
-      reason:      values.reason      ?? null,
-      status:      values.status      as MedicationStatus,
-      startDate:   values.startDate   ?? null,
-      endDate:     null,
-      personId,
-      prescribedBy: null,
+    if (!medication) return;
+    await onSave({
+      medicationId: medication.id,
+      name:         values.name,
+      dosage:       values.dosage      ?? null,
+      frequency:    values.frequency   ?? null,
+      reason:       values.reason      ?? null,
+      status:       values.status      as MedicationStatus,
+      startDate:    values.startDate   ?? null,
+      endDate:      medication.endDate,
+      prescribedBy: medication.prescribedBy,
     });
-    reset();
     onDismiss();
   };
 
   const handleDismiss = () => {
     setStatusOpen(false);
-    reset();
     onDismiss();
   };
 
@@ -108,7 +128,7 @@ export const AddMedicationModal = ({
 
               <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }}>
                 <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>
-                  Add medication
+                  Edit medication
                 </Text>
 
                 {/* ── Text fields ─────────────────────────────────────────── */}
@@ -223,7 +243,7 @@ export const AddMedicationModal = ({
 
                 {/* ── Actions ──────────────────────────────────────────────── */}
                 <View style={{ gap: 12, marginTop: 8 }}>
-                  <Button label="Add medication" variant="primary" size="lg" isFullWidth
+                  <Button label="Save changes" variant="primary" size="lg" isFullWidth
                     isLoading={isLoading} onPress={handleSubmit(onSubmit)} />
                   <Button label="Cancel" variant="ghost" size="lg" isFullWidth onPress={handleDismiss} />
                 </View>
