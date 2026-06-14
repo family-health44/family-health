@@ -1,3 +1,4 @@
+// src/lib/supabase.ts
 import { createClient } from '@supabase/supabase-js';
 import { ENV } from '@/core/config/env';
 import { secureStorageAdapter } from '@/core/auth/secureStorage';
@@ -21,5 +22,11 @@ export const supabase = createClient<Database>(
 );
 
 export type SupabaseClient = typeof supabase;
+
+// Untyped alias. C2 in progress: generated types exist at database.generated.ts
+// but the hand-written Db* domain types declare several columns non-null that the
+// live schema has nullable (family_group_id, medications.status, todos.completed,
+// notes.hidden, visits.visit_date, family_groups.name). Resolving that mismatch
+// (relax Db* types, or add NOT NULL constraints) is the remaining C2 work.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const db = supabase as any;

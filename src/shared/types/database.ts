@@ -128,71 +128,11 @@ export type DbTodoUpdate = Partial<Omit<DbTodo, 'id'>>;
 export type DbDocumentUpdate = Partial<Omit<DbDocument, 'id'>>;
 
 // ─── Supabase database type map ───────────────────────────────────────────────
-
-export interface Database {
-  public: {
-    Tables: {
-      family_groups: {
-        Row: DbFamilyGroup;
-        Insert: Omit<DbFamilyGroup, 'id'>;
-        Update: Partial<Omit<DbFamilyGroup, 'id'>>;
-      };
-      family_group_members: {
-        Row: DbFamilyGroupMember;
-        Insert: Omit<DbFamilyGroupMember, 'id'>;
-        Update: Partial<Omit<DbFamilyGroupMember, 'id'>>;
-      };
-      people: {
-        Row: DbPerson;
-        Insert: DbPersonInsert;
-        Update: DbPersonUpdate;
-      };
-      doctor_types: {
-        Row: DbDoctorType;
-        Insert: Omit<DbDoctorType, 'id'>;
-        Update: Partial<Omit<DbDoctorType, 'id'>>;
-      };
-      doctors: {
-        Row: DbDoctor;
-        Insert: DbDoctorInsert;
-        Update: DbDoctorUpdate;
-      };
-      people_doctors: {
-        Row: DbPeopleDoctor;
-        Insert: DbPeopleDoctor;
-        Update: Partial<DbPeopleDoctor>;
-      };
-      medications: {
-        Row: DbMedication;
-        Insert: DbMedicationInsert;
-        Update: DbMedicationUpdate;
-      };
-      visits: {
-        Row: DbVisit;
-        Insert: DbVisitInsert;
-        Update: DbVisitUpdate;
-      };
-      notes: {
-        Row: DbNote;
-        Insert: DbNoteInsert;
-        Update: DbNoteUpdate;
-      };
-      todos: {
-        Row: DbTodo;
-        Insert: DbTodoInsert;
-        Update: DbTodoUpdate;
-      };
-      documents: {
-        Row: DbDocument;
-        Insert: DbDocumentInsert;
-        Update: DbDocumentUpdate;
-      };
-    };
-    Functions: {
-      my_family_group_ids: {
-        Args: Record<string, never>;
-        Returns: string[];
-      };
-    };
-  };
-}
+// The Database type is generated from the live schema via:
+//   npx supabase gen types --linked --schema public > database.generated.ts
+// It is re-exported here so existing imports (`@/shared/types/database`) are
+// unchanged. The generated type is structurally what supabase-js's generics
+// expect, which resolves the `never` insert/update errors the hand-written
+// type produced. The Db* domain row types above are kept as-is — the domain
+// layer depends on their shape (e.g. DbVisit.visit_time, narrowed MedicationStatus).
+export type { Database } from './database.generated';
