@@ -14,7 +14,7 @@ import type { MedicationStatus } from '../types/medications.types';
 import type { InsertMedicationParams } from '../repository/medications.repository';
 
 // ── Status picker config ────────────────────────────────────────────────────
-type PickerStatus = Exclude<MedicationStatus, 'completed'>;
+type PickerStatus = MedicationStatus;
 
 const PICKER_OPTIONS: { value: PickerStatus; label: string }[] = [
   { value: 'active',    label: 'Active' },

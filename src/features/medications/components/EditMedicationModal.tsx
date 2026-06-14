@@ -15,19 +15,13 @@ import type { Medication, MedicationStatus } from '../types/medications.types';
 import type { UpdateMedicationParams } from '../repository/medications.repository';
 
 // ── Status picker config ────────────────────────────────────────────────────
-type PickerStatus = Exclude<MedicationStatus, 'completed'>;
+type PickerStatus = MedicationStatus;
 
 const PICKER_OPTIONS: { value: PickerStatus; label: string }[] = [
   { value: 'active',    label: 'Active' },
   { value: 'as_needed', label: 'As Needed' },
   { value: 'inactive',  label: 'Inactive' },
 ];
-
-// Legacy 'completed' rows default to 'inactive' in the picker; all other
-// values pass through. The picker never writes 'completed' back.
-function toPickerStatus(s: MedicationStatus): PickerStatus {
-  return s === 'completed' ? 'inactive' : s;
-}
 
 // ── Zod schema ──────────────────────────────────────────────────────────────
 const schema = z.object({
@@ -72,7 +66,7 @@ export const EditMedicationModal = ({
         frequency: medication.frequency  ?? '',
         reason:    medication.reason     ?? '',
         startDate: medication.startDate  ?? '',
-        status:    toPickerStatus(medication.status),
+        status:    medication.status,
       });
       setStatusOpen(false);
     }

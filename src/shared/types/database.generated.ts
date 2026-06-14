@@ -48,7 +48,7 @@ export type Database = {
           address: string | null
           created_at: string | null
           email: string | null
-          family_group_id: string | null
+          family_group_id: string
           id: string
           name: string
           notes: string | null
@@ -59,7 +59,7 @@ export type Database = {
           address?: string | null
           created_at?: string | null
           email?: string | null
-          family_group_id?: string | null
+          family_group_id: string
           id?: string
           name: string
           notes?: string | null
@@ -70,7 +70,7 @@ export type Database = {
           address?: string | null
           created_at?: string | null
           email?: string | null
-          family_group_id?: string | null
+          family_group_id?: string
           id?: string
           name?: string
           notes?: string | null
@@ -194,19 +194,19 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
-          name: string | null
+          name: string
           owner_id: string | null
         }
         Insert: {
           created_at?: string | null
           id?: string
-          name?: string | null
+          name: string
           owner_id?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
-          name?: string | null
+          name?: string
           owner_id?: string | null
         }
         Relationships: []
@@ -272,46 +272,46 @@ export type Database = {
           created_at: string | null
           dosage: string | null
           end_date: string | null
-          family_group_id: string | null
+          family_group_id: string
           frequency: string | null
           id: string
           name: string
           notes: string | null
-          person_id: string | null
+          person_id: string
           prescribed_by: string | null
           reason: string | null
           start_date: string | null
-          status: string | null
+          status: string
         }
         Insert: {
           created_at?: string | null
           dosage?: string | null
           end_date?: string | null
-          family_group_id?: string | null
+          family_group_id: string
           frequency?: string | null
           id?: string
           name: string
           notes?: string | null
-          person_id?: string | null
+          person_id: string
           prescribed_by?: string | null
           reason?: string | null
           start_date?: string | null
-          status?: string | null
+          status?: string
         }
         Update: {
           created_at?: string | null
           dosage?: string | null
           end_date?: string | null
-          family_group_id?: string | null
+          family_group_id?: string
           frequency?: string | null
           id?: string
           name?: string
           notes?: string | null
-          person_id?: string | null
+          person_id?: string
           prescribed_by?: string | null
           reason?: string | null
           start_date?: string | null
-          status?: string | null
+          status?: string
         }
         Relationships: [
           {
@@ -342,8 +342,8 @@ export type Database = {
           content: string
           created_at: string | null
           doctor_id: string | null
-          family_group_id: string | null
-          hidden: boolean | null
+          family_group_id: string
+          hidden: boolean
           id: string
           medication_id: string | null
           person_id: string | null
@@ -354,8 +354,8 @@ export type Database = {
           content: string
           created_at?: string | null
           doctor_id?: string | null
-          family_group_id?: string | null
-          hidden?: boolean | null
+          family_group_id: string
+          hidden?: boolean
           id?: string
           medication_id?: string | null
           person_id?: string | null
@@ -366,8 +366,8 @@ export type Database = {
           content?: string
           created_at?: string | null
           doctor_id?: string | null
-          family_group_id?: string | null
-          hidden?: boolean | null
+          family_group_id?: string
+          hidden?: boolean
           id?: string
           medication_id?: string | null
           person_id?: string | null
@@ -422,7 +422,7 @@ export type Database = {
           dob: string | null
           emergency_contact: string | null
           emergency_phone: string | null
-          family_group_id: string | null
+          family_group_id: string
           health_fund: string | null
           health_fund_number: string | null
           id: string
@@ -440,7 +440,7 @@ export type Database = {
           dob?: string | null
           emergency_contact?: string | null
           emergency_phone?: string | null
-          family_group_id?: string | null
+          family_group_id: string
           health_fund?: string | null
           health_fund_number?: string | null
           id?: string
@@ -458,7 +458,7 @@ export type Database = {
           dob?: string | null
           emergency_contact?: string | null
           emergency_phone?: string | null
-          family_group_id?: string | null
+          family_group_id?: string
           health_fund?: string | null
           health_fund_number?: string | null
           id?: string
@@ -509,12 +509,12 @@ export type Database = {
       }
       todos: {
         Row: {
-          completed: boolean | null
+          completed: boolean
           completed_at: string | null
           created_at: string | null
           doctor_id: string | null
           due_date: string | null
-          family_group_id: string | null
+          family_group_id: string
           id: string
           notes: string | null
           person_id: string | null
@@ -522,12 +522,12 @@ export type Database = {
           visit_id: string | null
         }
         Insert: {
-          completed?: boolean | null
+          completed?: boolean
           completed_at?: string | null
           created_at?: string | null
           doctor_id?: string | null
           due_date?: string | null
-          family_group_id?: string | null
+          family_group_id: string
           id?: string
           notes?: string | null
           person_id?: string | null
@@ -535,12 +535,12 @@ export type Database = {
           visit_id?: string | null
         }
         Update: {
-          completed?: boolean | null
+          completed?: boolean
           completed_at?: string | null
           created_at?: string | null
           doctor_id?: string | null
           due_date?: string | null
-          family_group_id?: string | null
+          family_group_id?: string
           id?: string
           notes?: string | null
           person_id?: string | null
@@ -583,46 +583,46 @@ export type Database = {
           calendar_event_id: string | null
           created_at: string | null
           doctor_id: string | null
-          family_group_id: string | null
+          family_group_id: string
           id: string
           notes: string | null
           out_of_pocket: number | null
-          person_id: string | null
+          person_id: string
           post_notes: string | null
           pre_notes: string | null
           title: string
           total_cost: number | null
-          visit_date: string | null
+          visit_date: string
         }
         Insert: {
           calendar_event_id?: string | null
           created_at?: string | null
           doctor_id?: string | null
-          family_group_id?: string | null
+          family_group_id: string
           id?: string
           notes?: string | null
           out_of_pocket?: number | null
-          person_id?: string | null
+          person_id: string
           post_notes?: string | null
           pre_notes?: string | null
           title: string
           total_cost?: number | null
-          visit_date?: string | null
+          visit_date: string
         }
         Update: {
           calendar_event_id?: string | null
           created_at?: string | null
           doctor_id?: string | null
-          family_group_id?: string | null
+          family_group_id?: string
           id?: string
           notes?: string | null
           out_of_pocket?: number | null
-          person_id?: string | null
+          person_id?: string
           post_notes?: string | null
           pre_notes?: string | null
           title?: string
           total_cost?: number | null
-          visit_date?: string | null
+          visit_date?: string
         }
         Relationships: [
           {

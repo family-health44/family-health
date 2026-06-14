@@ -60,14 +60,14 @@ describe('medications.domain', () => {
   describe('groupMedicationsByStatus', () => {
     it('groups medications by status in correct order', () => {
       const medications: Medication[] = [
-        makeMedication({ id: '1', status: 'completed' }),
+        makeMedication({ id: '1', status: 'as_needed' }),
         makeMedication({ id: '2', status: 'active' }),
         makeMedication({ id: '3', status: 'inactive' }),
       ];
       const groups = groupMedicationsByStatus(medications);
       expect(groups[0]?.status).toBe('active');
-      expect(groups[1]?.status).toBe('inactive');
-      expect(groups[2]?.status).toBe('completed');
+      expect(groups[1]?.status).toBe('as_needed');
+      expect(groups[2]?.status).toBe('inactive');
     });
 
     it('omits empty groups', () => {
@@ -101,8 +101,8 @@ describe('medications.domain', () => {
     it('maps inactive to warning', () => {
       expect(statusToBadgeVariant('inactive')).toBe('warning');
     });
-    it('maps completed to neutral', () => {
-      expect(statusToBadgeVariant('completed')).toBe('neutral');
+    it('maps as_needed to success', () => {
+      expect(statusToBadgeVariant('as_needed')).toBe('success');
     });
   });
 
@@ -110,7 +110,7 @@ describe('medications.domain', () => {
     it('returns correct labels', () => {
       expect(statusLabel('active')).toBe('Active');
       expect(statusLabel('inactive')).toBe('Inactive');
-      expect(statusLabel('completed')).toBe('Completed');
+      expect(statusLabel('as_needed')).toBe('As Needed');
     });
   });
 });

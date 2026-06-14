@@ -6,7 +6,7 @@
 
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
-export type MedicationStatus = 'active' | 'inactive' | 'completed';
+export type MedicationStatus = 'active' | 'as_needed' | 'inactive';
 
 // ─── Table row types ──────────────────────────────────────────────────────────
 
@@ -54,7 +54,7 @@ export interface DbMedication {
   dosage: string | null;
   frequency: string | null;
   reason: string | null;
-  status: MedicationStatus;
+  status: string; // raw DB value; narrowed via normaliseMedicationStatus in domain layer
   start_date: string | null;
   end_date: string | null;
   person_id: string;
