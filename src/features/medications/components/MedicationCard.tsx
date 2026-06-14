@@ -1,45 +1,37 @@
 // src/features/medications/components/MedicationCard.tsx
 // Medication card — name, dosage, frequency, reason, prescribed by, status badge.
-// Status can be toggled active ↔ inactive directly from the card.
+// Tapping the card opens the edit modal. The badge is display-only; status is
+// changed via the picker in the edit modal (not from this list).
 
 import { PressableBase } from '@/design-system/components/PressableBase';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text } from 'react-native';
 
 import { Badge } from '@/design-system/components/Badge';
 import { formatDate } from '@/shared/utils/dates';
 import { statusToBadgeVariant, statusLabel } from '../domain/medications.domain';
 
-import type { Medication, MedicationStatus } from '../types/medications.types';
+import type { Medication } from '../types/medications.types';
 import type { PersonColourSet } from '@/design-system/tokens/colours';
 
 interface MedicationCardProps {
   medication: Medication;
   colourSet?: PersonColourSet;
-  onStatusToggle?: (medicationId: string, newStatus: MedicationStatus) => void;
   onPress?: (medicationId: string) => void;
 }
 
 export const MedicationCard = ({
   medication,
   colourSet,
-  onStatusToggle,
   onPress,
 }: MedicationCardProps) => {
   const cardStyle = colourSet
     ? { backgroundColor: colourSet.bg, borderColor: colourSet.border }
     : { backgroundColor: '#FFFFFF', borderColor: '#E8E4DC' };
 
-  const handleStatusToggle = () => {
-    if (!onStatusToggle) return;
-    const newStatus: MedicationStatus =
-      medication.status === 'active' ? 'inactive' : 'active';
-    onStatusToggle(medication.id, newStatus);
-  };
-
   return (
     <PressableBase
       onPress={() => onPress?.(medication.id)}
-      style={(pressed) => ({
+      style={(pressed: boolean) => ({
         ...cardStyle,
         borderWidth: 1,
         borderRadius: 14,
@@ -48,7 +40,7 @@ export const MedicationCard = ({
         opacity: pressed ? 0.85 : 1,
       })}
       accessibilityRole="button"
-      accessibilityLabel={`${medication.name}, ${statusLabel(medication.status)}`}
+      accessibilityLabel={`${medication.name}, ${statusLabel(medication.status)}. Tap to edit.`}
     >
       {/* Header row */}
       <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
@@ -64,25 +56,11 @@ export const MedicationCard = ({
           ) : null}
         </View>
 
-        {/* Status badge — tappable to toggle active/inactive */}
-        {medication.status !== 'completed' && onStatusToggle ? (
-          <PressableBase
-            onPress={handleStatusToggle}
-            accessibilityRole="button"
-            accessibilityLabel={`Mark as ${medication.status === 'active' ? 'inactive' : 'active'}`}
-            hitSlop={8}
-          >
-            <Badge
-              label={statusLabel(medication.status)}
-              variant={statusToBadgeVariant(medication.status)}
-            />
-          </PressableBase>
-        ) : (
-          <Badge
-            label={statusLabel(medication.status)}
-            variant={statusToBadgeVariant(medication.status)}
-          />
-        )}
+        {/* Status badge — display only */}
+        <Badge
+          label={statusLabel(medication.status)}
+          variant={statusToBadgeVariant(medication.status)}
+        />
       </View>
 
       {/* Detail rows */}

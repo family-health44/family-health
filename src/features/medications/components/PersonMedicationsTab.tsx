@@ -14,7 +14,7 @@ import { MedicationCard } from './MedicationCard';
 import { AddMedicationModal } from './AddMedicationModal';
 import { EditMedicationModal } from './EditMedicationModal';
 import type { PersonColourSet } from '@/design-system/tokens/colours';
-import type { Medication, MedicationStatus } from '../types/medications.types';
+import type { Medication } from '../types/medications.types';
 
 interface PersonMedicationsTabProps {
   personId: string;
@@ -30,7 +30,7 @@ export const PersonMedicationsTab = ({ personId, colourSet, personName }: Person
 
   const {
     groups, isLoading, error,
-    addMedication, updateMedication, updateStatus,
+    addMedication, updateMedication,
     isAdding, isUpdating,
   } = usePersonMedications(personId);
 
@@ -121,7 +121,6 @@ export const PersonMedicationsTab = ({ personId, colourSet, personName }: Person
                 key={med.id}
                 medication={med}
                 colourSet={colourSet}
-                onStatusToggle={(id, status: MedicationStatus) => updateStatus(id, status)}
                 onPress={handleCardPress}
               />
             ))}
