@@ -66,8 +66,7 @@ export interface DbVisit {
   id: string;
   title: string;
   visit_date: string;
-  // Note: no visit_time column in database — repository injects null at runtime
-  visit_time: null;
+  visit_time: string | null;
   doctor_id: string | null;
   person_id: string;
   family_group_id: string;

@@ -593,6 +593,7 @@ export type Database = {
           title: string
           total_cost: number | null
           visit_date: string
+          visit_time: string | null
         }
         Insert: {
           calendar_event_id?: string | null
@@ -608,6 +609,7 @@ export type Database = {
           title: string
           total_cost?: number | null
           visit_date: string
+          visit_time?: string | null
         }
         Update: {
           calendar_event_id?: string | null
@@ -623,6 +625,7 @@ export type Database = {
           title?: string
           total_cost?: number | null
           visit_date?: string
+          visit_time?: string | null
         }
         Relationships: [
           {
