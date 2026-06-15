@@ -1,12 +1,16 @@
 // src/features/visits/screens/VisitDetailScreen.tsx
 // Visit detail screen — matches PWA design.
 import { PressableBase } from '@/design-system/components/PressableBase';
+import { useState } from 'react';
 import { View, Text, ScrollView, Linking, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { Fonts } from '@/design-system/tokens/fonts';
 import { useVisitsListQuery } from '../queries/visits.queries';
+import { useUpdateVisitMutation } from '../mutations/visits.mutations';
+import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
+import { EditVisitModal } from '../components/EditVisitModal';
 import { formatDate, formatTime } from '@/shared/utils/dates';
 
 interface VisitDetailScreenProps {
@@ -16,6 +20,10 @@ interface VisitDetailScreenProps {
 export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
   const insets = useSafeAreaInsets();
   const { data: groups, isLoading, error } = useVisitsListQuery();
+  const { data: doctorGroups } = useDoctorsQuery();
+  const updateVisit = useUpdateVisitMutation();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const doctors = (doctorGroups ?? []).flatMap((g) => g.doctors);
 
   if (isLoading) return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><LoadingState message="Loading visit..." /></View>;
   if (error) return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><ErrorState message={error.message} /></View>;
@@ -25,6 +33,22 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
 
   const today = new Date().toISOString().split('T')[0] ?? '';
   const isUpcoming = visit.visitDate >= today;
+
+  const handleSaveEdit = async (input: {
+    title: string;
+    visitDate: string;
+    visitTime: string | null;
+    doctorId: string | null;
+    preNotes: string | null;
+    postNotes: string | null;
+  }) => {
+    try {
+      await updateVisit.mutateAsync({ visitId: visit.id, ...input });
+      setShowEditModal(false);
+    } catch {
+      Alert.alert('Error', 'Could not save changes.');
+    }
+  };
 
   const handleAddToCalendar = async () => {
     const url = `webcal://calendar.google.com/calendar/r/eventedit?text=${encodeURIComponent(visit.title)}&dates=${visit.visitDate.replace(/-/g, '')}`;
@@ -52,9 +76,14 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
           <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
         </PressableBase>
-        <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEEAE3', alignItems: 'center', justifyContent: 'center' }}>
+        <PressableBase
+          onPress={() => setShowEditModal(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Edit visit"
+          style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEEAE3', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}
+        >
           <Text style={{ fontSize: 14, color: '#6B6460' }}>✎</Text>
-        </View>
+        </PressableBase>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4, paddingBottom: 100 }}>
@@ -160,6 +189,15 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
           </PressableBase>
         </View>
       )}
+
+      <EditVisitModal
+        visible={showEditModal}
+        isLoading={updateVisit.isPending}
+        visit={visit}
+        doctors={doctors}
+        onSave={handleSaveEdit}
+        onDismiss={() => setShowEditModal(false)}
+      />
     </View>
   );
 };
