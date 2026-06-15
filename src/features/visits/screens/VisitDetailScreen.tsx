@@ -45,7 +45,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
         justifyContent: 'space-between',
       }}>
         <PressableBase
-          onPress={() => router.back()}
+          onPress={() => router.navigate('/(app)/visits')}
           accessibilityRole="button"
           style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}
         >

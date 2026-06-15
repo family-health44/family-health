@@ -1,4 +1,5 @@
 // src/features/visits/components/AddVisitModal.tsx
+import { useState } from 'react';
 import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,11 +7,15 @@ import { z } from 'zod';
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
 import type { InsertVisitParams } from '../repository/visits.repository';
+import type { Person } from '@/features/family/types/family.types';
+import type { Doctor } from '@/features/doctors/types/doctors.types';
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required').max(100),
   visitDate: z.string().min(1, 'Date is required').regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD format'),
   visitTime: z.string().optional(),
+  personId: z.string().min(1, 'Please choose a family member'),
+  doctorId: z.string().nullable().optional(),
   preNotes: z.string().optional(),
   totalCost: z.string().optional(),
   outOfPocketCost: z.string().optional(),
@@ -21,18 +26,56 @@ type AddVisitInput = Omit<InsertVisitParams, 'familyGroupId'>;
 interface AddVisitModalProps {
   visible: boolean;
   isLoading: boolean;
+  people?: Person[];
+  doctors?: Doctor[];
   defaultPersonId?: string;
   personName?: string;
   onAdd: (input: AddVisitInput) => Promise<void>;
   onDismiss: () => void;
 }
 
-export const AddVisitModal = ({ visible, isLoading, defaultPersonId = '', personName, onAdd, onDismiss }: AddVisitModalProps) => {
+const InlinePicker = ({ label, isRequired, options, value, onChange, error }: {
+  label: string;
+  isRequired?: boolean;
+  options: { id: string | null; label: string }[];
+  value: string | null | undefined;
+  onChange: (id: string | null) => void;
+  error?: string;
+}) => {
+  const [open, setOpen] = useState(false);
+  const selected = options.find((o) => o.id === (value ?? null));
+  return (
+    <View style={{ gap: 6 }}>
+      <Text style={{ fontSize: 14, fontWeight: '600', color: '#3D3D3D' }}>
+        {label}{isRequired ? <Text style={{ color: '#B91C1C' }}> *</Text> : null}
+      </Text>
+      <Pressable onPress={() => setOpen(!open)} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderWidth: 1, borderColor: error ? '#B91C1C' : open ? '#2A6049' : '#E3DDD5', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12 }}>
+        <Text style={{ flex: 1, fontSize: 14, color: selected?.id ? '#1C1917' : '#A8A09A' }}>{selected?.label ?? 'Select...'}</Text>
+        <Text style={{ color: '#A8A09A', fontSize: 12 }}>{open ? '▲' : '▼'}</Text>
+      </Pressable>
+      {open && (
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#2A6049', borderRadius: 10, overflow: 'hidden' }}>
+          {options.map((opt, i) => (
+            <Pressable key={opt.id ?? 'none'} onPress={() => { onChange(opt.id); setOpen(false); }} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 11, paddingHorizontal: 14, borderBottomWidth: i < options.length - 1 ? 1 : 0, borderBottomColor: '#F0EDE8', backgroundColor: (value ?? null) === opt.id ? '#E6F0EC' : 'white' }}>
+              <Text style={{ flex: 1, fontSize: 14, color: (value ?? null) === opt.id ? '#1A4D35' : '#1C1917', fontWeight: (value ?? null) === opt.id ? '600' : '400' }}>{opt.label}</Text>
+              {(value ?? null) === opt.id && <Text style={{ color: '#2A6049', fontSize: 14 }}>✓</Text>}
+            </Pressable>
+          ))}
+        </View>
+      )}
+      {error ? <Text style={{ fontSize: 12, color: '#B91C1C' }}>{error}</Text> : null}
+    </View>
+  );
+};
+
+export const AddVisitModal = ({ visible, isLoading, people = [], doctors = [], defaultPersonId = '', personName, onAdd, onDismiss }: AddVisitModalProps) => {
   const today = new Date().toISOString().split('T')[0] ?? '';
-  const { control, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({
+  const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { title: '', visitDate: today, visitTime: '', preNotes: '', totalCost: '', outOfPocketCost: '' },
+    defaultValues: { title: '', visitDate: today, visitTime: '', personId: defaultPersonId, doctorId: null, preNotes: '', totalCost: '', outOfPocketCost: '' },
   });
+  const personId = watch('personId');
+  const doctorId = watch('doctorId');
 
   const onSubmit = async (values: FormValues) => {
     let preNotes = values.preNotes?.trim() || null;
@@ -40,10 +83,15 @@ export const AddVisitModal = ({ visible, isLoading, defaultPersonId = '', person
     if (values.totalCost?.trim()) costLines.push(`Total cost: $${values.totalCost.trim()}`);
     if (values.outOfPocketCost?.trim()) costLines.push(`Out of pocket: $${values.outOfPocketCost.trim()}`);
     if (costLines.length > 0) preNotes = [preNotes, ...costLines].filter(Boolean).join('\n');
-    await onAdd({ title: values.title, visitDate: values.visitDate, visitTime: values.visitTime?.trim() || null, doctorId: null, personId: defaultPersonId, preNotes: preNotes || null, postNotes: null });
+    await onAdd({ title: values.title, visitDate: values.visitDate, visitTime: values.visitTime?.trim() || null, doctorId: values.doctorId ?? null, personId: values.personId, preNotes: preNotes || null, postNotes: null });
     reset();
     onDismiss();
   };
+
+  const personOptions = people.map((p) => ({ id: p.id, label: p.name }));
+  const doctorOptions = [{ id: null, label: 'None' }, ...doctors.map((d) => ({ id: d.id, label: d.name + (d.type ? ` — ${d.type}` : '') }))];
+  // Show selector when a list is provided; fall back to read-only when a single person is fixed.
+  const showPersonSelector = people.length > 0;
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onDismiss}>
@@ -54,7 +102,9 @@ export const AddVisitModal = ({ visible, isLoading, defaultPersonId = '', person
               <View style={{ width: 40, height: 4, backgroundColor: '#D0CCC4', borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 20 }} />
               <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
                 <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>Add visit</Text>
-                {personName ? (
+                {showPersonSelector ? (
+                  <InlinePicker label="Family member" isRequired options={personOptions} value={personId} onChange={(id) => setValue('personId', id ?? '', { shouldValidate: true })} error={errors.personId?.message} />
+                ) : personName ? (
                   <View style={{ gap: 4 }}>
                     <Text style={{ fontSize: 13, fontWeight: '600', color: '#6B6460' }}>Person</Text>
                     <View style={{ backgroundColor: '#EEEAE3', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11 }}>
@@ -71,6 +121,9 @@ export const AddVisitModal = ({ visible, isLoading, defaultPersonId = '', person
                 <Controller control={control} name="visitTime" render={({ field: { onChange, onBlur, value } }) => (
                   <Input label="Time" placeholder="HH:MM (optional)" keyboardType="numbers-and-punctuation" value={value} onChangeText={onChange} onBlur={onBlur} />
                 )} />
+                {doctors.length > 0 && (
+                  <InlinePicker label="Doctor (optional)" options={doctorOptions} value={doctorId} onChange={(id) => setValue('doctorId', id)} />
+                )}
                 <Controller control={control} name="preNotes" render={({ field: { onChange, onBlur, value } }) => (
                   <Input label="Pre-visit notes" placeholder="What to discuss, questions to ask..." autoCapitalize="sentences" multiline numberOfLines={5} style={{ minHeight: 100, textAlignVertical: 'top' }} value={value} onChangeText={onChange} onBlur={onBlur} />
                 )} />

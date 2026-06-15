@@ -11,6 +11,8 @@ import { HamburgerButton } from '@/design-system/components/HamburgerButton';
 import { Fonts } from '@/design-system/tokens/fonts';
 import { useDrawer } from '@/design-system/components/DrawerContext';
 import { useVisits } from '../hooks/useVisits';
+import { useFamilyHome } from '@/features/family/hooks/useFamilyHome';
+import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
 import { VisitsViewToggle } from '../components/VisitsViewToggle';
 import { VisitCard } from '../components/VisitCard';
 import { WeekCalendarView } from '../components/WeekCalendarView';
@@ -26,8 +28,13 @@ export const VisitsScreen = () => {
     isLoading, error,
     addVisit, isAdding, refetch,
   } = useVisits();
+  const { data: familyData } = useFamilyHome();
+  const { data: doctorGroups } = useDoctorsQuery();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { openDrawer } = useDrawer();
+
+  const people = familyData?.people ?? [];
+  const doctors = (doctorGroups ?? []).flatMap((g) => g.doctors);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -127,6 +134,8 @@ export const VisitsScreen = () => {
       <AddVisitModal
         visible={showAddModal}
         isLoading={isAdding}
+        people={people}
+        doctors={doctors}
         onAdd={addVisit}
         onDismiss={() => setShowAddModal(false)}
       />
