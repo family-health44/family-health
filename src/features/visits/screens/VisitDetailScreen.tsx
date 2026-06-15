@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { Fonts } from '@/design-system/tokens/fonts';
 import { useVisitsListQuery } from '../queries/visits.queries';
-import { formatDate } from '@/shared/utils/dates';
+import { formatDate, formatTime } from '@/shared/utils/dates';
 
 interface VisitDetailScreenProps {
   visitId: string;
@@ -68,7 +68,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
               {visit.title}
             </Text>
             <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 3 }}>
-              {formatDate(visit.visitDate)}{visit.visitTime ? ` at ${visit.visitTime}` : ''} · {isUpcoming ? 'Upcoming' : 'Past'}
+              {formatDate(visit.visitDate)}{visit.visitTime ? ` at ${formatTime(visit.visitTime)}` : ''} · {isUpcoming ? 'Upcoming' : 'Past'}
             </Text>
           </View>
         </View>
@@ -81,7 +81,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
           <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EDE8' }}>
             <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Date</Text>
             <Text style={{ fontSize: 13, color: '#1C1917', fontWeight: '500' }}>
-              {formatDate(visit.visitDate)}{visit.visitTime ? ` at ${visit.visitTime}` : ''}
+              {formatDate(visit.visitDate)}{visit.visitTime ? ` at ${formatTime(visit.visitTime)}` : ''}
             </Text>
           </View>
           <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EDE8' }}>
