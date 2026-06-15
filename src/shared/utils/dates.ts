@@ -65,7 +65,13 @@ export function isToday(isoDate: string): boolean {
   );
 }
 
-// Formats a date as ISO date string "YYYY-MM-DD" for Supabase inserts
+// Formats a date as ISO date string "YYYY-MM-DD" for Supabase inserts.
+// Uses LOCAL components (not toISOString) to avoid the UTC day-shift trap:
+// in positive-offset zones (e.g. AEST UTC+10) toISOString() rolls the date
+// back a day for any local time before 10:00.
 export function toISODateString(date: Date): string {
-  return date.toISOString().split('T')[0] ?? '';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
