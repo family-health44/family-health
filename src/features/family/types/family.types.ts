@@ -5,6 +5,20 @@
 
 import type { PersonColourSet } from '@/design-system/tokens/colours';
 
+export interface PersonInfoCard {
+  dob: string | null;
+  medicareNumber: string | null;
+  bloodType: string | null;
+  immunisationsCurrent: boolean | null;
+  allergies: string | null;
+  diagnoses: string | null;
+  healthFund: string | null;
+  healthFundNumber: string | null;
+  emergencyContact: string | null;
+  emergencyPhone: string | null;
+  notes: string | null;
+}
+
 export interface Person {
   id: string;
   name: string;
@@ -12,6 +26,7 @@ export interface Person {
   colourSet: PersonColourSet;
   colourIndex: number;
   initials: string;
+  infoCard: PersonInfoCard;
 }
 
 export interface FamilyGroup {

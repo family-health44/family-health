@@ -10,7 +10,7 @@ import type { PersonColourSet } from '@/design-system/tokens/colours';
 // Wraps: index 5 → same as index 0, etc.
 export function getPersonColour(index: number): PersonColourSet {
   const colour = PERSON_COLOURS[index % PERSON_COLOURS.length];
-  // PERSON_COLOURS always has 5 entries and index % 5 is always 0–4
+  // index wraps via % PERSON_COLOURS.length (currently 28 entries)
   // so this is always defined — but we guard for TypeScript strict mode
   if (!colour) {
     return PERSON_COLOURS[0] as PersonColourSet;

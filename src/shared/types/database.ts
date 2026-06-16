@@ -26,6 +26,18 @@ export interface DbPerson {
   name: string;
   family_group_id: string;
   // Note: no colour column in database — colour is assigned by index in domain layer
+  // Info Card fields — all nullable; columns already exist in DB schema.
+  dob: string | null;
+  medicare_number: string | null;
+  blood_type: string | null;
+  immunisations_current: boolean | null;
+  allergies: string | null;
+  diagnoses: string | null;
+  health_fund: string | null;
+  health_fund_number: string | null;
+  emergency_contact: string | null;
+  emergency_phone: string | null;
+  notes: string | null;
 }
 
 export interface DbDoctorType {

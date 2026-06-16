@@ -20,6 +20,19 @@ export function mapDbPersonToPerson(dbPerson: DbPerson, colourIndex: number): Pe
     colourSet: getPersonColour(colourIndex),
     colourIndex,
     initials: getInitials(dbPerson.name),
+    infoCard: {
+      dob: dbPerson.dob,
+      medicareNumber: dbPerson.medicare_number,
+      bloodType: dbPerson.blood_type,
+      immunisationsCurrent: dbPerson.immunisations_current,
+      allergies: dbPerson.allergies,
+      diagnoses: dbPerson.diagnoses,
+      healthFund: dbPerson.health_fund,
+      healthFundNumber: dbPerson.health_fund_number,
+      emergencyContact: dbPerson.emergency_contact,
+      emergencyPhone: dbPerson.emergency_phone,
+      notes: dbPerson.notes,
+    },
   };
 }
 

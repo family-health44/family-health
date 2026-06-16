@@ -13,6 +13,17 @@ const makeDbPerson = (overrides: Partial<DbPerson> = {}): DbPerson => ({
   id: 'person-1',
   name: 'Jane Smith',
   family_group_id: 'group-1',
+  dob: null,
+  medicare_number: null,
+  blood_type: null,
+  immunisations_current: null,
+  allergies: null,
+  diagnoses: null,
+  health_fund: null,
+  health_fund_number: null,
+  emergency_contact: null,
+  emergency_phone: null,
+  notes: null,
   ...overrides,
 });
 
@@ -40,10 +51,11 @@ describe('family.domain', () => {
       expect(result1.colourSet).toEqual(PERSON_COLOURS[1]);
     });
 
-    it('wraps colour index at 5', () => {
-      const result5 = mapDbPersonToPerson(makeDbPerson(), 5);
-      expect(result5.colourSet).toEqual(PERSON_COLOURS[0]);
-      expect(result5.colourIndex).toBe(5);
+    it('wraps colour index at the array length', () => {
+      const n = PERSON_COLOURS.length;
+      const result = mapDbPersonToPerson(makeDbPerson(), n);
+      expect(result.colourSet).toEqual(PERSON_COLOURS[0]);
+      expect(result.colourIndex).toBe(n);
     });
 
     it('generates correct initials for single name', () => {
