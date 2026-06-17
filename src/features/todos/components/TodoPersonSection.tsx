@@ -35,7 +35,7 @@ export const TodoPersonSection = ({
     ? group.todos
     : group.todos.filter((t) => !t.completed);
 
-  if (visibleTodos.length === 0 && !showCompleted) return null;
+  // Empty sections still render (collapsed-friendly) so every person is visible.
 
   return (
     <View style={{ marginBottom: 8 }}>

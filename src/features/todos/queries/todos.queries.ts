@@ -2,6 +2,7 @@
 // TanStack Query wrappers for todo data.
 
 import { useQuery } from '@tanstack/react-query';
+import { sortPeopleByCreation } from '@/shared/utils/personOrder';
 
 import { queryKeys } from '@/lib/queryClient';
 import { fetchTodos } from '../repository/todos.repository';
@@ -19,21 +20,20 @@ export function useTodosQuery() {
         fetchPeople(),
       ]);
 
-      // Sort people alphabetically to assign stable colour indices
-      const sortedPeople = [...dbPeople].sort((a, b) =>
-        a.name.localeCompare(b.name),
-      );
+      // Sort by creation order to assign stable colour indices (matches Family)
+      const sortedPeople = sortPeopleByCreation(dbPeople);
 
       const personNameMap = new Map(sortedPeople.map((p) => [p.id, p.name]));
       const personColourMap = new Map(
         sortedPeople.map((p, i) => [p.id, i]),
       );
+      const orderedPersonIds = sortedPeople.map((p) => p.id);
 
       const todos = dbTodos.map((db) =>
         mapDbTodoToTodo(db, personNameMap.get(db.person_id ?? '') ?? null),
       );
 
-      return groupTodosByPerson(todos, personColourMap, personNameMap);
+      return groupTodosByPerson(todos, personColourMap, personNameMap, orderedPersonIds);
     },
   });
 }

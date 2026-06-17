@@ -12,6 +12,7 @@ export interface Visit {
   doctorName: string | null;
   personId: string;
   personName: string;
+  personColourIndex: number;
   familyGroupId: string;
   preNotes: string | null;
   postNotes: string | null;

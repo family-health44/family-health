@@ -1,6 +1,6 @@
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { View, Text } from 'react-native';
-import { PERSON_COLOURS } from '@/design-system/tokens/colours';
+import { getPersonColour } from '@/shared/utils/avatar';
 import { formatDate } from '@/shared/utils/dates';
 import type { Visit } from '../types/visits.types';
 
@@ -11,16 +11,8 @@ interface VisitCardProps {
   isPast?: boolean;
 }
 
-function personColourIndex(personId: string): number {
-  let hash = 0;
-  for (let i = 0; i < personId.length; i++) {
-    hash = (hash * 31 + (personId.charCodeAt(i) ?? 0)) >>> 0;
-  }
-  return hash % PERSON_COLOURS.length;
-}
-
 export const VisitCard = ({ visit, onPress, compact = false, isPast = false }: VisitCardProps) => {
-  const colourSet = (PERSON_COLOURS[personColourIndex(visit.personId)] ?? PERSON_COLOURS[0])!;
+  const colourSet = getPersonColour(visit.personColourIndex);
 
   if (compact) {
     return (

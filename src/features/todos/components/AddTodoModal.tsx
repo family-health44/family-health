@@ -9,9 +9,11 @@ import { Input } from '@/design-system/components/Input';
 import type { InsertTodoParams } from '../repository/todos.repository';
 import type { Doctor } from '@/features/doctors/types/doctors.types';
 import type { Visit } from '@/features/visits/types/visits.types';
+import type { Person } from '@/features/family/types/family.types';
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
+  personId: z.string().min(1, 'Please choose a person'),
   notes: z.string().max(500).optional(),
   dueDate: z.string().optional(),
   doctorId: z.string().nullable().optional(),
@@ -23,6 +25,7 @@ type AddTodoInput = Omit<InsertTodoParams, 'familyGroupId'>;
 interface AddTodoModalProps {
   visible: boolean;
   isLoading: boolean;
+  people?: Person[];
   defaultPersonId?: string | null;
   doctors?: Doctor[];
   visits?: Visit[];
@@ -72,20 +75,22 @@ function formatVisitDate(dateStr: string): string {
   }
 }
 
-export const AddTodoModal = ({ visible, isLoading, defaultPersonId, doctors = [], visits = [], onAdd, onDismiss }: AddTodoModalProps) => {
+export const AddTodoModal = ({ visible, isLoading, people = [], defaultPersonId, doctors = [], visits = [], onAdd, onDismiss }: AddTodoModalProps) => {
   const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { title: '', notes: '', dueDate: '', doctorId: null, visitId: null },
+    defaultValues: { title: '', notes: '', dueDate: '', personId: defaultPersonId ?? '', doctorId: null, visitId: null },
   });
+  const personId = watch('personId');
   const doctorId = watch('doctorId');
   const visitId = watch('visitId');
 
   const onSubmit = async (values: FormValues) => {
-    await onAdd({ title: values.title, notes: values.notes ?? null, dueDate: values.dueDate ?? null, personId: defaultPersonId ?? null, doctorId: values.doctorId ?? null, visitId: values.visitId ?? null });
+    await onAdd({ title: values.title, notes: values.notes ?? null, dueDate: values.dueDate ?? null, personId: values.personId, doctorId: values.doctorId ?? null, visitId: values.visitId ?? null });
     reset();
     onDismiss();
   };
 
+  const personOptions = people.map((pp) => ({ id: pp.id, label: pp.name }));
   const doctorOptions = [{ id: null, label: 'None' }, ...doctors.map((d) => ({ id: d.id, label: d.name + (d.type ? ` — ${d.type}` : '') }))];
 
   // All visits sorted newest first
@@ -106,7 +111,11 @@ export const AddTodoModal = ({ visible, isLoading, defaultPersonId, doctors = []
             <View style={{ backgroundColor: '#F7F5F0', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '90%' }}>
               <View style={{ width: 40, height: 4, backgroundColor: '#D0CCC4', borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 20 }} />
               <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
-                <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>Add to-do</Text>
+                <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>Add To Do</Text>
+                <View style={{ gap: 6 }}>
+                  <InlinePicker label="Person *" options={personOptions} value={personId} onChange={(id) => setValue('personId', id ?? '', { shouldValidate: true })} />
+                  {errors.personId ? <Text style={{ fontSize: 12, color: '#B91C1C' }}>{errors.personId.message}</Text> : null}
+                </View>
                 <Controller control={control} name="title" render={({ field: { onChange, onBlur, value } }) => (
                   <Input label="Title" isRequired placeholder="e.g. Book follow-up appointment" autoCapitalize="sentences" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.title?.message} />
                 )} />
@@ -123,7 +132,7 @@ export const AddTodoModal = ({ visible, isLoading, defaultPersonId, doctors = []
                   <InlinePicker label="Link to visit (optional)" options={visitOptions} value={visitId} onChange={(id) => setValue('visitId', id)} />
                 )}
                 <View style={{ gap: 12, marginTop: 8 }}>
-                  <Button label="Add to-do" variant="primary" size="lg" isFullWidth isLoading={isLoading} onPress={handleSubmit(onSubmit)} />
+                  <Button label="Save" variant="primary" size="lg" isFullWidth isLoading={isLoading} onPress={handleSubmit(onSubmit)} />
                   <Button label="Cancel" variant="ghost" size="lg" isFullWidth onPress={onDismiss} />
                 </View>
               </ScrollView>

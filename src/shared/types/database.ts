@@ -25,6 +25,7 @@ export interface DbPerson {
   id: string;
   name: string;
   family_group_id: string;
+  created_at: string | null;
   // Note: no colour column in database — colour is assigned by index in domain layer
   // Info Card fields — all nullable; columns already exist in DB schema.
   dob: string | null;

@@ -9,6 +9,7 @@ import { fetchVisits } from '../repository/visits.repository';
 import { fetchPeople } from '@/features/family/repository/family.repository';
 import { fetchDoctors } from '@/features/doctors/repository/doctors.repository';
 import { mapDbVisitToVisit, groupVisitsForList } from '../domain/visits.domain';
+import { sortPeopleByCreation } from '@/shared/utils/personOrder';
 
 import type { Visit } from '../types/visits.types';
 import type { VisitListGroup } from '../domain/visits.domain';
@@ -22,12 +23,15 @@ async function fetchVisitsWithNames(): Promise<Visit[]> {
   ]);
 
   const personMap = new Map(dbPeople.map((p) => [p.id, p.name]));
+  const orderedPeople = sortPeopleByCreation(dbPeople);
+  const colourIndexMap = new Map(orderedPeople.map((p, i) => [p.id, i]));
   const doctorMap = new Map(dbDoctors.map((d) => [d.id, d.name]));
 
   return dbVisits.map((db) =>
     mapDbVisitToVisit(
       db,
       personMap.get(db.person_id) ?? 'Unknown',
+      colourIndexMap.get(db.person_id) ?? 0,
       db.doctor_id ? (doctorMap.get(db.doctor_id) ?? null) : null,
     ),
   );

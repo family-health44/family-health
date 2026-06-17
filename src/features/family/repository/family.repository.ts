@@ -4,7 +4,7 @@ import type { DbPerson, DbFamilyGroup } from '@/shared/types/database';
 
 // Shared column list so every person read returns the full row (incl. Info Card fields).
 const PERSON_COLUMNS =
-  'id, name, family_group_id, dob, medicare_number, blood_type, immunisations_current, allergies, diagnoses, health_fund, health_fund_number, emergency_contact, emergency_phone, notes';
+  'id, name, family_group_id, created_at, dob, medicare_number, blood_type, immunisations_current, allergies, diagnoses, health_fund, health_fund_number, emergency_contact, emergency_phone, notes';
 
 export async function fetchFamilyGroup(): Promise<DbFamilyGroup | null> {
   try {
@@ -23,7 +23,7 @@ export async function fetchPeople(): Promise<DbPerson[]> {
     const { data, error } = await db
       .from('people')
       .select(PERSON_COLUMNS)
-      .order('name');
+      .order('created_at', { ascending: true });
     if (error) throw error;
     return data ?? [];
   } catch (error) { handleNetworkError(error); }

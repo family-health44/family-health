@@ -6,6 +6,7 @@
 import { PERSON_COLOURS } from '@/design-system/tokens/colours';
 import { getInitials } from '@/shared/utils/initials';
 import { getPersonColour } from '@/shared/utils/avatar';
+import { sortPeopleByCreation } from '@/shared/utils/personOrder';
 
 import type { DbPerson, DbFamilyGroup } from '@/shared/types/database';
 import type { Person, FamilyGroup, FamilyHomeData } from '../types/family.types';
@@ -54,7 +55,7 @@ export function buildFamilyHomeData(
   dbGroup: DbFamilyGroup,
   dbPeople: DbPerson[],
 ): FamilyHomeData {
-  const sorted = [...dbPeople].sort((a, b) => a.name.localeCompare(b.name));
+  const sorted = sortPeopleByCreation(dbPeople);
   const people = sorted.map((p, index) => mapDbPersonToPerson(p, index));
 
   return {

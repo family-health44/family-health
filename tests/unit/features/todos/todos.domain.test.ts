@@ -61,13 +61,14 @@ describe('todos.domain', () => {
       ['person-1', 0],
       ['person-2', 1],
     ]);
+    const orderedPersonIds = ['person-1', 'person-2'];
 
-    it('groups todos by person, sorted alphabetically', () => {
+    it('groups todos by person in creation order', () => {
       const todos: Todo[] = [
         makeTodo({ id: '1', personId: 'person-2', personName: 'Bob' }),
         makeTodo({ id: '2', personId: 'person-1', personName: 'Alice' }),
       ];
-      const groups = groupTodosByPerson(todos, personColourMap, personNameMap);
+      const groups = groupTodosByPerson(todos, personColourMap, personNameMap, orderedPersonIds);
       expect(groups[0]?.personName).toBe('Alice');
       expect(groups[1]?.personName).toBe('Bob');
     });
@@ -77,7 +78,7 @@ describe('todos.domain', () => {
         makeTodo({ id: '1', personId: 'person-1' }),
         makeTodo({ id: '2', personId: null, personName: null }),
       ];
-      const groups = groupTodosByPerson(todos, personColourMap, personNameMap);
+      const groups = groupTodosByPerson(todos, personColourMap, personNameMap, orderedPersonIds);
       expect(groups[groups.length - 1]?.personName).toBe('General');
       expect(groups[groups.length - 1]?.colourIndex).toBe(-1);
     });
@@ -87,7 +88,7 @@ describe('todos.domain', () => {
         makeTodo({ id: '1', completed: true, title: 'Done' }),
         makeTodo({ id: '2', completed: false, title: 'Pending' }),
       ];
-      const groups = groupTodosByPerson(todos, personColourMap, personNameMap);
+      const groups = groupTodosByPerson(todos, personColourMap, personNameMap, orderedPersonIds);
       expect(groups[0]?.todos[0]?.completed).toBe(false);
       expect(groups[0]?.todos[1]?.completed).toBe(true);
     });

@@ -10,6 +10,9 @@ import { useDrawer } from '@/design-system/components/DrawerContext';
 import { useTodos } from '../hooks/useTodos';
 import { TodoPersonSection } from '../components/TodoPersonSection';
 import { AddTodoModal } from '../components/AddTodoModal';
+import { useFamilyHome } from '@/features/family/hooks/useFamilyHome';
+import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
+import { useVisits } from '../../visits/hooks/useVisits';
 import { countIncompleteTodos, countOverdueTodos } from '../domain/todos.domain';
 import type { TodoPersonGroup } from '../types/todos.types';
 
@@ -19,6 +22,12 @@ export const TodosScreen = () => {
   const { openDrawer } = useDrawer();
   const insets = useSafeAreaInsets();
   const { groups, isLoading, isRefreshing, error, addTodo, toggleTodo, deleteTodo, isAdding, refetch } = useTodos();
+  const { data: familyData } = useFamilyHome();
+  const { data: doctorGroups } = useDoctorsQuery();
+  const { calendarVisits } = useVisits();
+  const people = familyData?.people ?? [];
+  const doctors = (doctorGroups ?? []).flatMap((g) => g.doctors);
+  const visits = calendarVisits ?? [];
 
   const incompleteCount = countIncompleteTodos(groups);
   const overdueCount = countOverdueTodos(groups);
@@ -29,9 +38,12 @@ export const TodosScreen = () => {
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-          <HamburgerButton onPress={openDrawer} />
-          <View style={{ flex: 1 }} />
+        <HamburgerButton onPress={openDrawer} />
+        <Text style={{ fontSize: 33, fontWeight: '300', color: '#1C1917', fontFamily: Fonts.serif, lineHeight: 36, marginTop: 8 }}>To Do</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
+          <Text style={{ flex: 1, fontSize: 12, color: '#A8A09A' }}>
+            {incompleteCount} active{overdueCount > 0 ? ` · ${overdueCount} overdue` : ''}
+          </Text>
           <PressableBase
             onPress={() => setShowCompleted(!showCompleted)}
             accessibilityRole="checkbox"
@@ -45,10 +57,6 @@ export const TodosScreen = () => {
             </View>
           </PressableBase>
         </View>
-        <Text style={{ fontSize: 33, fontWeight: '300', color: '#1C1917', fontFamily: Fonts.serif, lineHeight: 36 }}>To Do</Text>
-        <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 2 }}>
-          {incompleteCount} active{overdueCount > 0 ? ` · ${overdueCount} overdue` : ''}
-        </Text>
       </View>
 
       <FlatList<TodoPersonGroup>
@@ -63,7 +71,7 @@ export const TodosScreen = () => {
       />
 
       <FAB onPress={() => setShowAddModal(true)} accessibilityLabel="Add to-do" />
-      <AddTodoModal visible={showAddModal} isLoading={isAdding} onAdd={addTodo} onDismiss={() => setShowAddModal(false)} />
+      <AddTodoModal visible={showAddModal} isLoading={isAdding} people={people} doctors={doctors} visits={visits} onAdd={addTodo} onDismiss={() => setShowAddModal(false)} />
     </View>
   );
 };

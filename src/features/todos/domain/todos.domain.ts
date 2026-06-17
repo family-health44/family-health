@@ -29,6 +29,7 @@ export function groupTodosByPerson(
   todos: Todo[],
   personColourMap: Map<string, number>,
   personNameMap: Map<string, string>,
+  orderedPersonIds: string[],
 ): TodoPersonGroup[] {
   const groupMap = new Map<string | null, Todo[]>();
 
@@ -50,16 +51,8 @@ export function groupTodosByPerson(
 
   const groups: TodoPersonGroup[] = [];
 
-  // Person groups first, sorted by person name
-  const personIds = [...groupMap.keys()]
-    .filter((k): k is string => k !== null)
-    .sort((a, b) => {
-      const nameA = personNameMap.get(a) ?? '';
-      const nameB = personNameMap.get(b) ?? '';
-      return nameA.localeCompare(nameB);
-    });
-
-  for (const personId of personIds) {
+  // Person groups in creation order — every person gets a section, even with no todos.
+  for (const personId of orderedPersonIds) {
     const todos = groupMap.get(personId) ?? [];
     groups.push({
       personId,

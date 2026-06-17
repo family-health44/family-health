@@ -10,6 +10,7 @@ import type { Visit, CalendarDay, CalendarWeek } from '../types/visits.types';
 export function mapDbVisitToVisit(
   db: DbVisit,
   personName: string,
+  personColourIndex: number,
   doctorName: string | null = null,
 ): Visit {
   return {
@@ -21,6 +22,7 @@ export function mapDbVisitToVisit(
     doctorName,
     personId: db.person_id,
     personName,
+    personColourIndex,
     familyGroupId: db.family_group_id,
     preNotes: db.pre_notes,
     postNotes: db.post_notes,

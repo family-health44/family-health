@@ -20,6 +20,7 @@ const makeVisit = (overrides: Partial<Visit> = {}): Visit => ({
   doctorId: null,
   doctorName: null,
   personId: 'person-1',
+  personColourIndex: 0,
   personName: 'Jane',
   familyGroupId: 'group-1',
   preNotes: null,
