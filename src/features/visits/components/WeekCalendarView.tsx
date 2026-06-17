@@ -2,13 +2,42 @@ import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { buildWeekCalendar, WEEK_DAY_LABELS } from '../domain/visits.domain';
-import { VisitCard } from './VisitCard';
+import { getPersonColour } from '@/shared/utils/avatar';
+import { formatTime } from '@/shared/utils/dates';
 import type { Visit } from '../types/visits.types';
 
 interface WeekCalendarViewProps {
   visits: Visit[];
   onVisitPress: (visitId: string) => void;
 }
+
+const WeekVisitCard = ({ visit, onPress, fixedWidth }: { visit: Visit; onPress: (id: string) => void; fixedWidth: boolean }) => {
+  const c = getPersonColour(visit.personColourIndex);
+  const time = visit.visitTime ? formatTime(visit.visitTime) : null;
+  return (
+    <PressableBase
+      onPress={() => onPress(visit.id)}
+      accessibilityRole="button"
+      accessibilityLabel={visit.title}
+      style={(pressed) => ({
+        flex: fixedWidth ? undefined : 1,
+        width: fixedWidth ? 96 : undefined,
+        minWidth: fixedWidth ? 96 : 60,
+        backgroundColor: c.bg,
+        borderRadius: 6,
+        paddingHorizontal: 7,
+        paddingVertical: 5,
+        justifyContent: 'center',
+        opacity: pressed ? 0.75 : 1,
+      })}
+    >
+      <Text numberOfLines={1} style={{ fontSize: 10, fontWeight: '700', color: c.text }}>{visit.title}</Text>
+      <Text numberOfLines={1} style={{ fontSize: 9, color: c.dot, fontWeight: '500', marginTop: 1 }}>
+        {time ? `${time} · ${visit.personName}` : visit.personName}
+      </Text>
+    </PressableBase>
+  );
+};
 
 export const WeekCalendarView = ({ visits, onVisitPress }: WeekCalendarViewProps) => {
   const [centerDate, setCenterDate] = useState(new Date());
@@ -43,29 +72,40 @@ export const WeekCalendarView = ({ visits, onVisitPress }: WeekCalendarViewProps
         </PressableBase>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {week.days.map((day, i) => (
-          <View key={day.date} style={{ flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#E3DDD5', minHeight: 52 }}>
-            <View style={{ width: 48, borderRightWidth: 1, borderRightColor: '#E3DDD5', alignItems: 'center', justifyContent: 'center', paddingVertical: 6, flexShrink: 0 }}>
-              <Text style={{ fontSize: 9, fontWeight: '700', color: day.isToday ? '#2A6049' : '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                {WEEK_DAY_LABELS[i]}
-              </Text>
-              {day.isToday ? (
-                <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: '#2A6049', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}>
-                  <Text style={{ fontSize: 12, fontWeight: '700', color: 'white' }}>{day.dayNumber}</Text>
-                </View>
+      <View style={{ flex: 1 }}>
+        {week.days.map((day, i) => {
+          const scrolls = day.visits.length > 3;
+          return (
+            <View key={day.date} style={{ flex: 1, flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#E3DDD5' }}>
+              <View style={{ width: 48, borderRightWidth: 1, borderRightColor: '#E3DDD5', alignItems: 'center', justifyContent: 'center', paddingVertical: 6, flexShrink: 0 }}>
+                <Text style={{ fontSize: 9, fontWeight: '700', color: day.isToday ? '#2A6049' : '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  {WEEK_DAY_LABELS[i]}
+                </Text>
+                {day.isToday ? (
+                  <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: '#2A6049', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}>
+                    <Text style={{ fontSize: 12, fontWeight: '700', color: 'white' }}>{day.dayNumber}</Text>
+                  </View>
+                ) : (
+                  <Text style={{ fontSize: 14, color: '#1C1917', marginTop: 2 }}>{day.dayNumber}</Text>
+                )}
+              </View>
+              {scrolls ? (
+                <ScrollView horizontal showsHorizontalScrollIndicator contentContainerStyle={{ padding: 4, gap: 4, alignItems: 'stretch' }} style={{ flex: 1 }}>
+                  {day.visits.map((visit) => (
+                    <WeekVisitCard key={visit.id} visit={visit} onPress={onVisitPress} fixedWidth />
+                  ))}
+                </ScrollView>
               ) : (
-                <Text style={{ fontSize: 14, color: '#1C1917', marginTop: 2 }}>{day.dayNumber}</Text>
+                <View style={{ flex: 1, flexDirection: 'row', padding: 4, gap: 4, alignItems: 'stretch' }}>
+                  {day.visits.map((visit) => (
+                    <WeekVisitCard key={visit.id} visit={visit} onPress={onVisitPress} fixedWidth={false} />
+                  ))}
+                </View>
               )}
             </View>
-            <View style={{ flex: 1, padding: 4, gap: 3 }}>
-              {day.visits.map((visit) => (
-                <VisitCard key={visit.id} visit={visit} onPress={onVisitPress} compact />
-              ))}
-            </View>
-          </View>
-        ))}
-      </ScrollView>
+          );
+        })}
+      </View>
     </View>
   );
 };

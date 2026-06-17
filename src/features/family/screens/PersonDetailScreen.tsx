@@ -20,7 +20,7 @@ export const PersonDetailScreen = () => {
   const { personId } = useLocalSearchParams<{ personId: string }>();
   const insets = useSafeAreaInsets();
   const { person, isLoading, error } = usePersonDetail(personId ?? '');
-  const { updateName } = usePersonMutations();
+  const { updateName, deletePerson } = usePersonMutations();
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [showTodoModal, setShowTodoModal] = useState(false);
   const [showVisitModal, setShowVisitModal] = useState(false);
@@ -33,12 +33,36 @@ export const PersonDetailScreen = () => {
   const medications = medicationGroups.flatMap((g) => g.medications);
   const allVisits = (listGroups ?? []).flatMap((g) => g.visits);
 
-  const handleEditName = () => {
+  const promptEditName = () => {
     if (!person) return;
     Alert.prompt('Edit name', 'Enter a new name for this person',
       async (newName) => { if (newName?.trim() && newName.trim() !== person.name) await updateName(person.id, newName.trim()); },
       'plain-text', person.name,
     );
+  };
+
+  const confirmDelete = () => {
+    if (!person) return;
+    Alert.alert(
+      `Delete ${person.name}?`,
+      'This permanently deletes this person and all their doctors, medications, visits, notes, and documents. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: async () => {
+            await deletePerson(person.id);
+            router.replace('/(app)/family');
+          } },
+      ],
+    );
+  };
+
+  const handleManagePerson = () => {
+    if (!person) return;
+    Alert.alert('Manage person', undefined, [
+      { text: 'Edit name', onPress: promptEditName },
+      { text: 'Delete person', style: 'destructive', onPress: confirmDelete },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
   };
 
   if (isLoading) return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><LoadingState message="Loading..." /></View>;
@@ -67,7 +91,7 @@ export const PersonDetailScreen = () => {
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
           <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
         </PressableBase>
-        <PressableBase onPress={handleEditName} accessibilityRole="button" accessibilityLabel="Edit person name" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEEAE3', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
+        <PressableBase onPress={handleManagePerson} accessibilityRole="button" accessibilityLabel="Edit person name" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEEAE3', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
           <Text style={{ fontSize: 14, color: '#6B6460' }}>✎</Text>
         </PressableBase>
       </View>

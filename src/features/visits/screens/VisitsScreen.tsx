@@ -22,6 +22,7 @@ import type { Visit } from '../types/visits.types';
 
 export const VisitsScreen = () => {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [jumpDate, setJumpDate] = useState<string | null>(null);
   const {
     viewMode, setViewMode,
     listGroups, calendarVisits,
@@ -58,21 +59,14 @@ export const VisitsScreen = () => {
   return (
     <ScreenWrapper padded={false}>
       {/* Header */}
-      <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8 }}>
         <HamburgerButton onPress={openDrawer} />
-        <Text style={{
-          fontSize: 33,
-          fontWeight: '300',
-          color: '#1C1917',
-          fontFamily: Fonts.serif,
-          lineHeight: 36,
-          marginTop: 8,
-        }}>
-          Visits
-        </Text>
-        <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 2 }}>
-          {upcomingCount} upcoming
-        </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, flex: 1 }}>
+          <Text style={{ fontSize: 36, fontWeight: '300', color: '#1C1917', fontFamily: Fonts.serif, lineHeight: 38 }}>
+            Visits
+          </Text>
+          <Text style={{ fontSize: 12, color: '#A8A09A' }}>{upcomingCount} upcoming</Text>
+        </View>
       </View>
 
       {/* View toggle */}
@@ -126,6 +120,7 @@ export const VisitsScreen = () => {
         <MonthCalendarView
           visits={calendarVisits ?? []}
           onVisitPress={handleVisitPress}
+          initialSelectedDate={jumpDate}
         />
       )}
 

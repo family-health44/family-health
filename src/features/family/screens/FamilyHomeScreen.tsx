@@ -26,21 +26,18 @@ export const FamilyHomeScreen = () => {
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 8, paddingBottom: 4 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingTop: 8, paddingBottom: 50 }}>
           <HamburgerButton onPress={openDrawer} />
+          <Text style={{ fontSize: 36, fontWeight: '700', color: '#1C1917', fontFamily: Fonts.serif, lineHeight: 38 }}>
+            {data?.familyGroup.name ?? 'Family'}
+          </Text>
         </View>
         <FlatList<Person>
           data={data?.people ?? []}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 16, paddingBottom: 100 }}
           refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor="#2A6049" />}
-          ListHeaderComponent={
-            <View style={{ marginBottom: 20, marginTop: 4 }}>
-              <Text style={{ fontSize: 33, fontWeight: '700', color: '#1C1917', fontFamily: Fonts.serif, lineHeight: 36 }}>
-                {data?.familyGroup.name ?? 'Family'}
-              </Text>
-            </View>
-          }
+          ListHeaderComponent={null}
           ListEmptyComponent={
             <EmptyState title="No family members yet" message="Add your first family member to get started."
               actionLabel="Add person" onAction={() => setShowAddModal(true)} />

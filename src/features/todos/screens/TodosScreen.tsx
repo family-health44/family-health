@@ -38,12 +38,10 @@ export const TodosScreen = () => {
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
-        <HamburgerButton onPress={openDrawer} />
-        <Text style={{ fontSize: 33, fontWeight: '300', color: '#1C1917', fontFamily: Fonts.serif, lineHeight: 36, marginTop: 8 }}>To Do</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
-          <Text style={{ flex: 1, fontSize: 12, color: '#A8A09A' }}>
-            {incompleteCount} active{overdueCount > 0 ? ` · ${overdueCount} overdue` : ''}
-          </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <HamburgerButton onPress={openDrawer} />
+          <Text style={{ fontSize: 36, fontWeight: '300', color: '#1C1917', fontFamily: Fonts.serif, lineHeight: 38 }}>To Do</Text>
+          <View style={{ flex: 1 }} />
           <PressableBase
             onPress={() => setShowCompleted(!showCompleted)}
             accessibilityRole="checkbox"
