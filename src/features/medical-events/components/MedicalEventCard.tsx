@@ -12,10 +12,11 @@ import type { MedicalEvent } from '../types/medical-events.types';
 interface MedicalEventCardProps {
   event: MedicalEvent;
   onDelete: (noteId: string) => void;
+  onEdit: (event: MedicalEvent) => void;
   isLast?: boolean;
 }
 
-export const MedicalEventCard = ({ event, onDelete, isLast = false }: MedicalEventCardProps) => {
+export const MedicalEventCard = ({ event, onDelete, onEdit, isLast = false }: MedicalEventCardProps) => {
   const config = MEDICAL_EVENT_CONFIG[event.eventType];
 
   const handleLongPress = () => {
@@ -31,10 +32,11 @@ export const MedicalEventCard = ({ event, onDelete, isLast = false }: MedicalEve
 
   return (
     <PressableBase
+      onPress={() => onEdit(event)}
       onLongPress={handleLongPress}
       accessibilityRole="button"
       accessibilityLabel={`${config.label} on ${formatDate(event.eventDate)}: ${event.description}`}
-      accessibilityHint="Long press to delete"
+      accessibilityHint="Tap to edit, long press to delete"
       style={(pressed) => ({
         backgroundColor: '#FFFFFF',
         borderBottomWidth: isLast ? 0 : 1,

@@ -4,14 +4,12 @@
 
 // Formats an ISO date string for display: "12 Jan 2025"
 export function formatDate(isoDate: string): string {
-  const date = new Date(isoDate);
-  if (isNaN(date.getTime())) return 'Invalid date';
-
-  return date.toLocaleDateString('en-AU', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
+  // Pure string-split for bare YYYY-MM-DD — never new Date(), which parses a
+  // bare date as UTC midnight and shifts the day in positive-offset zones (AEST).
+  // Handles full ISO timestamps too by taking the date portion before any 'T'.
+  const datePart = (isoDate ?? '').split('T')[0] ?? '';
+  const display = isoToDisplayDate(datePart);
+  return display || 'Invalid date';
 }
 
 // Formats an ISO date string as relative time: "Today", "Yesterday", "3 days ago"

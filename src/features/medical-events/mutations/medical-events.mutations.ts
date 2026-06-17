@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/queryClient';
 import { fetchFamilyGroup } from '@/features/family/repository/family.repository';
-import { insertNote, deleteNote } from '@/features/notes/repository/notes.repository';
+import { insertNote, updateNote, deleteNote } from '@/features/notes/repository/notes.repository';
 import { buildEventNoteContent } from '../domain/medical-events.domain';
 
 import type { MedicalEventType } from '../types/medical-events.types';
@@ -54,6 +54,40 @@ export function useAddMedicalEventMutation(personId: string) {
   });
 }
 
+export interface UpdateMedicalEventInput {
+  noteId: string;
+  eventDate: string;
+  eventType: MedicalEventType;
+  description: string;
+  doctorId: string | null;
+}
+export function useUpdateMedicalEventMutation(personId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: UpdateMedicalEventInput) => {
+      const content = buildEventNoteContent(
+        input.eventDate,
+        input.eventType,
+        input.description,
+      );
+      return updateNote({
+        noteId: input.noteId,
+        content,
+        doctorId: input.doctorId,
+        medicationId: null,
+        hidden: false,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.medicalEvents.byPerson(personId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.notes.byPerson(personId),
+      });
+    },
+  });
+}
 export function useDeleteMedicalEventMutation(personId: string) {
   const queryClient = useQueryClient();
 

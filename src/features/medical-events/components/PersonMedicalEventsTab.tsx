@@ -10,6 +10,8 @@ import { Fonts } from '@/design-system/tokens/fonts';
 import { usePersonMedicalEvents } from '../hooks/usePersonMedicalEvents';
 import { MedicalEventCard } from './MedicalEventCard';
 import { AddMedicalEventModal } from './AddMedicalEventModal';
+import { EditMedicalEventModal } from './EditMedicalEventModal';
+import type { MedicalEvent } from '../types/medical-events.types';
 
 interface PersonMedicalEventsTabProps {
   personId: string;
@@ -27,8 +29,9 @@ const SECTION_COLOURS = [
 export const PersonMedicalEventsTab = ({ personId, personName }: PersonMedicalEventsTabProps) => {
   const insets = useSafeAreaInsets();
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editing, setEditing] = useState<MedicalEvent | null>(null);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
-  const { groups, isLoading, error, addEvent, deleteEvent, isAdding } = usePersonMedicalEvents(personId);
+  const { groups, isLoading, error, addEvent, updateEvent, deleteEvent, isAdding, isUpdating } = usePersonMedicalEvents(personId);
 
   if (isLoading) return <LoadingState message="Loading medical events..." />;
   if (error) return <ErrorState message={error.message} />;
@@ -76,6 +79,7 @@ export const PersonMedicalEventsTab = ({ personId, personName }: PersonMedicalEv
                         key={event.id}
                         event={event}
                         onDelete={deleteEvent}
+                        onEdit={setEditing}
                         isLast={i === group.events.length - 1}
                       />
                     ))
@@ -89,6 +93,7 @@ export const PersonMedicalEventsTab = ({ personId, personName }: PersonMedicalEv
 
       <FAB onPress={() => setShowAddModal(true)} accessibilityLabel="Add medical event" />
       <AddMedicalEventModal visible={showAddModal} isLoading={isAdding} onAdd={addEvent} onDismiss={() => setShowAddModal(false)} />
+      <EditMedicalEventModal visible={editing !== null} isLoading={isUpdating} event={editing} onSave={updateEvent} onDismiss={() => setEditing(null)} />
     </View>
   );
 };

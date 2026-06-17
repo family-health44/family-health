@@ -28,11 +28,10 @@ export function parseNoteAsMedicalEvent(
   const description = match[3]?.trim() ?? '';
 
   // Validate event type — fall back to 'other' if unrecognised
-  const eventType: MedicalEventType = MEDICAL_EVENT_TYPES.includes(
-    rawType as MedicalEventType,
-  )
-    ? (rawType as MedicalEventType)
-    : 'other';
+  // Drop the note if it is not one of the 3 live types
+  // (old test data of removed types is intentionally not displayed).
+  if (!MEDICAL_EVENT_TYPES.includes(rawType as MedicalEventType)) return null;
+  const eventType = rawType as MedicalEventType;
 
   return {
     id: db.id,
@@ -58,8 +57,7 @@ export function groupMedicalEventsByType(
     map.set(event.eventType, [...existing, event]);
   }
 
-  const DISPLAY_TYPES: MedicalEventType[] = ['procedure', 'diagnosis', 'illness'];
-  return DISPLAY_TYPES.map((type) => ({
+  return MEDICAL_EVENT_TYPES.map((type) => ({
     type,
     label: MEDICAL_EVENT_CONFIG[type].label,
     events: [...(map.get(type) ?? [])].sort((a, b) =>
