@@ -75,3 +75,31 @@ export function toISODateString(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
+
+const DOB_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// ISO (YYYY-MM-DD) -> '3 Nov 2018'. Pure split, no Date, no timezone risk. '' on bad input.
+export function isoToDisplayDate(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-');
+  const mi = Number(m) - 1;
+  if (!y || !d || mi < 0 || mi > 11) return '';
+  return `${Number(d)} ${DOB_MONTHS[mi]} ${y}`;
+}
+
+// ISO (YYYY-MM-DD) -> 'DD-MM-YYYY' for the editable field. '' on bad input.
+export function isoToInputDate(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-');
+  return y && m && d ? `${d}-${m}-${y}` : '';
+}
+
+// 'DD-MM-YYYY' -> ISO (YYYY-MM-DD) for storage. null if invalid.
+export function displayToIsoDate(input: string | null | undefined): string | null {
+  if (!input) return null;
+  const m = input.trim().match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+  if (!m) return null;
+  const day = Number(m[1]), month = Number(m[2]), year = Number(m[3]);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+  return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+}

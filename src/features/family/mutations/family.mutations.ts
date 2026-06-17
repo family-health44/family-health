@@ -8,7 +8,9 @@ import { queryKeys } from '@/lib/queryClient';
 import {
   insertPerson,
   updatePersonName,
+  updatePersonInfo,
   deletePerson,
+  type UpdatePersonInfoParams,
 } from '../repository/family.repository';
 import { fetchFamilyGroup } from '../repository/family.repository';
 
@@ -54,6 +56,21 @@ export function useDeletePersonMutation() {
     mutationFn: (personId: string) => deletePerson(personId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.family.people() });
+    },
+  });
+}
+
+// ─── Update person info (Info Card) ─────────────────────────────────────────────
+
+export function useUpdatePersonInfoMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ personId, fields }: { personId: string; fields: UpdatePersonInfoParams }) =>
+      updatePersonInfo(personId, fields),
+    onSuccess: (_data, { personId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.family.people() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.family.person(personId) });
     },
   });
 }
