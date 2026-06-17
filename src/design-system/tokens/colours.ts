@@ -30,31 +30,31 @@ export const PERSON_COLOURS: readonly PersonColourSet[] = [
   { bg: '#F5E8EB', border: '#E0BDC4', text: '#7A2030', dot: '#9B3A4A' }, // 2 — dusty rose
   { bg: '#EEE8F7', border: '#D4C4E8', text: '#3D2070', dot: '#5B3A8E' }, // 3 — soft purple
   { bg: '#F5EBE0', border: '#DEBFAA', text: '#7A3A10', dot: '#B56B2A' }, // 4 — warm amber
-  { bg: '#E4F2F2', border: '#B0D4D4', text: '#1A4A4A', dot: '#2A7070' }, // 5 — teal
-  { bg: '#FAE8E4', border: '#F0C4B8', text: '#7A2C1A', dot: '#B8432A' }, // 6 — coral
-  { bg: '#E4F5EC', border: '#A8DCBC', text: '#1A4A30', dot: '#2A7A50' }, // 7 — mint
-  { bg: '#EEE8F8', border: '#CEC0F0', text: '#3A1A70', dot: '#5A3AAA' }, // 8 — lavender
-  { bg: '#F5EDD8', border: '#DECCAA', text: '#6A4410', dot: '#B07820' }, // 9 — gold
-  { bg: '#E8EDF5', border: '#BCC8E0', text: '#1A2860', dot: '#2C4080' }, // 10 — slate blue
-  { bg: '#F8E8F0', border: '#ECC0D8', text: '#6A1840', dot: '#9A2860' }, // 11 — dusty pink
-  { bg: '#EEF0E0', border: '#CCD0A0', text: '#3A4010', dot: '#5A6018' }, // 12 — olive
-  { bg: '#E0F0F8', border: '#A8CDE0', text: '#0A3855', dot: '#1A5C80' }, // 13 — sky teal
-  { bg: '#F8E8EC', border: '#EEBCC8', text: '#6A1830', dot: '#A02848' }, // 14 — warm rose
-  { bg: '#E0EEEA', border: '#A0CCB8', text: '#0A4028', dot: '#187050' }, // 15 — forest green
-  { bg: '#E8EAF8', border: '#B8BEE8', text: '#1E2070', dot: '#3040A0' }, // 16 — periwinkle
-  { bg: '#F8EEE4', border: '#EED0B0', text: '#6A3A18', dot: '#A85C28' }, // 17 — peach
-  { bg: '#E4EEEC', border: '#B0CCCA', text: '#1A3A38', dot: '#286060' }, // 18 — sage teal
-  { bg: '#F0E8F5', border: '#D8B8E8', text: '#4A1A60', dot: '#7A3090' }, // 19 — warm purple
-  { bg: '#F5EAE0', border: '#E0C4A0', text: '#602810', dot: '#905020' }, // 20 — burnt orange
-  { bg: '#E8ECF8', border: '#B0B8E8', text: '#1A1E68', dot: '#2830A8' }, // 21 — indigo
-  { bg: '#E8F0E0', border: '#BED0A0', text: '#2A3C10', dot: '#487020' }, // 22 — fern
-  { bg: '#F0E8F0', border: '#D8B8D8', text: '#481848', dot: '#784878' }, // 23 — mauve
-  { bg: '#E4EEF8', border: '#A8C4E4', text: '#0E2C60', dot: '#1A4A90' }, // 24 — azure
-  { bg: '#E4F0EC', border: '#A8CCC0', text: '#0E3830', dot: '#1A5C50' }, // 25 — deep teal
-  { bg: '#EEE4F8', border: '#C8A8E8', text: '#3C0E68', dot: '#6018A8' }, // 26 — lilac
-  { bg: '#F5EDE0', border: '#E0C4A4', text: '#643A18', dot: '#9C5C28' }, // 27 — copper
-  { bg: '#E0F4EE', border: '#A0D4C0', text: '#0E4030', dot: '#186850' }, // 28 — seafoam
-  { bg: '#EAE4F8', border: '#C0A8E8', text: '#30106C', dot: '#5028A8' }, // 29 — violet
+  { bg: '#F3E4E2', border: '#DCAFA8', text: '#71291E', dot: '#A93E2D' }, // 5 — red
+  { bg: '#E2EDF3', border: '#A8CADC', text: '#1E5571', dot: '#2D80A9' }, // 6 — cyan blue
+  { bg: '#F3EFE2', border: '#DCCFA8', text: '#715C1E', dot: '#A98A2D' }, // 7 — gold
+  { bg: '#EDE2F3', border: '#CAA8DC', text: '#551E71', dot: '#802DA9' }, // 8 — violet
+  { bg: '#E2F3EB', border: '#A8DCC2', text: '#1E7147', dot: '#2DA96B' }, // 9 — emerald
+  { bg: '#F3E2EB', border: '#DCA8C2', text: '#711E47', dot: '#A92D6B' }, // 10 — magenta pink
+  { bg: '#E3EFF2', border: '#ACD0D8', text: '#245F6B', dot: '#368EA0' }, // 11 — teal
+  { bg: '#F3E9E2', border: '#DCBEA8', text: '#71401E', dot: '#A9612D' }, // 12 — burnt orange
+  { bg: '#E6E2F3', border: '#B5A8DC', text: '#331E71', dot: '#4C2DA9' }, // 13 — indigo
+  { bg: '#E9F3E2', border: '#BEDCA8', text: '#40711E', dot: '#61A92D' }, // 14 — olive lime
+  { bg: '#F2E3F0', border: '#D9ABD1', text: '#6D2260', dot: '#A33390' }, // 15 — purple magenta
+  { bg: '#E2F3F0', border: '#A8DCD3', text: '#1E7163', dot: '#2DA995' }, // 16 — spring green
+  { bg: '#F2E3E6', border: '#D8ACB3', text: '#6B2430', dot: '#A03648' }, // 17 — rose
+  { bg: '#E3E8F2', border: '#ABBAD9', text: '#223B6D', dot: '#3358A3' }, // 18 — blue
+  { bg: '#F0F3E2', border: '#D3DCA8', text: '#63711E', dot: '#95A92D' }, // 19 — chartreuse
+  { bg: '#EFE4F1', border: '#D0ADD6', text: '#5D2669', dot: '#8C399D' }, // 20 — amethyst
+  { bg: '#E3F2E6', border: '#ACD8B3', text: '#246B30', dot: '#36A048' }, // 21 — green
+  { bg: '#F2E7E3', border: '#D8B7AC', text: '#6B3624', dot: '#A05136' }, // 22 — terracotta
+  { bg: '#E4E5F1', border: '#AFB2D5', text: '#282E66', dot: '#3D449A' }, // 23 — periwinkle
+  { bg: '#F2F1E3', border: '#D8D4AC', text: '#6B6524', dot: '#A09736' }, // 24 — mustard
+  { bg: '#EAE5F1', border: '#BFB0D4', text: '#432A64', dot: '#644097' }, // 25 — slate violet
+  { bg: '#E7F1E5', border: '#B6D4B0', text: '#34642A', dot: '#4E9740' }, // 26 — moss
+  { bg: '#F1E5E9', border: '#D4B0BC', text: '#642A3E', dot: '#97405D' }, // 27 — dusty rose
+  { bg: '#E5F1F1', border: '#B0D4D4', text: '#2A6464', dot: '#409797' }, // 28 — muted teal
+  { bg: '#F1ECE5', border: '#D4C5B0', text: '#644C2A', dot: '#977240' }, // 29 — ochre
 ] as const;
 
 // Named map for the 5 person colours (explicit lookups — these never change)
