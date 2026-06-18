@@ -14,6 +14,8 @@ import { usePersonNotes } from '@/features/notes/hooks/usePersonNotes';
 import { useTodos } from '@/features/todos/hooks/useTodos';
 import { useVisits } from '@/features/visits/hooks/useVisits';
 import { usePersonDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
+import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
+import { useFamilyHome } from '@/features/family/hooks/useFamilyHome';
 import { usePersonMedicationsQuery } from '@/features/medications/queries/medications.queries';
 
 export const PersonDetailScreen = () => {
@@ -29,6 +31,10 @@ export const PersonDetailScreen = () => {
   const { addTodo, isAdding: isAddingTodo } = useTodos();
   const { addVisit, isAdding: isAddingVisit, listGroups } = useVisits();
   const { data: doctors = [] } = usePersonDoctorsQuery(personId ?? '');
+  const { data: familyData } = useFamilyHome();
+  const { data: doctorGroups } = useDoctorsQuery();
+  const allPeople = familyData?.people ?? [];
+  const allDoctors = (doctorGroups ?? []).flatMap((g) => g.doctors);
   const { data: medicationGroups = [] } = usePersonMedicationsQuery(personId ?? '');
   const medications = medicationGroups.flatMap((g) => g.medications);
   const allVisits = (listGroups ?? []).flatMap((g) => g.visits);
@@ -132,7 +138,7 @@ export const PersonDetailScreen = () => {
 
       <NoteModal visible={showNoteModal} editingNote={null} doctors={doctors} medications={medications} isLoading={isAddingNote} onSave={async (values) => { await addNote(values); setShowNoteModal(false); }} onDismiss={() => setShowNoteModal(false)} />
       <AddTodoModal visible={showTodoModal} isLoading={isAddingTodo} defaultPersonId={person.id} doctors={doctors} visits={allVisits} onAdd={async (input) => { await addTodo(input); setShowTodoModal(false); }} onDismiss={() => setShowTodoModal(false)} />
-      <AddVisitModal visible={showVisitModal} isLoading={isAddingVisit} defaultPersonId={person.id} personName={person.name} onAdd={async (input) => { await addVisit(input); setShowVisitModal(false); }} onDismiss={() => setShowVisitModal(false)} />
+      <AddVisitModal visible={showVisitModal} isLoading={isAddingVisit} people={allPeople} doctors={allDoctors} defaultPersonId={person.id} onAdd={async (input) => { await addVisit(input); setShowVisitModal(false); }} onDismiss={() => setShowVisitModal(false)} />
     </View>
   );
 };

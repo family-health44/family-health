@@ -81,7 +81,7 @@ export function isoToDisplayDate(iso: string | null | undefined): string {
   if (!iso) return '';
   const [y, m, d] = iso.split('-');
   const mi = Number(m) - 1;
-  if (!y || !d || mi < 0 || mi > 11) return '';
+  if (!y || !d || Number.isNaN(Number(y)) || Number.isNaN(Number(d)) || Number.isNaN(mi) || mi < 0 || mi > 11) return '';
   return `${Number(d)} ${DOB_MONTHS[mi]} ${y}`;
 }
 

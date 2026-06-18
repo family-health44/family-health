@@ -105,6 +105,12 @@ export const NoteCard = ({ note, onEdit, onDelete }: NoteCardProps) => {
         </View>
       ) : null}
 
+      {note.noteDate ? (
+        <Text style={{ fontSize: 12, color: '#6B6866', fontWeight: '600', marginBottom: 6 }}>
+          {formatDate(note.noteDate)}
+        </Text>
+      ) : null}
+
       {/* Parsed content */}
       <View style={{ gap: 2 }}>
         {segments.map((segment, index) => (

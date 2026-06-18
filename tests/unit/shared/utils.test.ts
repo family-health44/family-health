@@ -27,13 +27,14 @@ describe('getPersonColour', () => {
     }
   });
 
-  it('wraps around at index 5', () => {
-    expect(getPersonColour(5)).toEqual(PERSON_COLOURS[0]);
-    expect(getPersonColour(6)).toEqual(PERSON_COLOURS[1]);
+  it('wraps around at the palette length', () => {
+    const n = PERSON_COLOURS.length;
+    expect(getPersonColour(n)).toEqual(PERSON_COLOURS[0]);
+    expect(getPersonColour(n + 1)).toEqual(PERSON_COLOURS[1]);
   });
 
   it('handles large indices', () => {
-    expect(getPersonColour(100)).toEqual(PERSON_COLOURS[100 % 5]);
+    expect(getPersonColour(100)).toEqual(PERSON_COLOURS[100 % PERSON_COLOURS.length]);
   });
 });
 

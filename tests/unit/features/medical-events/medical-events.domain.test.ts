@@ -36,10 +36,10 @@ describe('medical-events.domain', () => {
       expect(parseNoteAsMedicalEvent(makeDbNote('[SECTION:Overview] text'))).toBeNull();
     });
 
-    it('falls back to "other" for unrecognised event type', () => {
+    it('drops notes with an unrecognised event type', () => {
       const note = makeDbNote('[EVENT:2024-01-01:unknowntype] description');
       const event = parseNoteAsMedicalEvent(note);
-      expect(event?.eventType).toBe('other');
+      expect(event).toBeNull();
     });
 
     it('is case-insensitive for event type', () => {
@@ -67,12 +67,14 @@ describe('medical-events.domain', () => {
       expect(groups.find((g) => g.type === 'procedure')).toBeDefined();
     });
 
-    it('omits empty groups', () => {
+    it('shows all live types as groups, even when empty', () => {
       const events = [
         { id: '1', eventDate: '2024-01-01', eventType: 'diagnosis' as const, description: 'D', personId: 'p1', doctorId: null, doctorName: null, familyGroupId: 'g1' },
       ];
       const groups = groupMedicalEventsByType(events);
-      expect(groups).toHaveLength(1);
+      expect(groups).toHaveLength(3);
+      expect(groups.find((g) => g.type === 'diagnosis')?.events).toHaveLength(1);
+      expect(groups.find((g) => g.type === 'procedure')?.events).toHaveLength(0);
     });
   });
 

@@ -1,4 +1,5 @@
 // src/features/notes/components/NoteModal.tsx
+import { InlinePicker } from '@/design-system/components/InlinePicker';
 import { useEffect, useState } from 'react';
 import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, Switch } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
@@ -6,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
+import { toISODateString } from '@/shared/utils/dates';
 import type { Note, NoteFormValues } from '../types/notes.types';
 import type { Doctor } from '@/features/doctors/types/doctors.types';
 import type { Medication } from '@/features/medications/types/medications.types';
@@ -14,6 +16,7 @@ const schema = z.object({
   content: z.string().min(1, 'Note content is required').max(5000),
   doctorId: z.string().nullable(),
   medicationId: z.string().nullable(),
+  noteDate: z.string().nullable(),
   hidden: z.boolean(),
 });
 type FormValues = z.infer<typeof schema>;
@@ -28,52 +31,24 @@ interface NoteModalProps {
   onDismiss: () => void;
 }
 
-const InlinePicker = ({ label, options, value, onChange }: {
-  label: string;
-  options: { id: string | null; label: string }[];
-  value: string | null;
-  onChange: (id: string | null) => void;
-}) => {
-  const [open, setOpen] = useState(false);
-  const selected = options.find((o) => o.id === value);
-  return (
-    <View style={{ gap: 6 }}>
-      <Text style={{ fontSize: 14, fontWeight: '600', color: '#3D3D3D' }}>{label}</Text>
-      <Pressable onPress={() => setOpen(!open)} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderWidth: 1, borderColor: open ? '#2A6049' : '#E3DDD5', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12 }}>
-        <Text style={{ flex: 1, fontSize: 14, color: selected?.id ? '#1C1917' : '#A8A09A' }}>{selected?.label ?? 'Select...'}</Text>
-        <Text style={{ color: '#A8A09A', fontSize: 12 }}>{open ? '▲' : '▼'}</Text>
-      </Pressable>
-      {open && (
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#2A6049', borderRadius: 10, overflow: 'hidden' }}>
-          {options.map((opt, i) => (
-            <Pressable key={opt.id ?? 'none'} onPress={() => { onChange(opt.id); setOpen(false); }} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 11, paddingHorizontal: 14, borderBottomWidth: i < options.length - 1 ? 1 : 0, borderBottomColor: '#F0EDE8', backgroundColor: value === opt.id ? '#E6F0EC' : 'white' }}>
-              <Text style={{ flex: 1, fontSize: 14, color: value === opt.id ? '#1A4D35' : '#1C1917', fontWeight: value === opt.id ? '600' : '400' }}>{opt.label}</Text>
-              {value === opt.id && <Text style={{ color: '#2A6049', fontSize: 14 }}>✓</Text>}
-            </Pressable>
-          ))}
-        </View>
-      )}
-    </View>
-  );
-};
 
 export const NoteModal = ({ visible, isLoading, editingNote, doctors, medications, onSave, onDismiss }: NoteModalProps) => {
   const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { content: '', doctorId: null, medicationId: null, hidden: false },
+    defaultValues: { content: '', doctorId: null, medicationId: null, hidden: false, noteDate: toISODateString(new Date()) },
   });
   const doctorId = watch('doctorId');
   const medicationId = watch('medicationId');
 
   useEffect(() => {
     if (editingNote) {
-      reset({ content: editingNote.content, doctorId: editingNote.doctorId, medicationId: editingNote.medicationId, hidden: editingNote.hidden });
+      reset({ content: editingNote.content, doctorId: editingNote.doctorId, medicationId: editingNote.medicationId, hidden: editingNote.hidden, noteDate: editingNote.noteDate ?? '' });
     } else {
-      reset({ content: '', doctorId: null, medicationId: null, hidden: false });
+      reset({ content: '', doctorId: null, medicationId: null, hidden: false, noteDate: toISODateString(new Date()) });
     }
   }, [editingNote, reset, visible]);
 
-  const onSubmit = async (values: FormValues) => { await onSave(values); reset(); };
+  const onSubmit = async (values: FormValues) => { await onSave({ ...values, noteDate: values.noteDate?.trim() || null }); reset(); };
 
   const doctorOptions = [
     { id: null, label: 'None' },
@@ -95,6 +70,9 @@ export const NoteModal = ({ visible, isLoading, editingNote, doctors, medication
                 <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>{editingNote ? 'Edit note' : 'Add note'}</Text>
                 <Controller control={control} name="content" render={({ field: { onChange, onBlur, value } }) => (
                   <Input label="Note" isRequired placeholder="Write your note here..." autoCapitalize="sentences" multiline numberOfLines={6} style={{ minHeight: 120, textAlignVertical: 'top' }} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.content?.message} />
+                )} />
+                <Controller control={control} name="noteDate" render={({ field: { onChange, onBlur, value } }) => (
+                  <Input label="Date (optional)" placeholder="YYYY-MM-DD" keyboardType="numbers-and-punctuation" value={value ?? ''} onChangeText={onChange} onBlur={onBlur} error={errors.noteDate?.message} />
                 )} />
                 {doctors.length > 0 && (
                   <InlinePicker label="Link to doctor (optional)" options={doctorOptions} value={doctorId} onChange={(id) => setValue('doctorId', id)} />

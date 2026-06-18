@@ -16,6 +16,7 @@ export interface Note {
   visitId: string | null;
   familyGroupId: string;
   hidden: boolean;
+  noteDate: string | null;
 }
 
 // Parsed segment of a note's content
@@ -34,4 +35,5 @@ export interface NoteFormValues {
   doctorId: string | null;
   medicationId: string | null;
   hidden: boolean;
+  noteDate: string | null;
 }

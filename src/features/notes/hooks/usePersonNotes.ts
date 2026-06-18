@@ -41,6 +41,7 @@ export function usePersonNotes(personId: string): UsePersonNotesReturn {
       medicationId: values.medicationId,
       visitId: null,
       hidden: values.hidden,
+      noteDate: values.noteDate,
     });
   }, [addMutation, personId]);
 
@@ -51,6 +52,7 @@ export function usePersonNotes(personId: string): UsePersonNotesReturn {
       doctorId: values.doctorId,
       medicationId: values.medicationId,
       hidden: values.hidden,
+      noteDate: values.noteDate,
     });
     setEditingNote(null);
   }, [updateMutation]);

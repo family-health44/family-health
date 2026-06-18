@@ -96,6 +96,7 @@ export interface DbNote {
   visit_id: string | null;
   family_group_id: string;
   hidden: boolean;
+  note_date: string | null;
 }
 
 export interface DbTodo {

@@ -28,6 +28,7 @@ export function mapDbNoteToNote(
     visitId: db.visit_id,
     familyGroupId: db.family_group_id,
     hidden: db.hidden,
+    noteDate: db.note_date,
   };
 }
 

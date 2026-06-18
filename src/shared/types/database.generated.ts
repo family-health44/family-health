@@ -346,6 +346,7 @@ export type Database = {
           hidden: boolean
           id: string
           medication_id: string | null
+          note_date: string | null
           person_id: string | null
           updated_at: string | null
           visit_id: string | null
@@ -358,6 +359,7 @@ export type Database = {
           hidden?: boolean
           id?: string
           medication_id?: string | null
+          note_date?: string | null
           person_id?: string | null
           updated_at?: string | null
           visit_id?: string | null
@@ -370,6 +372,7 @@ export type Database = {
           hidden?: boolean
           id?: string
           medication_id?: string | null
+          note_date?: string | null
           person_id?: string | null
           updated_at?: string | null
           visit_id?: string | null
