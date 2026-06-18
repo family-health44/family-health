@@ -27,7 +27,7 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
   const seed = initialSelectedDate ? new Date(initialSelectedDate + 'T00:00:00') : today;
   const [year, setYear] = useState(seed.getFullYear());
   const [month, setMonth] = useState(seed.getMonth());
-  const [selectedDate, setSelectedDate] = useState<string | null>(initialSelectedDate ?? null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(initialSelectedDate ?? todayISO());
   const [detailed, setDetailed] = useState(false);
 
   useEffect(() => {

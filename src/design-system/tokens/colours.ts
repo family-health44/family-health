@@ -31,29 +31,29 @@ export const PERSON_COLOURS: readonly PersonColourSet[] = [
   { bg: '#EEE8F7', border: '#D4C4E8', text: '#3D2070', dot: '#5B3A8E' }, // 3 — soft purple
   { bg: '#F5EBE0', border: '#DEBFAA', text: '#7A3A10', dot: '#B56B2A' }, // 4 — warm amber
   { bg: '#F3E4E2', border: '#DCAFA8', text: '#71291E', dot: '#A93E2D' }, // 5 — red
-  { bg: '#E2EDF3', border: '#A8CADC', text: '#1E5571', dot: '#2D80A9' }, // 6 — cyan blue
+  { bg: '#DFF2F6', border: '#9FD9E5', text: '#077288', dot: '#17B4D3' }, // 6 — cyan
   { bg: '#F3EFE2', border: '#DCCFA8', text: '#715C1E', dot: '#A98A2D' }, // 7 — gold
   { bg: '#EDE2F3', border: '#CAA8DC', text: '#551E71', dot: '#802DA9' }, // 8 — violet
-  { bg: '#E2F3EB', border: '#A8DCC2', text: '#1E7147', dot: '#2DA96B' }, // 9 — emerald
+  { bg: '#EEF5E0', border: '#CDE3A1', text: '#5C840B', dot: '#8FC91D' }, // 9 — lime
   { bg: '#F3E2EB', border: '#DCA8C2', text: '#711E47', dot: '#A92D6B' }, // 10 — magenta pink
-  { bg: '#E3EFF2', border: '#ACD0D8', text: '#245F6B', dot: '#368EA0' }, // 11 — teal
+  { bg: '#E1F5F4', border: '#A3E1DF', text: '#0E817D', dot: '#1FADA9' }, // 11 — teal
   { bg: '#F3E9E2', border: '#DCBEA8', text: '#71401E', dot: '#A9612D' }, // 12 — burnt orange
-  { bg: '#E6E2F3', border: '#B5A8DC', text: '#331E71', dot: '#4C2DA9' }, // 13 — indigo
-  { bg: '#E9F3E2', border: '#BEDCA8', text: '#40711E', dot: '#61A92D' }, // 14 — olive lime
+  { bg: '#E4E1F5', border: '#ADA3E1', text: '#210E81', dot: '#3920B6' }, // 13 — indigo
+  { bg: '#E1F4E9', border: '#A5DEBD', text: '#127D3E', dot: '#1B7E44' }, // 14 — deep forest
   { bg: '#F2E3F0', border: '#D9ABD1', text: '#6D2260', dot: '#A33390' }, // 15 — purple magenta
-  { bg: '#E2F3F0', border: '#A8DCD3', text: '#1E7163', dot: '#2DA995' }, // 16 — spring green
+  { bg: '#E1F5F1', border: '#A3E1D4', text: '#0E816A', dot: '#22BF9F' }, // 16 — teal-green
   { bg: '#F2E3E6', border: '#D8ACB3', text: '#6B2430', dot: '#A03648' }, // 17 — rose
-  { bg: '#E3E8F2', border: '#ABBAD9', text: '#223B6D', dot: '#3358A3' }, // 18 — blue
-  { bg: '#F0F3E2', border: '#D3DCA8', text: '#63711E', dot: '#95A92D' }, // 19 — chartreuse
+  { bg: '#E0ECF5', border: '#A1C7E3', text: '#0B5284', dot: '#1767A1' }, // 18 — deep azure
+  { bg: '#F4F7DE', border: '#DDE79C', text: '#798B04', dot: '#D1ED1D' }, // 19 — chartreuse
   { bg: '#EFE4F1', border: '#D0ADD6', text: '#5D2669', dot: '#8C399D' }, // 20 — amethyst
-  { bg: '#E3F2E6', border: '#ACD8B3', text: '#246B30', dot: '#36A048' }, // 21 — green
+  { bg: '#E4F5E1', border: '#ADE1A3', text: '#21810E', dot: '#36AD1F' }, // 21 — grass green
   { bg: '#F2E7E3', border: '#D8B7AC', text: '#6B3624', dot: '#A05136' }, // 22 — terracotta
-  { bg: '#E4E5F1', border: '#AFB2D5', text: '#282E66', dot: '#3D449A' }, // 23 — periwinkle
+  { bg: '#E4E6F1', border: '#AEB3D6', text: '#202B6F', dot: '#4E5CBC' }, // 23 — periwinkle
   { bg: '#F2F1E3', border: '#D8D4AC', text: '#6B6524', dot: '#A09736' }, // 24 — mustard
   { bg: '#EAE5F1', border: '#BFB0D4', text: '#432A64', dot: '#644097' }, // 25 — slate violet
-  { bg: '#E7F1E5', border: '#B6D4B0', text: '#34642A', dot: '#4E9740' }, // 26 — moss
+  { bg: '#F2F1E3', border: '#D8D6AC', text: '#726F1D', dot: '#918E30' }, // 26 — olive khaki
   { bg: '#F1E5E9', border: '#D4B0BC', text: '#642A3E', dot: '#97405D' }, // 27 — dusty rose
-  { bg: '#E5F1F1', border: '#B0D4D4', text: '#2A6464', dot: '#409797' }, // 28 — muted teal
+  { bg: '#E5EDF0', border: '#B0CAD3', text: '#24586B', dot: '#407F96' }, // 28 — steel teal
   { bg: '#F1ECE5', border: '#D4C5B0', text: '#644C2A', dot: '#977240' }, // 29 — ochre
 ] as const;
 

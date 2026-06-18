@@ -1,7 +1,7 @@
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { View, Text } from 'react-native';
 import { getPersonColour } from '@/shared/utils/avatar';
-import { formatDate } from '@/shared/utils/dates';
+import { formatDate, formatTime } from '@/shared/utils/dates';
 import type { Visit } from '../types/visits.types';
 
 interface VisitCardProps {
@@ -36,6 +36,9 @@ export const VisitCard = ({ visit, onPress, compact = false, isPast = false }: V
     );
   }
 
+  const time = visit.visitTime ? formatTime(visit.visitTime) : null;
+  const dateTime = time ? `${formatDate(visit.visitDate)} · ${time}` : formatDate(visit.visitDate);
+
   return (
     <PressableBase
       onPress={() => onPress?.(visit.id)}
@@ -51,18 +54,21 @@ export const VisitCard = ({ visit, onPress, compact = false, isPast = false }: V
         opacity: isPast ? 0.6 : pressed ? 0.85 : 1,
       })}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
         <View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: colourSet.dot, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <Text style={{ color: 'white', fontSize: 11, fontWeight: '700' }}>
             {visit.personName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
           </Text>
         </View>
-        <Text style={{ fontSize: 14, fontWeight: '700', color: colourSet.text, flex: 1 }}>{visit.title}</Text>
+        <View style={{ flex: 1, gap: 2 }}>
+          <Text style={{ fontSize: 14, fontWeight: '700', color: colourSet.text }}>{visit.title}</Text>
+          {visit.doctorName ? (
+            <Text style={{ fontSize: 12, fontWeight: '600', color: colourSet.text }}>{visit.doctorName}</Text>
+          ) : null}
+          <Text style={{ fontSize: 11, color: colourSet.dot, fontWeight: '500' }}>{dateTime}</Text>
+          <Text style={{ fontSize: 11, fontWeight: '600', color: colourSet.text }}>{visit.personName}</Text>
+        </View>
         <Text style={{ color: colourSet.border, fontSize: 13 }}>›</Text>
-      </View>
-      <View style={{ paddingLeft: 44, flexDirection: 'row', gap: 8 }}>
-        <Text style={{ fontSize: 11, fontWeight: '600', color: colourSet.text }}>{visit.personName}</Text>
-        <Text style={{ fontSize: 11, color: colourSet.dot, fontWeight: '500' }}>{formatDate(visit.visitDate)}</Text>
       </View>
     </PressableBase>
   );

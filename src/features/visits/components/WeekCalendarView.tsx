@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { buildWeekCalendar, WEEK_DAY_LABELS } from '../domain/visits.domain';
 import { getPersonColour } from '@/shared/utils/avatar';
-import { formatTime } from '@/shared/utils/dates';
+import { formatTime, formatDate } from '@/shared/utils/dates';
 import type { Visit } from '../types/visits.types';
 
 interface WeekCalendarViewProps {
@@ -14,6 +14,7 @@ interface WeekCalendarViewProps {
 const WeekVisitCard = ({ visit, onPress, fixedWidth }: { visit: Visit; onPress: (id: string) => void; fixedWidth: boolean }) => {
   const c = getPersonColour(visit.personColourIndex);
   const time = visit.visitTime ? formatTime(visit.visitTime) : null;
+  const dateTime = time ? `${formatDate(visit.visitDate)} · ${time}` : formatDate(visit.visitDate);
   return (
     <PressableBase
       onPress={() => onPress(visit.id)}
@@ -32,9 +33,11 @@ const WeekVisitCard = ({ visit, onPress, fixedWidth }: { visit: Visit; onPress: 
       })}
     >
       <Text numberOfLines={1} style={{ fontSize: 10, fontWeight: '700', color: c.text }}>{visit.title}</Text>
-      <Text numberOfLines={1} style={{ fontSize: 9, color: c.dot, fontWeight: '500', marginTop: 1 }}>
-        {time ? `${time} · ${visit.personName}` : visit.personName}
-      </Text>
+      {visit.doctorName ? (
+        <Text numberOfLines={1} style={{ fontSize: 9, fontWeight: '600', color: c.text, marginTop: 1 }}>{visit.doctorName}</Text>
+      ) : null}
+      <Text numberOfLines={1} style={{ fontSize: 9, color: c.dot, fontWeight: '500', marginTop: 1 }}>{dateTime}</Text>
+      <Text numberOfLines={1} style={{ fontSize: 9, fontWeight: '600', color: c.text, marginTop: 1 }}>{visit.personName}</Text>
     </PressableBase>
   );
 };
