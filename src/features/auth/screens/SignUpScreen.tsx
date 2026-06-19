@@ -35,7 +35,7 @@ export const SignUpScreen = () => {
           <Text style={{ fontFamily: Fonts.serif, fontSize: 26, fontWeight: '300', color: '#1C1917', textAlign: 'center' }}>
             Check your email
           </Text>
-          <Text style={{ fontSize: 14, color: '#6B6460', textAlign: 'center', lineHeight: 21 }}>
+          <Text style={{ fontSize: 14, color: '#6B6866', textAlign: 'center', lineHeight: 21 }}>
             We've sent a confirmation link to{'\n'}
             <Text style={{ fontWeight: '700', color: '#2A6049' }}>{confirmationEmail}</Text>.
             {'\n\n'}Tap the link to confirm your account, then sign in.

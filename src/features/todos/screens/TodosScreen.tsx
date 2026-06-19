@@ -49,7 +49,7 @@ export const TodosScreen = () => {
             accessibilityLabel="Show completed"
             style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 6, opacity: pressed ? 0.7 : 1 })}
           >
-            <Text style={{ fontSize: 11, fontWeight: '500', color: '#6B6460' }}>Show completed</Text>
+            <Text style={{ fontSize: 11, fontWeight: '500', color: '#6B6866' }}>Show completed</Text>
             <View style={{ width: 14, height: 14, borderWidth: 1.5, borderColor: showCompleted ? '#2A6049' : '#C8C4BC', borderRadius: 3, backgroundColor: showCompleted ? '#2A6049' : 'white', alignItems: 'center', justifyContent: 'center' }}>
               {showCompleted && <Text style={{ color: 'white', fontSize: 9, lineHeight: 12 }}>✓</Text>}
             </View>

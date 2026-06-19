@@ -120,7 +120,7 @@ export const SettingsScreen = () => {
               />
               <View style={{ flexDirection: 'row', gap: 8 }}>
                 <PressableBase onPress={() => setEditingName(false)} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#E3DDD5', alignItems: 'center', opacity: pressed ? 0.6 : 1 })}>
-                  <Text style={{ fontSize: 14, color: '#6B6460' }}>Cancel</Text>
+                  <Text style={{ fontSize: 14, color: '#6B6866' }}>Cancel</Text>
                 </PressableBase>
                 <PressableBase onPress={handleSaveFamilyName} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, backgroundColor: '#2A6049', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
                   <Text style={{ fontSize: 14, color: 'white', fontWeight: '600' }}>{isSavingName ? 'Saving...' : 'Save'}</Text>

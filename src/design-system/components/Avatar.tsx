@@ -43,7 +43,7 @@ export const Avatar = ({ initials, colourSet, size = 'md' }: AvatarProps) => {
     >
       <Text
         style={{
-          color: '#ffffff',
+          color: '#FFFFFF',
           fontSize,
           fontWeight: '700',
           letterSpacing: 0.5,

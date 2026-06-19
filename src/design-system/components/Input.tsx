@@ -44,7 +44,7 @@ export const Input = forwardRef<TextInput, InputProps>(
               ? 'border-[#9B3A4A]'
               : 'border-[#C8C4BC] focus:border-[#2A6049]',
           ].join(' ')}
-          placeholderTextColor="#9E9B95"
+          placeholderTextColor="#A8A09A"
           autoCapitalize="none"
           autoCorrect={false}
           {...textInputProps}

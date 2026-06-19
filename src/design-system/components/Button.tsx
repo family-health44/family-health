@@ -49,10 +49,10 @@ const sizeTextStyles: Record<ButtonSize, string> = {
 };
 
 const spinnerColours: Record<ButtonVariant, string> = {
-  primary: '#ffffff',
+  primary: '#FFFFFF',
   secondary: '#2A6049',
   ghost: '#2A6049',
-  danger: '#ffffff',
+  danger: '#FFFFFF',
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────

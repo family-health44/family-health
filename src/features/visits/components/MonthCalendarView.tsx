@@ -155,7 +155,7 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
                   );
                 })}
                 {extra > 0 && (
-                  <Text style={{ fontSize: 8, fontWeight: '700', color: '#6B6460', marginTop: 1, paddingHorizontal: 3 }}>
+                  <Text style={{ fontSize: 8, fontWeight: '700', color: '#6B6866', marginTop: 1, paddingHorizontal: 3 }}>
                     +{extra}
                   </Text>
                 )}

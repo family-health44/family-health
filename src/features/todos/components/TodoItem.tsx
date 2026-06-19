@@ -79,7 +79,7 @@ export const TodoItem = ({ todo, colourSet, onToggle, onDelete }: TodoItemProps)
           {todo.title}
         </Text>
         {todo.notes ? (
-          <Text style={{ fontSize: 11, color: '#6B6460', marginTop: 1 }} numberOfLines={1}>
+          <Text style={{ fontSize: 11, color: '#6B6866', marginTop: 1 }} numberOfLines={1}>
             {todo.notes}
           </Text>
         ) : null}

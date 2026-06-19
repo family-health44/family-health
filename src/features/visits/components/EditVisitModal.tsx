@@ -84,7 +84,7 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
               <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
                 <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>Edit visit</Text>
                 <View style={{ gap: 4 }}>
-                  <Text style={{ fontSize: 13, fontWeight: '600', color: '#6B6460' }}>Person</Text>
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: '#6B6866' }}>Person</Text>
                   <View style={{ backgroundColor: '#EEEAE3', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11 }}>
                     <Text style={{ fontSize: 14, color: '#1C1917', fontWeight: '500' }}>{visit.personName}</Text>
                   </View>

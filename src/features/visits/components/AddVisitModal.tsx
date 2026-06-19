@@ -73,7 +73,7 @@ export const AddVisitModal = ({ visible, isLoading, people = [], doctors = [], d
                   <InlinePicker label="Family member" isRequired options={personOptions} value={personId} onChange={(id) => setValue('personId', id ?? '', { shouldValidate: true })} error={errors.personId?.message} />
                 ) : personName ? (
                   <View style={{ gap: 4 }}>
-                    <Text style={{ fontSize: 13, fontWeight: '600', color: '#6B6460' }}>Person</Text>
+                    <Text style={{ fontSize: 13, fontWeight: '600', color: '#6B6866' }}>Person</Text>
                     <View style={{ backgroundColor: '#EEEAE3', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11 }}>
                       <Text style={{ fontSize: 14, color: '#1C1917', fontWeight: '500' }}>{personName}</Text>
                     </View>

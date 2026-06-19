@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   line: {
     width: 16,
     height: 2,
-    backgroundColor: '#6B6460',
+    backgroundColor: '#6B6866',
     borderRadius: 1,
   },
 });

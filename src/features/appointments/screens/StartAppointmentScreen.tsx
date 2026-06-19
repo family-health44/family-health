@@ -109,7 +109,7 @@ export const StartAppointmentScreen = () => {
           <Text style={{ fontSize: 22, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 26 }}>
             {appointment.doctorName ?? 'Appointment'}
           </Text>
-          <Text style={{ fontSize: 12, color: '#6B6460', marginTop: 2 }}>
+          <Text style={{ fontSize: 12, color: '#6B6866', marginTop: 2 }}>
             {appointment.personName} · {appointment.visitDate}
           </Text>
         </View>

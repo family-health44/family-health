@@ -10,6 +10,7 @@ import type { DbNote } from '@/shared/types/database';
 const makeDbNote = (overrides: Partial<DbNote> = {}): DbNote => ({
   id: 'note-1',
   content: 'A simple note',
+  note_date: null,
   person_id: 'person-1',
   doctor_id: null,
   medication_id: null,

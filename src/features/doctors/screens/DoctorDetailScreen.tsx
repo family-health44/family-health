@@ -83,7 +83,7 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
           <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
         </PressableBase>
         <PressableBase onPress={handleOpenEdit} accessibilityRole="button" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEEAE3', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
-          <Text style={{ fontSize: 14, color: '#6B6460' }}>✎</Text>
+          <Text style={{ fontSize: 14, color: '#6B6866' }}>✎</Text>
         </PressableBase>
       </View>
       <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4 }}>

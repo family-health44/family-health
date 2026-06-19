@@ -49,7 +49,7 @@ export const AcceptInviteScreen = () => {
         <Text style={{ fontFamily: Fonts.serif, fontSize: 28, fontWeight: '300', color: '#1C1917', textAlign: 'center' }}>
           You've been invited!
         </Text>
-        <Text style={{ fontSize: 15, color: '#6B6460', marginTop: 12, lineHeight: 22, textAlign: 'center' }}>
+        <Text style={{ fontSize: 15, color: '#6B6866', marginTop: 12, lineHeight: 22, textAlign: 'center' }}>
           Join the{' '}
           <Text style={{ fontWeight: '700', color: '#2A6049' }}>{familyGroupName}</Text>
           {' '}family to view and manage their health records together.
@@ -71,7 +71,7 @@ export const AcceptInviteScreen = () => {
           accessibilityRole="button"
           style={(pressed) => ({ alignItems: 'center', paddingVertical: 10, opacity: pressed ? 0.6 : 1 })}
         >
-          <Text style={{ fontSize: 14, color: '#6B6460' }}>No thanks — create my own group</Text>
+          <Text style={{ fontSize: 14, color: '#6B6866' }}>No thanks — create my own group</Text>
         </PressableBase>
 
         <PressableBase
