@@ -16,6 +16,8 @@ export interface Visit {
   familyGroupId: string;
   preNotes: string | null;
   postNotes: string | null;
+  totalCost: number | null;
+  outOfPocket: number | null;
 }
 
 // A day cell in the calendar — may have visits

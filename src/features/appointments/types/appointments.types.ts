@@ -4,27 +4,26 @@
 
 import type { MedicalEventType } from '@/features/medical-events/types/medical-events.types';
 
-// A note captured during the appointment (before save)
 export interface AppointmentNote {
-  id: string; // local uuid
+  id: string;
   content: string;
+  capturedAt: number;
 }
 
-// A todo captured during the appointment
 export interface AppointmentTodo {
-  id: string; // local uuid
+  id: string;
   title: string;
+  capturedAt: number;
 }
 
-// A medical event captured during the appointment
 export interface AppointmentEvent {
-  id: string; // local uuid
+  id: string;
   eventDate: string;
   eventType: MedicalEventType;
   description: string;
+  capturedAt: number;
 }
 
-// The full in-progress appointment state
 export interface ActiveAppointment {
   visitId: string;
   personId: string;

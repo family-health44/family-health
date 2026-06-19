@@ -85,6 +85,8 @@ export interface DbVisit {
   family_group_id: string;
   pre_notes: string | null;
   post_notes: string | null;
+  total_cost: number | null;
+  out_of_pocket: number | null;
 }
 
 export interface DbNote {

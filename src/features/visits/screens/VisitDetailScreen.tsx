@@ -1,8 +1,9 @@
 // src/features/visits/screens/VisitDetailScreen.tsx
-// Visit detail screen — matches PWA design.
+// Visit detail. Pre/post notes + costs are inline-editable (save on blur).
+// Title/date/time/doctor are edited via the ✎ modal.
 import { PressableBase } from '@/design-system/components/PressableBase';
-import { useState } from 'react';
-import { View, Text, ScrollView, Linking, Alert } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TextInput, Linking, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
@@ -12,10 +13,20 @@ import { useUpdateVisitMutation } from '../mutations/visits.mutations';
 import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
 import { EditVisitModal } from '../components/EditVisitModal';
 import { formatDate, formatTime } from '@/shared/utils/dates';
+import type { Visit } from '../types/visits.types';
 
 interface VisitDetailScreenProps {
   visitId: string;
 }
+
+const parseCost = (raw: string): number | null => {
+  const t = raw.trim();
+  if (!t) return null;
+  const n = Number(t.replace(/[^0-9.]/g, ''));
+  return Number.isFinite(n) ? n : null;
+};
+
+const costToText = (n: number | null): string => (n == null ? '' : String(n));
 
 export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
   const insets = useSafeAreaInsets();
@@ -25,14 +36,50 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const doctors = (doctorGroups ?? []).flatMap((g) => g.doctors);
 
+  const visit = groups?.flatMap((g) => g.visits).find((v) => v.id === visitId);
+
+  // Local editable state for the inline fields, seeded from the visit.
+  const [preNotes, setPreNotes] = useState('');
+  const [postNotes, setPostNotes] = useState('');
+  const [totalCost, setTotalCost] = useState('');
+  const [outOfPocket, setOutOfPocket] = useState('');
+
+  useEffect(() => {
+    if (visit) {
+      setPreNotes(visit.preNotes ?? '');
+      setPostNotes(visit.postNotes ?? '');
+      setTotalCost(costToText(visit.totalCost));
+      setOutOfPocket(costToText(visit.outOfPocket));
+    }
+  }, [visit?.id]);
+
   if (isLoading) return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><LoadingState message="Loading visit..." /></View>;
   if (error) return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><ErrorState message={error.message} /></View>;
-
-  const visit = groups?.flatMap((g) => g.visits).find((v) => v.id === visitId);
   if (!visit) return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><ErrorState message="Visit not found." /></View>;
 
+  const v = visit; // non-null alias
+
   const today = new Date().toISOString().split('T')[0] ?? '';
-  const isUpcoming = visit.visitDate >= today;
+  const isUpcoming = v.visitDate >= today;
+
+  // Save a single inline field by sending the full current param set.
+  const persist = async (patch: Partial<Pick<Visit, 'preNotes' | 'postNotes' | 'totalCost' | 'outOfPocket'>>) => {
+    try {
+      await updateVisit.mutateAsync({
+        visitId: v.id,
+        title: v.title,
+        visitDate: v.visitDate,
+        visitTime: v.visitTime,
+        doctorId: v.doctorId,
+        preNotes: patch.preNotes !== undefined ? patch.preNotes : v.preNotes,
+        postNotes: patch.postNotes !== undefined ? patch.postNotes : v.postNotes,
+        totalCost: patch.totalCost !== undefined ? patch.totalCost : v.totalCost,
+        outOfPocket: patch.outOfPocket !== undefined ? patch.outOfPocket : v.outOfPocket,
+      });
+    } catch {
+      Alert.alert('Error', 'Could not save changes.');
+    }
+  };
 
   const handleSaveEdit = async (input: {
     title: string;
@@ -41,9 +88,11 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
     doctorId: string | null;
     preNotes: string | null;
     postNotes: string | null;
+    totalCost: number | null;
+    outOfPocket: number | null;
   }) => {
     try {
-      await updateVisit.mutateAsync({ visitId: visit.id, ...input });
+      await updateVisit.mutateAsync({ visitId: v.id, ...input });
       setShowEditModal(false);
     } catch {
       Alert.alert('Error', 'Could not save changes.');
@@ -51,153 +100,104 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
   };
 
   const handleAddToCalendar = async () => {
-    const url = `webcal://calendar.google.com/calendar/r/eventedit?text=${encodeURIComponent(visit.title)}&dates=${visit.visitDate.replace(/-/g, '')}`;
+    const url = `webcal://calendar.google.com/calendar/r/eventedit?text=${encodeURIComponent(v.title)}&dates=${v.visitDate.replace(/-/g, '')}`;
     const supported = await Linking.canOpenURL(url);
     if (supported) await Linking.openURL(url);
     else Alert.alert('Cannot open calendar', 'Unable to open calendar app.');
   };
 
+  const inlineInputStyle = { fontSize: 14, color: '#1C1917', padding: 0, margin: 0 } as const;
+  const costInputStyle = { fontSize: 13, color: '#1C1917', fontWeight: '500' as const, textAlign: 'right' as const, minWidth: 80, padding: 0 };
+
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
-      {/* Header */}
-      <View style={{
-        paddingTop: insets.top + 4,
-        paddingHorizontal: 16,
-        paddingBottom: 8,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        <PressableBase
-          onPress={() => router.navigate('/(app)/visits')}
-          accessibilityRole="button"
-          style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}
-        >
+      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <PressableBase onPress={() => router.navigate('/(app)/visits')} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
           <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
         </PressableBase>
-        <PressableBase
-          onPress={() => setShowEditModal(true)}
-          accessibilityRole="button"
-          accessibilityLabel="Edit visit"
-          style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEEAE3', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}
-        >
+        <PressableBase onPress={() => setShowEditModal(true)} accessibilityRole="button" accessibilityLabel="Edit visit" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEEAE3', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
           <Text style={{ fontSize: 14, color: '#6B6866' }}>✎</Text>
         </PressableBase>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4, paddingBottom: 100 }}>
+      <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4, paddingBottom: 100 }} keyboardShouldPersistTaps="handled">
         {/* Hero card */}
         <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 14, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <View style={{ width: 52, height: 52, borderRadius: 12, backgroundColor: '#E8EFF8', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Text style={{ fontSize: 24 }}>📅</Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 20, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 24 }}>
-              {visit.title}
-            </Text>
+            <Text style={{ fontSize: 20, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 24 }}>{v.title}</Text>
             <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 3 }}>
-              {formatDate(visit.visitDate)}{visit.visitTime ? ` at ${formatTime(visit.visitTime)}` : ''} · {isUpcoming ? 'Upcoming' : 'Past'}
+              {formatDate(v.visitDate)}{v.visitTime ? ` at ${formatTime(v.visitTime)}` : ''} · {isUpcoming ? 'Upcoming' : 'Past'}
             </Text>
           </View>
         </View>
 
-        {/* Details section */}
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>
-          Details
-        </Text>
+        {/* Details */}
+        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>Details</Text>
         <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
           <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EDE8' }}>
             <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Date</Text>
-            <Text style={{ fontSize: 13, color: '#1C1917', fontWeight: '500' }}>
-              {formatDate(visit.visitDate)}{visit.visitTime ? ` at ${formatTime(visit.visitTime)}` : ''}
-            </Text>
+            <Text style={{ fontSize: 13, color: '#1C1917', fontWeight: '500' }}>{formatDate(v.visitDate)}{v.visitTime ? ` at ${formatTime(v.visitTime)}` : ''}</Text>
           </View>
           <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EDE8' }}>
             <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Person</Text>
-            <Text style={{ fontSize: 13, color: '#1C1917', fontWeight: '500' }}>{visit.personName}</Text>
+            <Text style={{ fontSize: 13, color: '#1C1917', fontWeight: '500' }}>{v.personName}</Text>
           </View>
-          {visit.doctorName ? (
+          {v.doctorName ? (
             <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EDE8' }}>
               <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Doctor</Text>
-              <Text style={{ fontSize: 13, color: '#1C1917', fontWeight: '500' }}>{visit.doctorName}</Text>
+              <Text style={{ fontSize: 13, color: '#1C1917', fontWeight: '500' }}>{v.doctorName}</Text>
             </View>
           ) : null}
+          {/* Costs — inline editable */}
+          <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EDE8', alignItems: 'center' }}>
+            <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Total cost</Text>
+            <Text style={{ fontSize: 13, color: '#A8A09A' }}>$</Text>
+            <TextInput value={totalCost} onChangeText={setTotalCost} onBlur={() => persist({ totalCost: parseCost(totalCost) })} placeholder="0.00" placeholderTextColor="#C8C4BC" keyboardType="decimal-pad" style={costInputStyle} />
+          </View>
+          <View style={{ flexDirection: 'row', padding: 12, alignItems: 'center' }}>
+            <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Out of pocket</Text>
+            <Text style={{ fontSize: 13, color: '#A8A09A' }}>$</Text>
+            <TextInput value={outOfPocket} onChangeText={setOutOfPocket} onBlur={() => persist({ outOfPocket: parseCost(outOfPocket) })} placeholder="0.00" placeholderTextColor="#C8C4BC" keyboardType="decimal-pad" style={costInputStyle} />
+          </View>
         </View>
 
-        {/* Pre-appointment notes */}
-        {visit.preNotes ? (
-          <>
-            <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>
-              Pre-Appointment Notes
-            </Text>
-            <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, padding: 14, marginBottom: 16 }}>
-              <Text style={{ fontSize: 14, color: '#1C1917', lineHeight: 20 }}>{visit.preNotes}</Text>
-            </View>
-          </>
-        ) : null}
+        {/* Pre-appointment notes — inline editable */}
+        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>Pre-Appointment Notes</Text>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, padding: 14, marginBottom: 16 }}>
+          <TextInput value={preNotes} onChangeText={setPreNotes} onBlur={() => persist({ preNotes: preNotes.trim() || null })} placeholder="What to discuss, questions to ask..." placeholderTextColor="#A8A09A" multiline style={{ ...inlineInputStyle, lineHeight: 20, minHeight: 40, textAlignVertical: 'top' }} />
+        </View>
 
-        {/* Post-appointment notes */}
-        {visit.postNotes ? (
-          <>
-            <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>
-              Post-Appointment Notes
-            </Text>
-            <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, padding: 14, marginBottom: 16 }}>
-              <Text style={{ fontSize: 14, color: '#1C1917', lineHeight: 20 }}>{visit.postNotes}</Text>
-            </View>
-          </>
-        ) : null}
+        {/* Post-appointment notes — inline editable */}
+        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>Post-Appointment Notes</Text>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, padding: 14, marginBottom: 16 }}>
+          <TextInput value={postNotes} onChangeText={setPostNotes} onBlur={() => persist({ postNotes: postNotes.trim() || null })} placeholder="Outcomes, follow-ups, results..." placeholderTextColor="#A8A09A" multiline style={{ ...inlineInputStyle, lineHeight: 20, minHeight: 40, textAlignVertical: 'top' }} />
+        </View>
 
-        {/* Action buttons */}
-        <PressableBase
-          onPress={handleAddToCalendar}
-          accessibilityRole="button"
-          style={(pressed) => ({ backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 })}
-        >
+        {/* Actions */}
+        <PressableBase onPress={handleAddToCalendar} accessibilityRole="button" style={(pressed) => ({ backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 })}>
           <Text style={{ fontSize: 18 }}>📅</Text>
           <Text style={{ fontSize: 14, fontWeight: '500', color: '#2C5282' }}>Add to Google / iOS Calendar</Text>
         </PressableBase>
-
-        <PressableBase
-          accessibilityRole="button"
-          style={(pressed) => ({ backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10 })}
-        >
+        <PressableBase accessibilityRole="button" style={(pressed) => ({ backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10 })}>
           <Text style={{ fontSize: 18 }}>📄</Text>
           <Text style={{ fontSize: 14, fontWeight: '500', color: '#2C5282' }}>Add Document</Text>
         </PressableBase>
       </ScrollView>
 
-      {/* Start Appointment button */}
       {isUpcoming && (
         <View style={{ position: 'absolute', bottom: 24, left: 16, right: 16 }}>
-          <PressableBase
-            onPress={() => router.push(`/(app)/appointments?visitId=${visit.id}&personId=${visit.personId ?? ''}&personName=${encodeURIComponent(visit.personName ?? '')}&doctorName=${encodeURIComponent(visit.doctorName ?? '')}&visitDate=${visit.visitDate}&preNotes=${encodeURIComponent(visit.preNotes ?? '')}` as never)}
-            accessibilityRole="button"
-            style={(pressed) => ({
-              backgroundColor: pressed ? '#1A4D35' : '#2A6049',
-              borderRadius: 24,
-              padding: 16,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-            })}
-          >
+          <PressableBase onPress={() => router.push(`/(app)/appointments?visitId=${v.id}&personId=${v.personId ?? ''}&personName=${encodeURIComponent(v.personName ?? '')}&doctorName=${encodeURIComponent(v.doctorName ?? '')}&visitDate=${v.visitDate}&preNotes=${encodeURIComponent(v.preNotes ?? '')}` as never)} accessibilityRole="button" style={(pressed) => ({ backgroundColor: pressed ? '#1A4D35' : '#2A6049', borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 })}>
             <Text style={{ fontSize: 16, color: 'white' }}>▶</Text>
             <Text style={{ fontSize: 16, fontWeight: '600', color: 'white' }}>Start Appointment</Text>
           </PressableBase>
         </View>
       )}
 
-      <EditVisitModal
-        visible={showEditModal}
-        isLoading={updateVisit.isPending}
-        visit={visit}
-        doctors={doctors}
-        onSave={handleSaveEdit}
-        onDismiss={() => setShowEditModal(false)}
-      />
+      <EditVisitModal visible={showEditModal} isLoading={updateVisit.isPending} visit={v} doctors={doctors} onSave={handleSaveEdit} onDismiss={() => setShowEditModal(false)} />
     </View>
   );
 };

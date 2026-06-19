@@ -24,7 +24,7 @@ const makeVisit = (overrides: Partial<Visit> = {}): Visit => ({
   personName: 'Jane',
   familyGroupId: 'group-1',
   preNotes: null,
-  postNotes: null,
+  postNotes: null, totalCost: null, outOfPocket: null,
   ...overrides,
 });
 

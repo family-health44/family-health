@@ -1,4 +1,4 @@
-// src/features/doctors/components/DoctorDetailScreen.tsx
+// src/features/doctors/screens/DoctorDetailScreen.tsx
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
 import { View, Text, ScrollView, Linking, Alert, Modal, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
@@ -7,10 +7,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
+import { isoToDisplayDate } from '@/shared/utils/dates';
 import { usePersonDoctors } from '../hooks/usePersonDoctors';
 import { updateDoctor } from '../repository/doctors.repository';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/queryClient';
+import { useVisitsForCalendarQuery } from '@/features/visits/queries/visits.queries';
+import { usePersonNotesQuery } from '@/features/notes/queries/notes.queries';
+import { parseNoteContent } from '@/features/notes/domain/notes.domain';
+import { usePersonMedicationsQuery } from '@/features/medications/queries/medications.queries';
 
 interface DoctorDetailScreenProps { doctorId: string; personId: string; }
 
@@ -31,6 +36,10 @@ const CollapsibleSection = ({ title, bg, border, text, children }: { title: stri
   );
 };
 
+const EmptyRow = ({ text }: { text: string }) => (
+  <View style={{ padding: 14 }}><Text style={{ fontSize: 12, color: '#A8A09A', fontStyle: 'italic' }}>{text}</Text></View>
+);
+
 export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenProps) => {
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
@@ -43,11 +52,36 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
   const [isSaving, setIsSaving] = useState(false);
   const { doctors, isLoading, error } = usePersonDoctors(personId);
 
+  const visitsQuery = useVisitsForCalendarQuery();
+  const { data: notes = [] } = usePersonNotesQuery(personId);
+  const { data: medGroups = [] } = usePersonMedicationsQuery(personId);
+
   if (isLoading) return <LoadingState message="Loading doctor..." />;
   if (error) return <ErrorState message={error.message} />;
 
   const doctor = doctors.find((d) => d.id === doctorId);
   if (!doctor) return <ErrorState message="Doctor not found." />;
+
+  // Visits with this doctor (this person), newest first
+  const doctorVisits = (visitsQuery.data ?? [])
+    .filter((v) => v.personId === personId && v.doctorId === doctorId)
+    .sort((a, b) => b.visitDate.localeCompare(a.visitDate));
+
+  // Notes linked to this doctor, excluding event-marker notes + hidden, newest first
+  const noteText = (content: string) =>
+    parseNoteContent(content)
+      .filter((seg) => seg.type === 'text')
+      .map((seg) => seg.content)
+      .join(' ')
+      .trim();
+  const doctorNotes = notes
+    .filter((n) => n.doctorId === doctorId && !n.hidden && noteText(n.content).length > 0)
+    .sort((a, b) => (b.noteDate ?? '').localeCompare(a.noteDate ?? ''));
+
+  // Medications prescribed by this doctor (across all status groups)
+  const doctorMeds = medGroups
+    .flatMap((g) => g.medications)
+    .filter((m) => m.prescribedBy === doctorId);
 
   const handleOpenEdit = () => {
     setEditName(doctor.name);
@@ -117,14 +151,51 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
             </View>
           )}
         </View>
+
         <CollapsibleSection title="Visits" bg="#E8EFF8" border="#C0CFDF" text="#1A3A6B">
-          <View style={{ padding: 14 }}><Text style={{ fontSize: 12, color: '#A8A09A', fontStyle: 'italic' }}>No visits with this doctor yet</Text></View>
+          {doctorVisits.length === 0 ? (
+            <EmptyRow text="No visits with this doctor yet" />
+          ) : (
+            doctorVisits.map((v, i) => (
+              <PressableBase key={v.id} onPress={() => router.push(`/(app)/visits/${v.id}` as never)} style={(pressed) => ({ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EDE8', opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center' })}>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 13, color: '#1C1917' }}>{v.title || 'Visit'}</Text>
+                  <Text style={{ fontSize: 11, color: '#A8A09A', marginTop: 2 }}>{isoToDisplayDate(v.visitDate)}</Text>
+                </View>
+                <Text style={{ fontSize: 14, color: '#C8C4BC' }}>›</Text>
+              </PressableBase>
+            ))
+          )}
         </CollapsibleSection>
+
         <CollapsibleSection title="Notes" bg="#E6F0EC" border="#C0D8CA" text="#1A4D35">
-          <View style={{ padding: 14 }}><Text style={{ fontSize: 12, color: '#A8A09A', fontStyle: 'italic' }}>No notes for this doctor yet</Text></View>
+          {doctorNotes.length === 0 ? (
+            <EmptyRow text="No notes for this doctor yet" />
+          ) : (
+            doctorNotes.map((n, i) => (
+              <View key={n.id} style={{ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EDE8' }}>
+                <Text style={{ fontSize: 13, color: '#1C1917', lineHeight: 18 }}>{noteText(n.content)}</Text>
+                {n.noteDate ? <Text style={{ fontSize: 11, color: '#A8A09A', marginTop: 2 }}>{isoToDisplayDate(n.noteDate)}</Text> : null}
+              </View>
+            ))
+          )}
         </CollapsibleSection>
+
         <CollapsibleSection title="Medications Prescribed" bg="#F5EBE0" border="#DEBFAA" text="#7A3A10">
-          <View style={{ padding: 14 }}><Text style={{ fontSize: 12, color: '#A8A09A', fontStyle: 'italic' }}>No medications prescribed yet</Text></View>
+          {doctorMeds.length === 0 ? (
+            <EmptyRow text="No medications prescribed yet" />
+          ) : (
+            doctorMeds.map((m, i) => (
+              <View key={m.id} style={{ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EDE8' }}>
+                <Text style={{ fontSize: 13, color: '#1C1917' }}>{m.name}</Text>
+                {(m.dosage || m.frequency) ? (
+                  <Text style={{ fontSize: 11, color: '#A8A09A', marginTop: 2 }}>
+                    {[m.dosage, m.frequency].filter(Boolean).join(' · ')}
+                  </Text>
+                ) : null}
+              </View>
+            ))
+          )}
         </CollapsibleSection>
       </ScrollView>
       <Modal visible={showEditModal} transparent animationType="slide" onRequestClose={() => setShowEditModal(false)}>

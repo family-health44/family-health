@@ -39,6 +39,7 @@ export interface UseActiveAppointmentReturn {
   setPostNotes: (text: string) => void;
   saveAppointment: () => Promise<void>;
   cancelAppointment: () => void;
+  clearAppointment: () => void;
 }
 
 export function useActiveAppointment(): UseActiveAppointmentReturn {
@@ -57,7 +58,7 @@ export function useActiveAppointment(): UseActiveAppointmentReturn {
   const addNote = useCallback((content: string) => {
     if (!content.trim()) return;
     setAppointment((prev) => prev
-      ? { ...prev, notes: [...prev.notes, { id: localId(), content: content.trim() }] }
+      ? { ...prev, notes: [...prev.notes, { id: localId(), content: content.trim(), capturedAt: Date.now() }] }
       : prev);
   }, []);
 
@@ -70,7 +71,7 @@ export function useActiveAppointment(): UseActiveAppointmentReturn {
   const addTodo = useCallback((title: string) => {
     if (!title.trim()) return;
     setAppointment((prev) => prev
-      ? { ...prev, todos: [...prev.todos, { id: localId(), title: title.trim() }] }
+      ? { ...prev, todos: [...prev.todos, { id: localId(), title: title.trim(), capturedAt: Date.now() }] }
       : prev);
   }, []);
 
@@ -84,7 +85,7 @@ export function useActiveAppointment(): UseActiveAppointmentReturn {
     eventDate: string, eventType: MedicalEventType, description: string,
   ) => {
     setAppointment((prev) => prev
-      ? { ...prev, events: [...prev.events, { id: localId(), eventDate, eventType, description }] }
+      ? { ...prev, events: [...prev.events, { id: localId(), eventDate, eventType, description, capturedAt: Date.now() }] }
       : prev);
   }, []);
 
@@ -154,6 +155,8 @@ export function useActiveAppointment(): UseActiveAppointmentReturn {
               doctorId: appointment.doctorId,
               preNotes: null,
               postNotes: appointment.postNotes.trim(),
+              totalCost: null,
+              outOfPocket: null,
             })]
           : []),
       ]);
@@ -164,8 +167,9 @@ export function useActiveAppointment(): UseActiveAppointmentReturn {
       queryClient.invalidateQueries({ queryKey: queryKeys.medicalEvents.byPerson(appointment.personId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.visits.all });
 
+      const visitId = appointment.visitId;
       setAppointment(null);
-      router.back();
+      router.replace(`/(app)/visits/${visitId}` as never);
     } catch (err) {
       setError(isAppError(err) ? err : toAppError(err));
     } finally {
@@ -178,10 +182,14 @@ export function useActiveAppointment(): UseActiveAppointmentReturn {
     router.back();
   }, []);
 
+  const clearAppointment = useCallback(() => {
+    setAppointment(null);
+  }, []);
+
   return {
     appointment, isSaving, error,
     startAppointment, addNote, removeNote,
     addTodo, removeTodo, addEvent, removeEvent,
-    setPostNotes, saveAppointment, cancelAppointment,
+    setPostNotes, saveAppointment, cancelAppointment, clearAppointment,
   };
 }

@@ -16,8 +16,6 @@ const schema = z.object({
   visitDate: z.string().min(1, 'Date is required').regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD format'),
   visitTime: z.string().optional(),
   doctorId: z.string().nullable().optional(),
-  preNotes: z.string().optional(),
-  postNotes: z.string().optional(),
 });
 type FormValues = z.infer<typeof schema>;
 type EditVisitInput = Omit<UpdateVisitParams, 'visitId'>;
@@ -40,8 +38,6 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
       visitDate: visit.visitDate,
       visitTime: visit.visitTime ?? '',
       doctorId: visit.doctorId,
-      preNotes: visit.preNotes ?? '',
-      postNotes: visit.postNotes ?? '',
     },
   });
   const doctorId = watch('doctorId');
@@ -54,8 +50,6 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
         visitDate: visit.visitDate,
         visitTime: visit.visitTime ?? '',
         doctorId: visit.doctorId,
-        preNotes: visit.preNotes ?? '',
-        postNotes: visit.postNotes ?? '',
       });
     }
   }, [visible, visit, reset]);
@@ -66,8 +60,10 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
       visitDate: values.visitDate,
       visitTime: values.visitTime?.trim() || null,
       doctorId: values.doctorId ?? null,
-      preNotes: values.preNotes?.trim() || null,
-      postNotes: values.postNotes?.trim() || null,
+      preNotes: visit.preNotes,
+      postNotes: visit.postNotes,
+      totalCost: visit.totalCost,
+      outOfPocket: visit.outOfPocket,
     });
     onDismiss();
   };
@@ -101,12 +97,6 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
                 {doctors.length > 0 && (
                   <InlinePicker label="Doctor (optional)" options={doctorOptions} value={doctorId} onChange={(id) => setValue('doctorId', id)} />
                 )}
-                <Controller control={control} name="preNotes" render={({ field: { onChange, onBlur, value } }) => (
-                  <Input label="Pre-visit notes" placeholder="What to discuss, questions to ask..." autoCapitalize="sentences" multiline numberOfLines={5} style={{ minHeight: 100, textAlignVertical: 'top' }} value={value} onChangeText={onChange} onBlur={onBlur} />
-                )} />
-                <Controller control={control} name="postNotes" render={({ field: { onChange, onBlur, value } }) => (
-                  <Input label="Post-visit notes" placeholder="Outcomes, follow-ups, results..." autoCapitalize="sentences" multiline numberOfLines={5} style={{ minHeight: 100, textAlignVertical: 'top' }} value={value} onChangeText={onChange} onBlur={onBlur} />
-                )} />
                 <View style={{ gap: 12, marginTop: 8 }}>
                   <Button label="Save changes" variant="primary" size="lg" isFullWidth isLoading={isLoading} onPress={handleSubmit(onSubmit)} />
                   <Button label="Cancel" variant="ghost" size="lg" isFullWidth onPress={onDismiss} />

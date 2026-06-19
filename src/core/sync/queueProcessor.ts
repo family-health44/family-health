@@ -26,7 +26,7 @@ interface AddDoctorPayload { name: string; type: string | null; address: string 
 interface LinkDoctorPayload { doctorId: string; personId: string }
 interface AddMedicationPayload { name: string; dosage: string | null; frequency: string | null; reason: string | null; status: 'active' | 'as_needed' | 'inactive'; startDate: string | null; endDate: string | null; personId: string; prescribedBy: string | null; familyGroupId: string }
 interface UpdateMedicationStatusPayload { medicationId: string; status: 'active' | 'as_needed' | 'inactive' }
-interface AddVisitPayload { title: string; visitDate: string; visitTime: string | null; doctorId: string | null; personId: string; familyGroupId: string; preNotes: string | null; postNotes: string | null }
+interface AddVisitPayload { title: string; visitDate: string; visitTime: string | null; doctorId: string | null; personId: string; familyGroupId: string; preNotes: string | null; postNotes: string | null; totalCost: number | null; outOfPocket: number | null }
 interface AddTodoPayload { title: string; notes: string | null; dueDate: string | null; personId: string | null; familyGroupId: string }
 interface ToggleTodoPayload { todoId: string; completed: boolean }
 interface DeleteTodoPayload { todoId: string }

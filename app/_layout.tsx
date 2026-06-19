@@ -44,6 +44,7 @@ function RootLayoutNav() {
           <Stack.Screen name="index" />
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(app)" />
+          <Stack.Screen name="appointment-history" options={{ presentation: 'modal' }} />
         </Stack>
       </View>
     </DrawerProvider>

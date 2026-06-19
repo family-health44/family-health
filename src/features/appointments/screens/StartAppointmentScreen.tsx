@@ -1,15 +1,39 @@
 // src/features/appointments/screens/StartAppointmentScreen.tsx
-// Live appointment screen — matches PWA design exactly.
+// Live appointment capture — single input, tag as Note / To do / Event.
+// Entries form a time-ordered stream. Auto-linked to person + doctor + visit on save.
 import { PressableBase } from '@/design-system/components/PressableBase';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ErrorState } from '@/design-system/components/EmptyState';
 import { Fonts } from '@/design-system/tokens/fonts';
+import { formatTime, isoToDisplayDate, toISODateString } from '@/shared/utils/dates';
+import { secureStorageAdapter } from '@/core/auth/secureStorage';
 import { MEDICAL_EVENT_CONFIG, MEDICAL_EVENT_TYPES } from '@/features/medical-events/types/medical-events.types';
 import { useActiveAppointment } from '../hooks/useActiveAppointment';
 import type { MedicalEventType } from '@/features/medical-events/types/medical-events.types';
+
+type CaptureKind = 'note' | 'todo' | 'event';
+const TEASER_KEY = 'ai_briefing_dismissed_at';
+const TEASER_REAPPEAR_MS = 30 * 24 * 60 * 60 * 1000; // ~30 days
+
+// epoch ms -> "2:30 PM" via the safe time formatter
+function msToClock(ms: number): string {
+  const d = new Date(ms);
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return formatTime(`${hh}:${mm}:00`);
+}
+
+interface StreamRow {
+  id: string;
+  kind: CaptureKind;
+  primary: string;
+  meta: string;
+  capturedAt: number;
+  onRemove: () => void;
+}
 
 export const StartAppointmentScreen = () => {
   const insets = useSafeAreaInsets();
@@ -27,7 +51,7 @@ export const StartAppointmentScreen = () => {
     appointment, isSaving, error,
     startAppointment, addNote, removeNote,
     addTodo, removeTodo, addEvent, removeEvent,
-    setPostNotes, saveAppointment, cancelAppointment,
+    saveAppointment, cancelAppointment, clearAppointment,
   } = useActiveAppointment();
 
   if (!appointment && params.visitId) {
@@ -42,37 +66,78 @@ export const StartAppointmentScreen = () => {
     });
   }
 
-  const [eventType, setEventType] = useState<MedicalEventType>('procedure');
-  const [eventDescription, setEventDescription] = useState('');
-  const [saveToEvents, setSaveToEvents] = useState(false);
-  const [captureNote, setCaptureNote] = useState('');
-  const [todoText, setTodoText] = useState('');
+  const [draft, setDraft] = useState('');
+  const [pendingKind, setPendingKind] = useState<CaptureKind | null>(null);
+  const [eventType, setEventType] = useState<MedicalEventType>('illness');
+  const [showTeaser, setShowTeaser] = useState(false);
 
-  const handleAddEvent = () => {
-    if (!eventDescription.trim()) return;
-    const today = new Date().toISOString().split('T')[0] ?? '';
-    addEvent(today, eventType, eventDescription.trim());
-    setEventDescription('');
+  // Teaser visibility — reappears ~monthly after dismissal
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const raw = await secureStorageAdapter.getItem(TEASER_KEY);
+      const dismissedAt = raw ? Number(raw) : 0;
+      const due = !dismissedAt || Date.now() - dismissedAt > TEASER_REAPPEAR_MS;
+      if (active) setShowTeaser(due);
+    })();
+    return () => { active = false; };
+  }, []);
+
+  const dismissTeaser = () => {
+    setShowTeaser(false);
+    void secureStorageAdapter.setItem(TEASER_KEY, String(Date.now()));
   };
 
-  const handleAddTodo = () => {
-    if (!todoText.trim()) return;
-    addTodo(todoText.trim());
-    setTodoText('');
+  const commitNote = () => {
+    const text = draft.trim();
+    if (!text) return;
+    addNote(text);
+    setDraft('');
+    setPendingKind(null);
   };
 
-  const handleFinish = () => {
-    if (captureNote.trim()) addNote(captureNote.trim());
-    saveAppointment();
+  const commitTodo = () => {
+    const text = draft.trim();
+    if (!text) return;
+    addTodo(text);
+    setDraft('');
+    setPendingKind(null);
+  };
+
+  const commitEvent = () => {
+    const text = draft.trim();
+    if (!text) return;
+    const today = toISODateString(new Date());
+    addEvent(today, eventType, text);
+    setDraft('');
+    setPendingKind(null);
+  };
+
+  const handleTag = (kind: CaptureKind) => {
+    if (!draft.trim()) return;
+    if (kind === 'note') commitNote();
+    else if (kind === 'todo') commitTodo();
+    else setPendingKind('event'); // event needs a type choice first
+  };
+
+  const backToVisit = () => {
+    const visitId = appointment?.visitId ?? params.visitId;
+    clearAppointment();
+    router.replace(`/(app)/visits/${visitId}` as never);
   };
 
   const handleCancel = () => {
+    const captured =
+      (appointment?.notes.length ?? 0) +
+      (appointment?.todos.length ?? 0) +
+      (appointment?.events.length ?? 0);
+    if (captured === 0) { backToVisit(); return; }
     Alert.alert(
       'Cancel appointment',
-      'Any captured notes, todos, and events will be lost.',
+      'Any captured notes, to dos, and events will be lost.',
       [
         { text: 'Keep going', style: 'cancel' },
-        { text: 'Cancel appointment', style: 'destructive', onPress: cancelAppointment },
+        { text: 'Discard', style: 'destructive', onPress: backToVisit },
       ],
     );
   };
@@ -85,182 +150,191 @@ export const StartAppointmentScreen = () => {
     );
   }
 
+  // Build the unified, time-ordered stream (newest first)
+  const stream: StreamRow[] = [
+    ...appointment.notes.map((n): StreamRow => ({
+      id: n.id, kind: 'note', primary: n.content,
+      meta: `Note · ${msToClock(n.capturedAt)}`, capturedAt: n.capturedAt,
+      onRemove: () => removeNote(n.id),
+    })),
+    ...appointment.todos.map((t): StreamRow => ({
+      id: t.id, kind: 'todo', primary: t.title,
+      meta: `Follow-up · ${msToClock(t.capturedAt)}`, capturedAt: t.capturedAt,
+      onRemove: () => removeTodo(t.id),
+    })),
+    ...appointment.events.map((e): StreamRow => ({
+      id: e.id, kind: 'event', primary: e.description,
+      meta: `${MEDICAL_EVENT_CONFIG[e.eventType].label} · saved to ${appointment.personName} · ${msToClock(e.capturedAt)}`,
+      capturedAt: e.capturedAt,
+      onRemove: () => removeEvent(e.id),
+    })),
+  ].sort((a, b) => b.capturedAt - a.capturedAt);
+
+  const total = stream.length;
+
+  const ROW_STYLE: Record<CaptureKind, { border: string; icon: string; iconColour: string }> = {
+    note: { border: '#E3DDD5', icon: '⊙', iconColour: '#888780' },
+    todo: { border: '#2A6049', icon: '☐', iconColour: '#2A6049' },
+    event: { border: '#185FA5', icon: '✚', iconColour: '#185FA5' },
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
       {/* Header */}
-      <View style={{
-        paddingTop: insets.top + 4,
-        paddingHorizontal: 16,
-        paddingBottom: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: '#E3DDD5',
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        justifyContent: 'space-between',
-      }}>
-        <View style={{ flex: 1 }}>
-          <PressableBase
-            onPress={handleCancel}
-            style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}
-          >
-            <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-            <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
-          </PressableBase>
-          <Text style={{ fontSize: 22, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 26 }}>
-            {appointment.doctorName ?? 'Appointment'}
-          </Text>
-          <Text style={{ fontSize: 12, color: '#6B6866', marginTop: 2 }}>
-            {appointment.personName} · {appointment.visitDate}
-          </Text>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingTop: 20 }}>
-          <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#2A6049' }} />
-          <Text style={{ fontSize: 11, fontWeight: '700', color: '#2A6049' }}>Live</Text>
+      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E3DDD5' }}>
+        <PressableBase onPress={handleCancel} style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}>
+          <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
+          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
+        </PressableBase>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 21, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 26 }}>
+              {appointment.doctorName ?? 'Appointment'}
+            </Text>
+            <Text style={{ fontSize: 12, color: '#6B6866', marginTop: 2 }}>
+              {appointment.personName} · {isoToDisplayDate(appointment.visitDate)}
+            </Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingTop: 4 }}>
+            <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#2A6049' }} />
+            <Text style={{ fontSize: 11, fontWeight: '700', color: '#2A6049' }}>Live</Text>
+          </View>
         </View>
       </View>
 
-      <ScrollView
-        contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+      {/* Pre-notes & history bar */}
+      <PressableBase
+        onPress={() => router.push({
+          pathname: '/appointment-history',
+          params: {
+            personId: appointment.personId,
+            personName: appointment.personName,
+            doctorId: appointment.doctorId ?? '',
+            doctorName: appointment.doctorName ?? '',
+            preNotes: appointment.preNotes ? encodeURIComponent(appointment.preNotes) : '',
+          },
+        })}
+        style={(pressed) => ({ opacity: pressed ? 0.7 : 1, paddingVertical: 10, paddingHorizontal: 14, backgroundColor: '#EAF3F7', borderBottomWidth: 1, borderBottomColor: '#DCE8EE', flexDirection: 'row', alignItems: 'center', gap: 8 })}
       >
+        <Text style={{ fontSize: 14, color: '#185FA5' }}>ⓘ</Text>
+        <Text style={{ fontSize: 12, color: '#0C447C', flex: 1 }}>Pre-notes & history</Text>
+        <Text style={{ fontSize: 12, color: '#185FA5' }}>View ›</Text>
+      </PressableBase>
+
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         {error ? (
-          <View style={{ backgroundColor: '#F5E8EB', borderColor: '#E0BDC4', borderWidth: 1, borderRadius: 12, padding: 12, marginBottom: 16 }}>
+          <View style={{ backgroundColor: '#F5E8EB', borderColor: '#E0BDC4', borderWidth: 1, borderRadius: 12, padding: 12, marginBottom: 14 }}>
             <Text style={{ color: '#7A2030', fontSize: 14 }}>{error.message}</Text>
           </View>
         ) : null}
 
-        {/* BRIEFING */}
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>
-          Briefing
-        </Text>
-        <View style={{ backgroundColor: '#E8F4F8', borderWidth: 1, borderColor: '#B8D8EE', borderRadius: 12, padding: 12, marginBottom: 12 }}>
-          <Text style={{ fontSize: 12, fontWeight: '700', color: '#1C1917', marginBottom: 4 }}>Pre-notes</Text>
-          <Text style={{ fontSize: 13, color: '#1C1917', lineHeight: 19 }}>
-            {appointment.preNotes?.trim() ? appointment.preNotes : 'No pre-notes for this appointment.'}
-          </Text>
-        </View>
-
-        {/* FULL HISTORY */}
-        <PressableBase style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#E3DDD5', marginBottom: 16 }}>
-          <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, flex: 1 }}>Full History</Text>
-          <Text style={{ fontSize: 12, color: '#A8A09A' }}>0 items ›</Text>
-        </PressableBase>
-
-        {/* CAPTURE NOW */}
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 }}>
-          Capture Now
-        </Text>
-        <Text style={{ fontSize: 12, color: '#A8A09A', marginBottom: 8 }}>
-          Saved as post-visit notes for this appointment.
-        </Text>
-        <TextInput
-          value={captureNote}
-          onChangeText={setCaptureNote}
-          placeholder="Start typing your notes..."
-          placeholderTextColor="#A8A09A"
-          multiline
-          numberOfLines={4}
-          style={{
-            backgroundColor: 'white',
-            borderWidth: 1,
-            borderColor: '#E3DDD5',
-            borderRadius: 12,
-            padding: 12,
-            fontSize: 14,
-            color: '#1C1917',
-            minHeight: 80,
-            textAlignVertical: 'top',
-            marginBottom: 16,
-          }}
-        />
-
-        {/* MEDICAL EVENT */}
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>
-          Medical Event
-        </Text>
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, padding: 12, marginBottom: 16 }}>
-          {/* Type pills */}
-          <View style={{ flexDirection: 'row', gap: 6, marginBottom: 10 }}>
-            {MEDICAL_EVENT_TYPES.map((type) => (
-              <PressableBase
-                key={type}
-                onPress={() => setEventType(type)}
-                style={{
-                  flex: 1,
-                  paddingVertical: 6,
-                  borderRadius: 20,
-                  borderWidth: 1.5,
-                  borderColor: eventType === type ? '#B0C8E8' : '#E3DDD5',
-                  backgroundColor: eventType === type ? '#EAF0F8' : 'transparent',
-                  alignItems: 'center',
-                }}
-              >
-                <Text style={{ fontSize: 11, fontWeight: '700', color: eventType === type ? '#1A3254' : '#A8A09A' }}>
-                  {MEDICAL_EVENT_CONFIG[type].label}
-                </Text>
+        {/* AI briefing teaser */}
+        {showTeaser ? (
+          <View style={{ backgroundColor: '#F3F0FA', borderWidth: 1, borderColor: '#D8D0F0', borderRadius: 12, padding: 12, marginBottom: 14 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              <Text style={{ fontSize: 14, color: '#534AB7' }}>✦</Text>
+              <Text style={{ fontSize: 13, fontWeight: '600', color: '#26215C', flex: 1 }}>AI briefing</Text>
+              <View style={{ backgroundColor: '#CECBF6', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 }}>
+                <Text style={{ fontSize: 10, fontWeight: '700', color: '#3C3489' }}>Pro</Text>
+              </View>
+              <PressableBase onPress={dismissTeaser} hitSlop={10} style={(pressed) => ({ opacity: pressed ? 0.5 : 1, marginLeft: 4 })}>
+                <Text style={{ fontSize: 16, color: '#7F77DD' }}>×</Text>
               </PressableBase>
-            ))}
-          </View>
-          {/* Description input */}
-          <TextInput
-            value={eventDescription}
-            onChangeText={setEventDescription}
-            placeholder="e.g. Tonsillectomy, Ear infection..."
-            placeholderTextColor="#A8A09A"
-            style={{ backgroundColor: '#F7F5F0', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 8, padding: 10, fontSize: 13, color: '#1C1917', marginBottom: 8 }}
-          />
-          {/* Save to events checkbox */}
-          <PressableBase
-            onPress={() => setSaveToEvents(!saveToEvents)}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
-          >
-            <View style={{ width: 16, height: 16, borderWidth: 1.5, borderColor: saveToEvents ? '#2A6049' : '#E3DDD5', borderRadius: 3, backgroundColor: saveToEvents ? '#2A6049' : 'white', alignItems: 'center', justifyContent: 'center' }}>
-              {saveToEvents && <Text style={{ color: 'white', fontSize: 9 }}>✓</Text>}
             </View>
-            <Text style={{ fontSize: 12, color: '#1C1917' }}>
-              Save to Medical Events for {appointment.personName}
+            <Text style={{ fontSize: 12, color: '#3C3489', lineHeight: 18 }}>
+              Get a summary of {appointment.personName}'s history with {appointment.doctorName ?? 'this doctor'} — past visits, notes, and current medications — before you walk in.
             </Text>
-          </PressableBase>
+          </View>
+        ) : null}
+
+        {/* Capture input */}
+        <View style={{ backgroundColor: '#FFFFFF', borderWidth: pendingKind === 'event' ? 2 : 1, borderColor: pendingKind === 'event' ? '#B5D4F4' : '#E3DDD5', borderRadius: 12, padding: 10, marginBottom: 18 }}>
+          <TextInput
+            value={draft}
+            onChangeText={setDraft}
+            placeholder="Type what the doctor said..."
+            placeholderTextColor="#A8A09A"
+            multiline
+            style={{ fontSize: 14, color: '#1C1917', paddingVertical: 6, paddingHorizontal: 4, minHeight: 24, textAlignVertical: 'top' }}
+          />
+
+          {pendingKind === 'event' ? (
+            <View style={{ marginTop: 6 }}>
+              <Text style={{ fontSize: 10, fontWeight: '700', color: '#6B6866', letterSpacing: 0.8, marginBottom: 6 }}>EVENT TYPE</Text>
+              <View style={{ flexDirection: 'row', gap: 6, marginBottom: 10 }}>
+                {MEDICAL_EVENT_TYPES.map((type) => {
+                  const selected = eventType === type;
+                  return (
+                    <PressableBase key={type} onPress={() => setEventType(type)} style={{ flex: 1, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: selected ? '#185FA5' : '#E3DDD5', backgroundColor: selected ? '#E6F1FB' : 'transparent', alignItems: 'center' }}>
+                      <Text style={{ fontSize: 11, fontWeight: '700', color: selected ? '#0C447C' : '#A8A09A' }}>
+                        {MEDICAL_EVENT_CONFIG[type].label}
+                      </Text>
+                    </PressableBase>
+                  );
+                })}
+              </View>
+              <View style={{ flexDirection: 'row', gap: 6 }}>
+                <PressableBase onPress={commitEvent} style={(pressed) => ({ flex: 1, paddingVertical: 9, borderRadius: 8, backgroundColor: pressed ? '#0C447C' : '#185FA5', alignItems: 'center' })}>
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: '#FFFFFF' }}>Add event</Text>
+                </PressableBase>
+                <PressableBase onPress={() => setPendingKind(null)} style={(pressed) => ({ paddingVertical: 9, paddingHorizontal: 14, borderRadius: 8, borderWidth: 0.5, borderColor: '#E3DDD5', alignItems: 'center', opacity: pressed ? 0.6 : 1 })}>
+                  <Text style={{ fontSize: 12, color: '#6B6866' }}>Cancel</Text>
+                </PressableBase>
+              </View>
+            </View>
+          ) : (
+            <View style={{ flexDirection: 'row', gap: 6, marginTop: 6 }}>
+              <PressableBase onPress={() => handleTag('note')} style={{ flex: 1, paddingVertical: 7, borderRadius: 8, backgroundColor: '#F1EFE8', alignItems: 'center' }}>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: '#5F5E5A' }}>⊙ Note</Text>
+              </PressableBase>
+              <PressableBase onPress={() => handleTag('todo')} style={{ flex: 1, paddingVertical: 7, borderRadius: 8, backgroundColor: '#EAF3DE', alignItems: 'center' }}>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: '#3B6D11' }}>☐ To do</Text>
+              </PressableBase>
+              <PressableBase onPress={() => handleTag('event')} style={{ flex: 1, paddingVertical: 7, borderRadius: 8, backgroundColor: '#E6F1FB', alignItems: 'center' }}>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: '#185FA5' }}>✚ Event</Text>
+              </PressableBase>
+            </View>
+          )}
         </View>
 
-        {/* TO DO */}
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>
-          To Do
+        {/* Captured stream */}
+        <Text style={{ fontSize: 11, fontWeight: '700', color: '#6B6866', marginBottom: 8 }}>
+          Captured this visit{total > 0 ? ` · ${total}` : ''}
         </Text>
-        {appointment.todos.map((t) => (
-          <View key={t.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 10, padding: 10, marginBottom: 4 }}>
-            <View style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 1.5, borderColor: '#2A6049', flexShrink: 0 }} />
-            <Text style={{ flex: 1, fontSize: 13, color: '#1C1917' }}>{t.title}</Text>
-            <PressableBase onPress={() => removeTodo(t.id)} hitSlop={8}>
-              <Text style={{ fontSize: 16, color: '#9B3A4A' }}>×</Text>
-            </PressableBase>
-          </View>
-        ))}
-        <View style={{ flexDirection: 'row', gap: 8, borderWidth: 1.5, borderColor: '#E3DDD5', borderStyle: 'dashed', borderRadius: 10, padding: 10, alignItems: 'center', marginBottom: 16 }}>
-          <View style={{ width: 16, height: 16, borderRadius: 8, borderWidth: 1.5, borderColor: '#2A6049', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <Text style={{ color: '#2A6049', fontSize: 10 }}>+</Text>
-          </View>
-          <TextInput
-            value={todoText}
-            onChangeText={setTodoText}
-            onSubmitEditing={handleAddTodo}
-            placeholder="Add To Do..."
-            placeholderTextColor="#A8A09A"
-            returnKeyType="done"
-            style={{ flex: 1, fontSize: 13, color: '#1C1917' }}
-          />
-        </View>
+
+        {total === 0 ? (
+          <Text style={{ fontSize: 13, color: '#A8A09A', paddingVertical: 12, textAlign: 'center' }}>
+            Nothing captured yet. Type above and tag it.
+          </Text>
+        ) : (
+          stream.map((row) => {
+            const s = ROW_STYLE[row.kind];
+            const accent = row.kind !== 'note';
+            return (
+              <View key={row.id} style={{ backgroundColor: '#FFFFFF', borderWidth: 0.5, borderColor: s.border, borderLeftWidth: accent ? 3 : 0.5, borderLeftColor: s.border, borderRadius: accent ? 0 : 10, borderTopRightRadius: 10, borderBottomRightRadius: 10, padding: 10, paddingHorizontal: 12, marginBottom: 6, flexDirection: 'row', gap: 8, alignItems: 'flex-start' }}>
+                <Text style={{ fontSize: 14, color: s.iconColour, marginTop: 1 }}>{s.icon}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 13, color: '#1C1917', lineHeight: 18 }}>{row.primary}</Text>
+                  <Text style={{ fontSize: 10, color: row.kind === 'note' ? '#A8A09A' : s.iconColour, marginTop: 3 }}>{row.meta}</Text>
+                </View>
+                <PressableBase onPress={row.onRemove} hitSlop={8} style={(pressed) => ({ opacity: pressed ? 0.5 : 1 })}>
+                  <Text style={{ fontSize: 15, color: '#A8A09A' }}>×</Text>
+                </PressableBase>
+              </View>
+            );
+          })
+        )}
       </ScrollView>
 
-      {/* Finish & Save */}
-      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16, backgroundColor: '#F7F5F0', borderTopWidth: 1, borderTopColor: '#E3DDD5' }}>
+      {/* Finish */}
+      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16, backgroundColor: '#FFFFFF', borderTopWidth: 1, borderTopColor: '#E3DDD5' }}>
         <PressableBase
-          onPress={handleFinish}
-          style={(pressed) => ({ backgroundColor: pressed ? '#1A4D35' : '#2A6049', borderRadius: 10, padding: 14, alignItems: 'center' })}
+          onPress={saveAppointment}
+          disabled={isSaving}
+          style={(pressed) => ({ backgroundColor: total === 0 ? '#C8C4BC' : pressed ? '#1A4D35' : '#2A6049', borderRadius: 10, padding: 14, alignItems: 'center' })}
         >
-          <Text style={{ color: 'white', fontSize: 15, fontWeight: '600' }}>
-            {isSaving ? 'Saving...' : 'Finish & Save'}
+          <Text style={{ color: '#FFFFFF', fontSize: 15, fontWeight: '600' }}>
+            {isSaving ? 'Saving...' : total > 0 ? `Finish & save · ${total} item${total === 1 ? '' : 's'}` : 'Finish & save'}
           </Text>
         </PressableBase>
       </View>

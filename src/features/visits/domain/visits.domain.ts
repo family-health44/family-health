@@ -26,6 +26,8 @@ export function mapDbVisitToVisit(
     familyGroupId: db.family_group_id,
     preNotes: db.pre_notes,
     postNotes: db.post_notes,
+    totalCost: db.total_cost,
+    outOfPocket: db.out_of_pocket,
   };
 }
 

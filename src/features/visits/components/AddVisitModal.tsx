@@ -44,13 +44,25 @@ export const AddVisitModal = ({ visible, isLoading, people = [], doctors = [], d
   const personId = watch('personId');
   const doctorId = watch('doctorId');
 
+  const parseCost = (raw?: string): number | null => {
+    const t = raw?.trim();
+    if (!t) return null;
+    const n = Number(t.replace(/[^0-9.]/g, ''));
+    return Number.isFinite(n) ? n : null;
+  };
+
   const onSubmit = async (values: FormValues) => {
-    let preNotes = values.preNotes?.trim() || null;
-    const costLines: string[] = [];
-    if (values.totalCost?.trim()) costLines.push(`Total cost: $${values.totalCost.trim()}`);
-    if (values.outOfPocketCost?.trim()) costLines.push(`Out of pocket: $${values.outOfPocketCost.trim()}`);
-    if (costLines.length > 0) preNotes = [preNotes, ...costLines].filter(Boolean).join('\n');
-    await onAdd({ title: values.title, visitDate: values.visitDate, visitTime: values.visitTime?.trim() || null, doctorId: values.doctorId ?? null, personId: values.personId, preNotes: preNotes || null, postNotes: null });
+    await onAdd({
+      title: values.title,
+      visitDate: values.visitDate,
+      visitTime: values.visitTime?.trim() || null,
+      doctorId: values.doctorId ?? null,
+      personId: values.personId,
+      preNotes: values.preNotes?.trim() || null,
+      postNotes: null,
+      totalCost: parseCost(values.totalCost),
+      outOfPocket: parseCost(values.outOfPocketCost),
+    });
     reset();
     onDismiss();
   };

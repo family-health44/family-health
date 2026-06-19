@@ -60,6 +60,15 @@ export function parseNoteContent(content: string): NoteSegment[] {
       continue;
     }
 
+    // Match [S:name] (short section marker — appointment-saved notes use this)
+    const shortSectionMatch = trimmed.match(/^\[S:([^\]]+)\]\s*(.*)/);
+    if (shortSectionMatch) {
+      segments.push({ type: 'section', content: shortSectionMatch[1] ?? '' });
+      if (shortSectionMatch[2]?.trim()) {
+        segments.push({ type: 'text', content: shortSectionMatch[2].trim() });
+      }
+      continue;
+    }
     // Match [SECTION:name]
     const sectionMatch = trimmed.match(/^\[SECTION:([^\]]+)\]\s*(.*)/);
     if (sectionMatch) {
