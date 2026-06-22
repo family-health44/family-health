@@ -16,6 +16,12 @@ export interface Medication {
   prescribedBy: string | null; // doctor id
   prescribedByName: string | null; // doctor name — joined at query layer
   familyGroupId: string;
+  form: string | null;
+  timeOfDay: string | null;
+  withFood: string | null;
+  repeatsLeft: number | null;
+  nextRefill: string | null;
+  pharmacy: string | null;
 }
 
 // Grouped by status for display

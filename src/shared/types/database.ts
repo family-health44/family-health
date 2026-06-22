@@ -73,6 +73,12 @@ export interface DbMedication {
   person_id: string;
   prescribed_by: string | null;
   family_group_id: string;
+  form: string | null;
+  time_of_day: string | null;
+  with_food: string | null;
+  repeats_left: number | null;
+  next_refill: string | null;
+  pharmacy: string | null;
 }
 
 export interface DbVisit {

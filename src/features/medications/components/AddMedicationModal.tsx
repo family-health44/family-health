@@ -71,6 +71,12 @@ export const AddMedicationModal = ({
       endDate:     null,
       personId,
       prescribedBy: null,
+      form:        null,
+      timeOfDay:   null,
+      withFood:    null,
+      repeatsLeft: null,
+      nextRefill:  null,
+      pharmacy:    null,
     });
     reset();
     onDismiss();

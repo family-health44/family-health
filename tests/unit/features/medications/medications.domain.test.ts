@@ -21,6 +21,12 @@ const makeDbMedication = (overrides: Partial<DbMedication> = {}): DbMedication =
   person_id: 'person-1',
   prescribed_by: null,
   family_group_id: 'group-1',
+  form: null,
+  time_of_day: null,
+  with_food: null,
+  repeats_left: null,
+  next_refill: null,
+  pharmacy: null,
   ...overrides,
 });
 
@@ -37,6 +43,12 @@ const makeMedication = (overrides: Partial<Medication> = {}): Medication => ({
   prescribedBy: null,
   prescribedByName: null,
   familyGroupId: 'group-1',
+  form: null,
+  timeOfDay: null,
+  withFood: null,
+  repeatsLeft: null,
+  nextRefill: null,
+  pharmacy: null,
   ...overrides,
 });
 

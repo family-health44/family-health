@@ -12,7 +12,7 @@ export async function fetchMedicationsByPerson(personId: string): Promise<DbMedi
   try {
     const { data, error } = await db
       .from('medications')
-      .select('id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id')
+      .select('id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id, form, time_of_day, with_food, repeats_left, next_refill, pharmacy')
       .eq('person_id', personId)
       .order('name', { ascending: true });
 
@@ -28,7 +28,7 @@ export async function fetchMedicationById(medicationId: string): Promise<DbMedic
   try {
     const { data, error } = await db
       .from('medications')
-      .select('id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id')
+      .select('id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id, form, time_of_day, with_food, repeats_left, next_refill, pharmacy')
       .eq('id', medicationId)
       .maybeSingle();
 
@@ -50,6 +50,12 @@ export interface InsertMedicationParams {
   personId: string;
   prescribedBy: string | null;
   familyGroupId: string;
+  form: string | null;
+  timeOfDay: string | null;
+  withFood: string | null;
+  repeatsLeft: number | null;
+  nextRefill: string | null;
+  pharmacy: string | null;
 }
 
 export async function insertMedication(params: InsertMedicationParams): Promise<DbMedication> {
@@ -67,8 +73,14 @@ export async function insertMedication(params: InsertMedicationParams): Promise<
         person_id: params.personId,
         prescribed_by: params.prescribedBy,
         family_group_id: params.familyGroupId,
+        form: params.form,
+        time_of_day: params.timeOfDay,
+        with_food: params.withFood,
+        repeats_left: params.repeatsLeft,
+        next_refill: params.nextRefill,
+        pharmacy: params.pharmacy,
       })
-      .select('id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id')
+      .select('id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id, form, time_of_day, with_food, repeats_left, next_refill, pharmacy')
       .single();
 
     if (error) throw error;
@@ -89,6 +101,12 @@ export interface UpdateMedicationParams {
   startDate: string | null;
   endDate: string | null;
   prescribedBy: string | null;
+  form: string | null;
+  timeOfDay: string | null;
+  withFood: string | null;
+  repeatsLeft: number | null;
+  nextRefill: string | null;
+  pharmacy: string | null;
 }
 
 export async function updateMedication(params: UpdateMedicationParams): Promise<DbMedication> {
@@ -104,9 +122,15 @@ export async function updateMedication(params: UpdateMedicationParams): Promise<
         start_date: params.startDate,
         end_date: params.endDate,
         prescribed_by: params.prescribedBy,
+        form: params.form,
+        time_of_day: params.timeOfDay,
+        with_food: params.withFood,
+        repeats_left: params.repeatsLeft,
+        next_refill: params.nextRefill,
+        pharmacy: params.pharmacy,
       })
       .eq('id', params.medicationId)
-      .select('id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id')
+      .select('id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id, form, time_of_day, with_food, repeats_left, next_refill, pharmacy')
       .single();
 
     if (error) throw error;

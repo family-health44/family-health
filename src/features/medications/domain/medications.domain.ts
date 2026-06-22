@@ -40,6 +40,12 @@ export function mapDbMedicationToMedication(
     prescribedBy: db.prescribed_by,
     prescribedByName,
     familyGroupId: db.family_group_id,
+    form: db.form,
+    timeOfDay: db.time_of_day,
+    withFood: db.with_food,
+    repeatsLeft: db.repeats_left,
+    nextRefill: db.next_refill,
+    pharmacy: db.pharmacy,
   };
 }
 

@@ -10,6 +10,7 @@ import { z } from 'zod';
 
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
+import { InlinePicker } from '@/design-system/components/InlinePicker';
 
 import type { Medication, MedicationStatus } from '../types/medications.types';
 import type { UpdateMedicationParams } from '../repository/medications.repository';
@@ -23,14 +24,30 @@ const PICKER_OPTIONS: { value: PickerStatus; label: string }[] = [
   { value: 'inactive',  label: 'Inactive' },
 ];
 
+// Details-tab dropdown options. Stored value is the label text itself.
+const toOpts = (vals: string[]) => [
+  { id: null as string | null, label: 'Not set' },
+  ...vals.map((v) => ({ id: v, label: v })),
+];
+const FORM_OPTIONS = toOpts(['Tablet', 'Capsule', 'Liquid', 'Injection', 'Inhaler', 'Patch', 'Drops', 'Cream', 'Other']);
+const TIME_OF_DAY_OPTIONS = toOpts(['Morning', 'Midday', 'Evening', 'Night', 'As needed']);
+const WITH_FOOD_OPTIONS = toOpts(['With food', 'Without food', 'Preferred', 'No preference']);
+
 // ── Zod schema ──────────────────────────────────────────────────────────────
 const schema = z.object({
-  name:      z.string().min(1, 'Name is required').max(100),
-  dosage:    z.string().max(100).optional(),
-  frequency: z.string().max(100).optional(),
-  reason:    z.string().max(200).optional(),
-  startDate: z.string().optional(),
-  status:    z.enum(['active', 'as_needed', 'inactive']),
+  name:        z.string().min(1, 'Name is required').max(100),
+  dosage:      z.string().max(100).optional(),
+  frequency:   z.string().max(100).optional(),
+  reason:      z.string().max(200).optional(),
+  startDate:   z.string().optional(),
+  endDate:     z.string().optional(),
+  status:      z.enum(['active', 'as_needed', 'inactive']),
+  form:        z.string().nullable(),
+  timeOfDay:   z.string().nullable(),
+  withFood:    z.string().nullable(),
+  repeatsLeft: z.string().max(6).optional(),
+  nextRefill:  z.string().optional(),
+  pharmacy:    z.string().max(120).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -53,7 +70,8 @@ export const EditMedicationModal = ({
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: '', dosage: '', frequency: '', reason: '', startDate: '', status: 'active',
+      name: '', dosage: '', frequency: '', reason: '', startDate: '', endDate: '', status: 'active',
+      form: null, timeOfDay: null, withFood: null, repeatsLeft: '', nextRefill: '', pharmacy: '',
     },
   });
 
@@ -61,12 +79,19 @@ export const EditMedicationModal = ({
   useEffect(() => {
     if (medication) {
       reset({
-        name:      medication.name,
-        dosage:    medication.dosage     ?? '',
-        frequency: medication.frequency  ?? '',
-        reason:    medication.reason     ?? '',
-        startDate: medication.startDate  ?? '',
-        status:    medication.status,
+        name:        medication.name,
+        dosage:      medication.dosage     ?? '',
+        frequency:   medication.frequency  ?? '',
+        reason:      medication.reason     ?? '',
+        startDate:   medication.startDate  ?? '',
+        endDate:     medication.endDate    ?? '',
+        status:      medication.status,
+        form:        medication.form       ?? null,
+        timeOfDay:   medication.timeOfDay  ?? null,
+        withFood:    medication.withFood   ?? null,
+        repeatsLeft: medication.repeatsLeft != null ? String(medication.repeatsLeft) : '',
+        nextRefill:  medication.nextRefill ?? '',
+        pharmacy:    medication.pharmacy   ?? '',
       });
       setStatusOpen(false);
     }
@@ -77,6 +102,9 @@ export const EditMedicationModal = ({
 
   const onSubmit = async (values: FormValues) => {
     if (!medication) return;
+    const repeatsParsed = values.repeatsLeft && values.repeatsLeft.trim() !== ''
+      ? Number.parseInt(values.repeatsLeft, 10)
+      : null;
     await onSave({
       medicationId: medication.id,
       name:         values.name,
@@ -85,8 +113,14 @@ export const EditMedicationModal = ({
       reason:       values.reason      ?? null,
       status:       values.status      as MedicationStatus,
       startDate:    values.startDate   ?? null,
-      endDate:      medication.endDate,
+      endDate:      values.endDate && values.endDate.trim() !== '' ? values.endDate : null,
       prescribedBy: medication.prescribedBy,
+      form:         values.form        ?? null,
+      timeOfDay:    values.timeOfDay   ?? null,
+      withFood:     values.withFood    ?? null,
+      repeatsLeft:  Number.isNaN(repeatsParsed as number) ? null : repeatsParsed,
+      nextRefill:   values.nextRefill && values.nextRefill.trim() !== '' ? values.nextRefill : null,
+      pharmacy:     values.pharmacy && values.pharmacy.trim() !== '' ? values.pharmacy : null,
     });
     onDismiss();
   };
@@ -150,6 +184,41 @@ export const EditMedicationModal = ({
                   <Input label="Start date" placeholder="YYYY-MM-DD"
                     keyboardType="numbers-and-punctuation"
                     value={value} onChangeText={onChange} onBlur={onBlur} />
+                )} />
+
+                <Controller control={control} name="endDate" render={({ field: { onChange, onBlur, value } }) => (
+                  <Input label="End date" placeholder="YYYY-MM-DD"
+                    keyboardType="numbers-and-punctuation"
+                    value={value} onChangeText={onChange} onBlur={onBlur} />
+                )} />
+
+                <Controller control={control} name="form" render={({ field: { onChange, value } }) => (
+                  <InlinePicker label="Form" options={FORM_OPTIONS} value={value} onChange={onChange} />
+                )} />
+
+                <Controller control={control} name="timeOfDay" render={({ field: { onChange, value } }) => (
+                  <InlinePicker label="Time of day" options={TIME_OF_DAY_OPTIONS} value={value} onChange={onChange} />
+                )} />
+
+                <Controller control={control} name="withFood" render={({ field: { onChange, value } }) => (
+                  <InlinePicker label="With food" options={WITH_FOOD_OPTIONS} value={value} onChange={onChange} />
+                )} />
+
+                <Controller control={control} name="repeatsLeft" render={({ field: { onChange, onBlur, value } }) => (
+                  <Input label="Repeats left" placeholder="e.g. 3"
+                    keyboardType="number-pad"
+                    value={value} onChangeText={onChange} onBlur={onBlur} />
+                )} />
+
+                <Controller control={control} name="nextRefill" render={({ field: { onChange, onBlur, value } }) => (
+                  <Input label="Next refill" placeholder="YYYY-MM-DD"
+                    keyboardType="numbers-and-punctuation"
+                    value={value} onChangeText={onChange} onBlur={onBlur} />
+                )} />
+
+                <Controller control={control} name="pharmacy" render={({ field: { onChange, onBlur, value } }) => (
+                  <Input label="Pharmacy" placeholder="e.g. Chemist Warehouse"
+                    autoCapitalize="words" value={value} onChangeText={onChange} onBlur={onBlur} />
                 )} />
 
                 {/* ── Status picker (styled to match the To Do doctor selector) ── */}
