@@ -66,6 +66,13 @@ export const queryKeys = {
     detail: (medicationId: string) => [...queryKeys.medications.all, medicationId] as const,
   },
 
+  // Medication logs
+  medicationLogs: {
+    all: ['medicationLogs'] as const,
+    byMedication: (medicationId: string) =>
+      [...queryKeys.medicationLogs.all, 'byMedication', medicationId] as const,
+  },
+
   // Visits
   visits: {
     all: ['visits'] as const,

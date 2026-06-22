@@ -133,6 +133,23 @@ export interface DbDocument {
 
 export type DbPersonInsert = Omit<DbPerson, 'id'>;
 export type DbDoctorInsert = Omit<DbDoctor, 'id'>;
+export interface DbMedicationLog {
+  id: string;
+  medication_id: string;
+  person_id: string;
+  family_group_id: string;
+  logged_date: string;
+  logged_time: string | null;
+  feeling: number | null;
+  dose_status: string | null;
+  note: string | null;
+  tags: string[] | null;
+  created_at: string | null;
+}
+
+export type DbMedicationLogInsert = Omit<DbMedicationLog, 'id' | 'created_at'>;
+export type DbMedicationLogUpdate = Partial<Omit<DbMedicationLog, 'id' | 'created_at'>>;
+
 export type DbMedicationInsert = Omit<DbMedication, 'id'>;
 export type DbVisitInsert = Omit<DbVisit, 'id'>;
 export type DbNoteInsert = Omit<DbNote, 'id'>;
