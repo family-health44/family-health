@@ -20,11 +20,12 @@ import { EditMedicationModal } from '../components/EditMedicationModal';
 
 import { useMedicationLogs } from '@/features/medication-logs/hooks/useMedicationLogs';
 import { FEELING_CONFIG, doseStatusLabel } from '@/features/medication-logs/domain/medication-logs.domain';
+import { MedicationLogSheet } from '@/features/medication-logs/components/MedicationLogSheet';
 
 import { usePersonNotesQuery } from '@/features/notes/queries/notes.queries';
 import { parseNoteContent } from '@/features/notes/domain/notes.domain';
 
-import type { MedicationLog } from '@/features/medication-logs/types/medication-logs.types';
+import type { MedicationLog, MedicationLogFormValues } from '@/features/medication-logs/types/medication-logs.types';
 import type { Medication } from '../types/medications.types';
 
 type Tab = 'log' | 'details' | 'notes';
@@ -46,9 +47,11 @@ export const MedicationDetailScreen = ({
   const [tab, setTab] = useState<Tab>('log');
   const [editing, setEditing] = useState(false);
   const [showTeaser, setShowTeaser] = useState(false);
+  const [logSheetOpen, setLogSheetOpen] = useState(false);
+  const [editingLog, setEditingLog] = useState<MedicationLog | null>(null);
 
   const { data: medication, isLoading, error } = useMedicationDetailQuery(medicationId);
-  const { logs, stats, isLoading: logsLoading } = useMedicationLogs(medicationId);
+  const { logs, stats, isLoading: logsLoading, addLog, updateLog, deleteLog, isSubmitting } = useMedicationLogs(medicationId);
   const { updateMedication, isUpdating } = usePersonMedications(personId);
 
   useEffect(() => {
@@ -62,6 +65,17 @@ export const MedicationDetailScreen = ({
   const dismissTeaser = () => {
     setShowTeaser(false);
     void secureStorageAdapter.setItem(TEASER_KEY, String(Date.now()));
+  };
+
+  const openAddLog = () => { setEditingLog(null); setLogSheetOpen(true); };
+  const openEditLog = (log: MedicationLog) => { setEditingLog(log); setLogSheetOpen(true); };
+
+  const handleSaveLog = async (values: MedicationLogFormValues) => {
+    if (editingLog) {
+      await updateLog(editingLog.id, values);
+    } else {
+      await addLog({ personId, familyGroupId, values });
+    }
   };
 
   if (isLoading) return <LoadingState message="Loading medication..." />;
@@ -113,7 +127,8 @@ export const MedicationDetailScreen = ({
             isLoading={logsLoading}
             showTeaser={showTeaser}
             onDismissTeaser={dismissTeaser}
-            onAddLog={() => { /* Stage 5: open Add Log sheet */ }}
+            onAddLog={openAddLog}
+            onEditLog={openEditLog}
           />
         ) : null}
 
@@ -129,6 +144,17 @@ export const MedicationDetailScreen = ({
         onSave={async (params) => { await updateMedication(params); setEditing(false); }}
         onDismiss={() => setEditing(false)}
       />
+
+      <MedicationLogSheet
+        visible={logSheetOpen}
+        isSubmitting={isSubmitting}
+        editingLog={editingLog}
+        medicationLabel={[medication.name, medication.dosage].filter(Boolean).join(' ')}
+        medicationSubLabel={[personName, medication.frequency].filter(Boolean).join(' · ')}
+        onSave={handleSaveLog}
+        onDelete={deleteLog}
+        onDismiss={() => setLogSheetOpen(false)}
+      />
     </View>
   );
 };
@@ -141,13 +167,14 @@ const StatCard = ({ value, label }: { value: string; label: string }) => (
 );
 
 const LogHistoryTab = ({
-  logs, isLoading, showTeaser, onDismissTeaser, onAddLog,
+  logs, isLoading, showTeaser, onDismissTeaser, onAddLog, onEditLog,
 }: {
   logs: MedicationLog[];
   isLoading: boolean;
   showTeaser: boolean;
   onDismissTeaser: () => void;
   onAddLog: () => void;
+  onEditLog: (log: MedicationLog) => void;
 }) => (
   <View>
     {showTeaser ? (
@@ -174,7 +201,11 @@ const LogHistoryTab = ({
       <EmptyState title="No log entries yet" message="Tap Add log entry to record how this medication is going." />
     ) : (
       <View style={{ gap: 10, marginBottom: 16 }}>
-        {logs.map((log) => <LogEntryCard key={log.id} log={log} />)}
+        {logs.map((log) => (
+          <PressableBase key={log.id} onPress={() => onEditLog(log)} accessibilityRole="button" style={(p) => ({ opacity: p ? 0.7 : 1 })}>
+            <LogEntryCard log={log} />
+          </PressableBase>
+        ))}
       </View>
     )}
 
