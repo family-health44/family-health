@@ -267,51 +267,133 @@ export type Database = {
           },
         ]
       }
+      medication_logs: {
+        Row: {
+          created_at: string | null
+          dose_status: string | null
+          family_group_id: string
+          feeling: number | null
+          id: string
+          logged_date: string
+          logged_time: string | null
+          medication_id: string
+          note: string | null
+          person_id: string
+          tags: string[] | null
+        }
+        Insert: {
+          created_at?: string | null
+          dose_status?: string | null
+          family_group_id: string
+          feeling?: number | null
+          id?: string
+          logged_date: string
+          logged_time?: string | null
+          medication_id: string
+          note?: string | null
+          person_id: string
+          tags?: string[] | null
+        }
+        Update: {
+          created_at?: string | null
+          dose_status?: string | null
+          family_group_id?: string
+          feeling?: number | null
+          id?: string
+          logged_date?: string
+          logged_time?: string | null
+          medication_id?: string
+          note?: string | null
+          person_id?: string
+          tags?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medication_logs_family_group_id_fkey"
+            columns: ["family_group_id"]
+            isOneToOne: false
+            referencedRelation: "family_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medication_logs_medication_id_fkey"
+            columns: ["medication_id"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medication_logs_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       medications: {
         Row: {
           created_at: string | null
           dosage: string | null
           end_date: string | null
           family_group_id: string
+          form: string | null
           frequency: string | null
           id: string
           name: string
+          next_refill: string | null
           notes: string | null
           person_id: string
+          pharmacy: string | null
           prescribed_by: string | null
           reason: string | null
+          repeats_left: number | null
           start_date: string | null
           status: string
+          time_of_day: string | null
+          with_food: string | null
         }
         Insert: {
           created_at?: string | null
           dosage?: string | null
           end_date?: string | null
           family_group_id: string
+          form?: string | null
           frequency?: string | null
           id?: string
           name: string
+          next_refill?: string | null
           notes?: string | null
           person_id: string
+          pharmacy?: string | null
           prescribed_by?: string | null
           reason?: string | null
+          repeats_left?: number | null
           start_date?: string | null
           status?: string
+          time_of_day?: string | null
+          with_food?: string | null
         }
         Update: {
           created_at?: string | null
           dosage?: string | null
           end_date?: string | null
           family_group_id?: string
+          form?: string | null
           frequency?: string | null
           id?: string
           name?: string
+          next_refill?: string | null
           notes?: string | null
           person_id?: string
+          pharmacy?: string | null
           prescribed_by?: string | null
           reason?: string | null
+          repeats_left?: number | null
           start_date?: string | null
           status?: string
+          time_of_day?: string | null
+          with_food?: string | null
         }
         Relationships: [
           {
