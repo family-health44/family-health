@@ -6,6 +6,9 @@ import { handleNetworkError } from '@/core/network/errorHandler';
 
 import type { DbNote } from '@/shared/types/database';
 
+// Column list shared by every query — one source of truth (prevents silent field-drop).
+const COLS = 'id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date, created_at';
+
 export async function fetchNotesByPerson(
   personId: string,
   includeHidden = false,
@@ -13,7 +16,7 @@ export async function fetchNotesByPerson(
   try {
     let query = db
       .from('notes')
-      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date, created_at')
+      .select(COLS)
       .eq('person_id', personId);
 
     if (!includeHidden) {
@@ -33,7 +36,7 @@ export async function fetchNotesByVisit(visitId: string): Promise<DbNote[]> {
   try {
     const { data, error } = await db
       .from('notes')
-      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date, created_at')
+      .select(COLS)
       .eq('visit_id', visitId)
       .eq('hidden', false)
       .order('id', { ascending: false });
@@ -49,7 +52,7 @@ export async function fetchNotesByDoctor(doctorId: string): Promise<DbNote[]> {
   try {
     const { data, error } = await db
       .from('notes')
-      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date, created_at')
+      .select(COLS)
       .eq('doctor_id', doctorId)
       .eq('hidden', false)
       .order('id', { ascending: false });
@@ -86,7 +89,7 @@ export async function insertNote(params: InsertNoteParams): Promise<DbNote> {
         hidden: params.hidden,
         note_date: params.noteDate ?? null,
       })
-      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date, created_at')
+      .select(COLS)
       .single();
 
     if (error) throw error;
@@ -120,7 +123,7 @@ export async function updateNote(params: UpdateNoteParams): Promise<DbNote> {
         note_date: params.noteDate ?? null,
       })
       .eq('id', params.noteId)
-      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date, created_at')
+      .select(COLS)
       .single();
 
     if (error) throw error;

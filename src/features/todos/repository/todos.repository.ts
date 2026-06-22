@@ -4,6 +4,9 @@ import { handleNetworkError } from '@/core/network/errorHandler';
 import type { DbTodo } from '@/shared/types/database';
 import type { Todo } from '../types/todos.types';
 
+// Column list shared by every query — one source of truth (prevents silent field-drop).
+const COLS = 'id, title, notes, due_date, completed, person_id, doctor_id, visit_id, family_group_id';
+
 export interface InsertTodoParams {
   title: string;
   notes: string | null;
@@ -33,7 +36,7 @@ export async function fetchTodos(): Promise<DbTodo[]> {
   try {
     const { data, error } = await db
       .from('todos')
-      .select('id, title, notes, due_date, completed, person_id, doctor_id, visit_id, family_group_id')
+      .select(COLS)
       .order('due_date', { ascending: true, nullsFirst: false });
     if (error) throw error;
     return data ?? [];
@@ -54,7 +57,7 @@ export async function insertTodo(params: InsertTodoParams): Promise<DbTodo> {
         visit_id: params.visitId ?? null,
         family_group_id: params.familyGroupId,
       })
-      .select('id, title, notes, due_date, completed, person_id, doctor_id, visit_id, family_group_id')
+      .select(COLS)
       .single();
     if (error) throw error;
     if (!data) throw new Error('Insert returned no data.');
@@ -68,7 +71,7 @@ export async function updateTodoCompleted(todoId: string, completed: boolean): P
       .from('todos')
       .update({ completed })
       .eq('id', todoId)
-      .select('id, title, notes, due_date, completed, person_id, doctor_id, visit_id, family_group_id')
+      .select(COLS)
       .single();
     if (error) throw error;
     if (!data) throw new Error('Update returned no data.');

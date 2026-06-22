@@ -7,12 +7,15 @@ import { handleNetworkError } from '@/core/network/errorHandler';
 import type { DbMedication } from '@/shared/types/database';
 import type { MedicationStatus } from '../types/medications.types';
 
+// Column list shared by every query — one source of truth (prevents silent field-drop).
+const COLS = 'id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id, form, time_of_day, with_food, repeats_left, next_refill, pharmacy';
+
 // Fetch all medications for a specific person
 export async function fetchMedicationsByPerson(personId: string): Promise<DbMedication[]> {
   try {
     const { data, error } = await db
       .from('medications')
-      .select('id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id, form, time_of_day, with_food, repeats_left, next_refill, pharmacy')
+      .select(COLS)
       .eq('person_id', personId)
       .order('name', { ascending: true });
 
@@ -28,7 +31,7 @@ export async function fetchMedicationById(medicationId: string): Promise<DbMedic
   try {
     const { data, error } = await db
       .from('medications')
-      .select('id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id, form, time_of_day, with_food, repeats_left, next_refill, pharmacy')
+      .select(COLS)
       .eq('id', medicationId)
       .maybeSingle();
 
@@ -80,7 +83,7 @@ export async function insertMedication(params: InsertMedicationParams): Promise<
         next_refill: params.nextRefill,
         pharmacy: params.pharmacy,
       })
-      .select('id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id, form, time_of_day, with_food, repeats_left, next_refill, pharmacy')
+      .select(COLS)
       .single();
 
     if (error) throw error;
@@ -130,7 +133,7 @@ export async function updateMedication(params: UpdateMedicationParams): Promise<
         pharmacy: params.pharmacy,
       })
       .eq('id', params.medicationId)
-      .select('id, name, dosage, frequency, reason, status, start_date, end_date, person_id, prescribed_by, family_group_id, form, time_of_day, with_food, repeats_left, next_refill, pharmacy')
+      .select(COLS)
       .single();
 
     if (error) throw error;

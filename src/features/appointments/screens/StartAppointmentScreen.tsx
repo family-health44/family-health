@@ -9,14 +9,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ErrorState } from '@/design-system/components/EmptyState';
 import { Fonts } from '@/design-system/tokens/fonts';
 import { formatTime, isoToDisplayDate, toISODateString } from '@/shared/utils/dates';
-import { secureStorageAdapter } from '@/core/auth/secureStorage';
+import { AiTeaser } from '@/design-system/components/AiTeaser';
 import { MEDICAL_EVENT_CONFIG, MEDICAL_EVENT_TYPES } from '@/features/medical-events/types/medical-events.types';
 import { useActiveAppointment } from '../hooks/useActiveAppointment';
 import type { MedicalEventType } from '@/features/medical-events/types/medical-events.types';
 
 type CaptureKind = 'note' | 'todo' | 'event';
-const TEASER_KEY = 'ai_briefing_dismissed_at';
-const TEASER_REAPPEAR_MS = 30 * 24 * 60 * 60 * 1000; // ~30 days
 
 // epoch ms -> "2:30 PM" via the safe time formatter
 function msToClock(ms: number): string {
@@ -69,24 +67,7 @@ export const StartAppointmentScreen = () => {
   const [draft, setDraft] = useState('');
   const [pendingKind, setPendingKind] = useState<CaptureKind | null>(null);
   const [eventType, setEventType] = useState<MedicalEventType>('illness');
-  const [showTeaser, setShowTeaser] = useState(false);
 
-  // Teaser visibility — reappears ~monthly after dismissal
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      const raw = await secureStorageAdapter.getItem(TEASER_KEY);
-      const dismissedAt = raw ? Number(raw) : 0;
-      const due = !dismissedAt || Date.now() - dismissedAt > TEASER_REAPPEAR_MS;
-      if (active) setShowTeaser(due);
-    })();
-    return () => { active = false; };
-  }, []);
-
-  const dismissTeaser = () => {
-    setShowTeaser(false);
-    void secureStorageAdapter.setItem(TEASER_KEY, String(Date.now()));
-  };
 
   const commitNote = () => {
     const text = draft.trim();
@@ -228,24 +209,11 @@ export const StartAppointmentScreen = () => {
           </View>
         ) : null}
 
-        {/* AI briefing teaser */}
-        {showTeaser ? (
-          <View style={{ backgroundColor: '#F3F0FA', borderWidth: 1, borderColor: '#D8D0F0', borderRadius: 12, padding: 12, marginBottom: 14 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <Text style={{ fontSize: 14, color: '#534AB7' }}>✦</Text>
-              <Text style={{ fontSize: 13, fontWeight: '600', color: '#26215C', flex: 1 }}>AI briefing</Text>
-              <View style={{ backgroundColor: '#CECBF6', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 }}>
-                <Text style={{ fontSize: 10, fontWeight: '700', color: '#3C3489' }}>Pro</Text>
-              </View>
-              <PressableBase onPress={dismissTeaser} hitSlop={10} style={(pressed) => ({ opacity: pressed ? 0.5 : 1, marginLeft: 4 })}>
-                <Text style={{ fontSize: 16, color: '#7F77DD' }}>×</Text>
-              </PressableBase>
-            </View>
-            <Text style={{ fontSize: 12, color: '#3C3489', lineHeight: 18 }}>
-              Get a summary of {appointment.personName}'s history with {appointment.doctorName ?? 'this doctor'} — past visits, notes, and current medications — before you walk in.
-            </Text>
-          </View>
-        ) : null}
+        <AiTeaser
+          storageKey="ai_briefing_dismissed_at"
+          title="AI briefing"
+          body={`Get a summary of ${appointment.personName}'s history with ${appointment.doctorName ?? 'this doctor'} — past visits, notes, and current medications — before you walk in.`}
+        />
 
         {/* Capture input */}
         <View style={{ backgroundColor: '#FFFFFF', borderWidth: pendingKind === 'event' ? 2 : 1, borderColor: pendingKind === 'event' ? '#B5D4F4' : '#E3DDD5', borderRadius: 12, padding: 10, marginBottom: 18 }}>

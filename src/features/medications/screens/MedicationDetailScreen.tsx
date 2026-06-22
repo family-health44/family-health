@@ -11,7 +11,7 @@ import { PressableBase } from '@/design-system/components/PressableBase';
 import { ErrorState, LoadingState, EmptyState } from '@/design-system/components/EmptyState';
 import { Fonts } from '@/design-system/tokens/fonts';
 import { formatDate, formatTime } from '@/shared/utils/dates';
-import { secureStorageAdapter } from '@/core/auth/secureStorage';
+import { AiTeaser } from '@/design-system/components/AiTeaser';
 
 import { useMedicationDetailQuery } from '../queries/medications.queries';
 import { usePersonMedications } from '../hooks/usePersonMedications';
@@ -30,9 +30,6 @@ import type { Medication } from '../types/medications.types';
 
 type Tab = 'log' | 'details' | 'notes';
 
-const TEASER_KEY = 'med_ai_summary_dismissed_at';
-const TEASER_REAPPEAR_MS = 30 * 24 * 60 * 60 * 1000;
-
 interface MedicationDetailScreenProps {
   personId: string;
   medicationId: string;
@@ -46,26 +43,12 @@ export const MedicationDetailScreen = ({
   const insets = useSafeAreaInsets();
   const [tab, setTab] = useState<Tab>('log');
   const [editing, setEditing] = useState(false);
-  const [showTeaser, setShowTeaser] = useState(false);
   const [logSheetOpen, setLogSheetOpen] = useState(false);
   const [editingLog, setEditingLog] = useState<MedicationLog | null>(null);
 
   const { data: medication, isLoading, error } = useMedicationDetailQuery(medicationId);
   const { logs, stats, isLoading: logsLoading, addLog, updateLog, deleteLog, isSubmitting } = useMedicationLogs(medicationId);
   const { updateMedication, isUpdating } = usePersonMedications(personId);
-
-  useEffect(() => {
-    void (async () => {
-      const raw = await secureStorageAdapter.getItem(TEASER_KEY);
-      const dismissedAt = raw ? Number(raw) : 0;
-      setShowTeaser(!dismissedAt || Date.now() - dismissedAt > TEASER_REAPPEAR_MS);
-    })();
-  }, []);
-
-  const dismissTeaser = () => {
-    setShowTeaser(false);
-    void secureStorageAdapter.setItem(TEASER_KEY, String(Date.now()));
-  };
 
   const openAddLog = () => { setEditingLog(null); setLogSheetOpen(true); };
   const openEditLog = (log: MedicationLog) => { setEditingLog(log); setLogSheetOpen(true); };
@@ -125,8 +108,6 @@ export const MedicationDetailScreen = ({
           <LogHistoryTab
             logs={logs}
             isLoading={logsLoading}
-            showTeaser={showTeaser}
-            onDismissTeaser={dismissTeaser}
             onAddLog={openAddLog}
             onEditLog={openEditLog}
           />
@@ -167,33 +148,19 @@ const StatCard = ({ value, label }: { value: string; label: string }) => (
 );
 
 const LogHistoryTab = ({
-  logs, isLoading, showTeaser, onDismissTeaser, onAddLog, onEditLog,
+  logs, isLoading, onAddLog, onEditLog,
 }: {
   logs: MedicationLog[];
   isLoading: boolean;
-  showTeaser: boolean;
-  onDismissTeaser: () => void;
   onAddLog: () => void;
   onEditLog: (log: MedicationLog) => void;
 }) => (
   <View>
-    {showTeaser ? (
-      <View style={{ backgroundColor: '#F3F0FA', borderWidth: 1, borderColor: '#D8D0F0', borderRadius: 12, padding: 12, marginBottom: 14 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-          <Text style={{ fontSize: 14, color: '#534AB7' }}>✦</Text>
-          <Text style={{ fontSize: 13, fontWeight: '600', color: '#26215C', flex: 1 }}>AI summary</Text>
-          <View style={{ backgroundColor: '#CECBF6', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 }}>
-            <Text style={{ fontSize: 10, fontWeight: '700', color: '#3C3489' }}>Pro</Text>
-          </View>
-          <PressableBase onPress={onDismissTeaser} hitSlop={10} style={(p) => ({ opacity: p ? 0.5 : 1, marginLeft: 4 })}>
-            <Text style={{ fontSize: 16, color: '#7F77DD' }}>×</Text>
-          </PressableBase>
-        </View>
-        <Text style={{ fontSize: 12, color: '#3C3489', lineHeight: 18 }}>
-          Pattern detection, trends, and a plain-English summary of how this medication is working — across all your logs.
-        </Text>
-      </View>
-    ) : null}
+    <AiTeaser
+      storageKey="med_ai_summary_dismissed_at"
+      title="AI summary"
+      body="Pattern detection, trends, and a plain-English summary of how this medication is working — across all your logs."
+    />
 
     {isLoading ? (
       <Text style={{ fontSize: 13, color: '#A8A09A', textAlign: 'center', paddingVertical: 20 }}>Loading entries...</Text>
