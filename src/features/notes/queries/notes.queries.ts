@@ -29,12 +29,12 @@ async function buildNameMaps(personId: string) {
   return { doctorMap, medMap, visitMap };
 }
 
-export function usePersonNotesQuery(personId: string) {
+export function usePersonNotesQuery(personId: string, includeHidden = false) {
   return useQuery<Note[], Error>({
-    queryKey: queryKeys.notes.byPerson(personId),
+    queryKey: queryKeys.notes.byPerson(personId, includeHidden),
     queryFn: async () => {
       const [dbNotes, { doctorMap, medMap, visitMap }] = await Promise.all([
-        fetchNotesByPerson(personId),
+        fetchNotesByPerson(personId, includeHidden),
         buildNameMaps(personId),
       ]);
 

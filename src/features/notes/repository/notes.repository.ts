@@ -6,14 +6,21 @@ import { handleNetworkError } from '@/core/network/errorHandler';
 
 import type { DbNote } from '@/shared/types/database';
 
-export async function fetchNotesByPerson(personId: string): Promise<DbNote[]> {
+export async function fetchNotesByPerson(
+  personId: string,
+  includeHidden = false,
+): Promise<DbNote[]> {
   try {
-    const { data, error } = await db
+    let query = db
       .from('notes')
       .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date, created_at')
-      .eq('person_id', personId)
-      .eq('hidden', false)
-      .order('id', { ascending: false });
+      .eq('person_id', personId);
+
+    if (!includeHidden) {
+      query = query.eq('hidden', false);
+    }
+
+    const { data, error } = await query.order('id', { ascending: false });
 
     if (error) throw error;
     return data ?? [];

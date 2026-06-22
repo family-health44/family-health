@@ -51,8 +51,9 @@ export const PersonNotesScreen = ({ personId, personName }: PersonNotesScreenPro
   const [editing, setEditing] = useState<Note | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
   const [filter, setFilter] = useState<LinkFilter>(null);
+  const [showHidden, setShowHidden] = useState(false);
 
-  const { notes, isLoading, error, addNote, updateNote, deleteNote, isSubmitting } = usePersonNotes(personId);
+  const { notes, isLoading, error, addNote, updateNote, deleteNote, setHidden, isSubmitting } = usePersonNotes(personId, showHidden);
   const { data: doctors = [] } = usePersonDoctorsQuery(personId);
   const { data: medicationGroups = [] } = usePersonMedicationsQuery(personId);
   const medications = medicationGroups.flatMap((g) => g.medications);
@@ -85,15 +86,26 @@ export const PersonNotesScreen = ({ personId, personName }: PersonNotesScreenPro
             <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32 }}>Notes</Text>
             {personName ? <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 2 }}>{personName}</Text> : null}
           </View>
-          <PressableBase
-            onPress={() => setSortOrder((o) => (o === 'newest' ? 'oldest' : 'newest'))}
-            accessibilityRole="button"
-            accessibilityLabel={`Sort ${sortOrder === 'newest' ? 'newest' : 'oldest'} first`}
-            style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: pressed ? '#F0EDE8' : 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 8, paddingHorizontal: 11, paddingVertical: 6 })}
-          >
-            <Text style={{ fontSize: 13, color: '#6B6866' }}>{sortOrder === 'newest' ? '↓' : '↑'}</Text>
-            <Text style={{ fontSize: 12, fontWeight: '600', color: '#6B6866' }}>{sortOrder === 'newest' ? 'Newest' : 'Oldest'}</Text>
-          </PressableBase>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <PressableBase
+              onPress={() => setShowHidden((s) => !s)}
+              accessibilityRole="button"
+              accessibilityLabel={showHidden ? 'Hide hidden notes' : 'Show hidden notes'}
+              style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: showHidden ? '#2A6049' : (pressed ? '#F0EDE8' : 'white'), borderWidth: 1, borderColor: showHidden ? '#2A6049' : '#E3DDD5', borderRadius: 8, paddingHorizontal: 11, paddingVertical: 6 })}
+            >
+              <Text style={{ fontSize: 13 }}>{showHidden ? '🙉' : '🙈'}</Text>
+              <Text style={{ fontSize: 12, fontWeight: '600', color: showHidden ? 'white' : '#6B6866' }}>Hidden</Text>
+            </PressableBase>
+            <PressableBase
+              onPress={() => setSortOrder((o) => (o === 'newest' ? 'oldest' : 'newest'))}
+              accessibilityRole="button"
+              accessibilityLabel={`Sort ${sortOrder === 'newest' ? 'newest' : 'oldest'} first`}
+              style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: pressed ? '#F0EDE8' : 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 8, paddingHorizontal: 11, paddingVertical: 6 })}
+            >
+              <Text style={{ fontSize: 13, color: '#6B6866' }}>{sortOrder === 'newest' ? '↓' : '↑'}</Text>
+              <Text style={{ fontSize: 12, fontWeight: '600', color: '#6B6866' }}>{sortOrder === 'newest' ? 'Newest' : 'Oldest'}</Text>
+            </PressableBase>
+          </View>
         </View>
       </View>
 
@@ -123,7 +135,7 @@ export const PersonNotesScreen = ({ personId, personName }: PersonNotesScreenPro
           <EmptyState title={filter ? 'No matches' : 'No notes yet'} message={filter ? 'No notes match this filter.' : 'Tap + to add the first note.'} />
         ) : (
           visibleNotes.map((note) => (
-            <NoteCard key={note.id} note={note} onEdit={setEditing} onDelete={deleteNote} />
+            <NoteCard key={note.id} note={note} onEdit={setEditing} onDelete={deleteNote} dimmed={note.hidden} onToggleHidden={setHidden} />
           ))
         )}
       </ScrollView>

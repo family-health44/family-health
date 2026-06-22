@@ -23,12 +23,13 @@ export interface UsePersonNotesReturn {
   addNote: (values: NoteFormValues) => Promise<void>;
   updateNote: (noteId: string, values: NoteFormValues) => Promise<void>;
   deleteNote: (noteId: string) => Promise<void>;
+  setHidden: (note: Note, hidden: boolean) => Promise<void>;
   isSubmitting: boolean;
 }
 
-export function usePersonNotes(personId: string): UsePersonNotesReturn {
+export function usePersonNotes(personId: string, includeHidden = false): UsePersonNotesReturn {
   const [editingNote, setEditingNote] = useState<Note | null>(null);
-  const { data: notes = [], isLoading, error: queryError } = usePersonNotesQuery(personId);
+  const { data: notes = [], isLoading, error: queryError } = usePersonNotesQuery(personId, includeHidden);
   const addMutation = useAddNoteMutation(personId);
   const updateMutation = useUpdateNoteMutation(personId);
   const deleteMutation = useDeleteNoteMutation(personId);
@@ -63,6 +64,18 @@ export function usePersonNotes(personId: string): UsePersonNotesReturn {
     setEditingNote(null);
   }, [deleteMutation]);
 
+  const setHidden = useCallback(async (note: Note, hidden: boolean) => {
+    await updateMutation.mutateAsync({
+      noteId: note.id,
+      content: note.content,
+      doctorId: note.doctorId,
+      medicationId: note.medicationId,
+      visitId: note.visitId,
+      hidden,
+      noteDate: note.noteDate,
+    });
+  }, [updateMutation]);
+
   const error = queryError
     ? isAppError(queryError) ? queryError : toAppError(queryError)
     : null;
@@ -76,6 +89,7 @@ export function usePersonNotes(personId: string): UsePersonNotesReturn {
     addNote,
     updateNote,
     deleteNote,
+    setHidden,
     isSubmitting: addMutation.isPending || updateMutation.isPending,
   };
 }

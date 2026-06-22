@@ -84,7 +84,8 @@ export const queryKeys = {
   // Notes
   notes: {
     all: ['notes'] as const,
-    byPerson: (personId: string) => [...queryKeys.notes.all, 'byPerson', personId] as const,
+    byPerson: (personId: string, includeHidden = false) =>
+      [...queryKeys.notes.all, 'byPerson', personId, includeHidden] as const,
     byVisit: (visitId: string) => [...queryKeys.notes.all, 'byVisit', visitId] as const,
     byDoctor: (doctorId: string) => [...queryKeys.notes.all, 'byDoctor', doctorId] as const,
     byMedication: (medicationId: string) =>

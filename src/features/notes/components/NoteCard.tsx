@@ -16,6 +16,8 @@ interface NoteCardProps {
   note: Note;
   onEdit: (note: Note) => void;
   onDelete: (noteId: string) => void;
+  dimmed?: boolean;
+  onToggleHidden?: (note: Note, hidden: boolean) => void;
 }
 
 const NoteSegmentView = ({ segment }: { segment: NoteSegment }) => {
@@ -56,7 +58,7 @@ const NoteSegmentView = ({ segment }: { segment: NoteSegment }) => {
   );
 };
 
-export const NoteCard = ({ note, onEdit, onDelete }: NoteCardProps) => {
+export const NoteCard = ({ note, onEdit, onDelete, dimmed, onToggleHidden }: NoteCardProps) => {
   const segments = parseNoteContent(note.content);
 
   const handleLongPress = () => {
@@ -94,9 +96,26 @@ export const NoteCard = ({ note, onEdit, onDelete }: NoteCardProps) => {
         borderRadius: 14,
         padding: 14,
         marginBottom: 10,
-        opacity: pressed ? 0.85 : 1,
+        opacity: pressed ? 0.85 : dimmed ? 0.55 : 1,
       })}
     >
+      {note.hidden && onToggleHidden ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+            <Text style={{ fontSize: 12 }}>🙈</Text>
+            <Text style={{ fontSize: 11, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.6 }}>Hidden</Text>
+          </View>
+          <PressableBase
+            onPress={() => onToggleHidden(note, false)}
+            accessibilityRole="button"
+            accessibilityLabel="Unhide note"
+            style={(pressed) => ({ backgroundColor: pressed ? '#F0EDE8' : 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 5 })}
+          >
+            <Text style={{ fontSize: 12, fontWeight: '600', color: '#2A6049' }}>Unhide</Text>
+          </PressableBase>
+        </View>
+      ) : null}
+
       {/* Linked context badges */}
       {(note.doctorName ?? note.medicationName) ? (
         <View style={{ flexDirection: 'row', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
