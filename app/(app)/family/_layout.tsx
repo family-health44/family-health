@@ -13,6 +13,7 @@ export default function FamilyLayout() {
       <Stack.Screen name="[personId]/info-card" />
       <Stack.Screen name="[personId]/documents" />
       <Stack.Screen name="[personId]/doctor/[doctorId]" />
+      <Stack.Screen name="[personId]/medication/[medicationId]" />
     </Stack>
   );
 }

@@ -4,14 +4,14 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/queryClient';
-import { fetchMedicationsByPerson } from '../repository/medications.repository';
+import { fetchMedicationsByPerson, fetchMedicationById } from '../repository/medications.repository';
 import { fetchDoctorById } from '@/features/doctors/repository/doctors.repository';
 import {
   mapDbMedicationToMedication,
   groupMedicationsByStatus,
 } from '../domain/medications.domain';
 
-import type { MedicationGroup } from '../types/medications.types';
+import type { MedicationGroup, Medication } from '../types/medications.types';
 
 // Medications for a person grouped by status.
 // Joins doctor name for display — avoids a separate query on every card.
@@ -45,5 +45,23 @@ export function usePersonMedicationsQuery(personId: string) {
       return groupMedicationsByStatus(medications);
     },
     enabled: Boolean(personId),
+  });
+}
+
+// Single medication by id (for the detail screen). Joins the prescribing doctor name.
+export function useMedicationDetailQuery(medicationId: string) {
+  return useQuery<Medication | null, Error>({
+    queryKey: queryKeys.medications.detail(medicationId),
+    queryFn: async () => {
+      const dbMed = await fetchMedicationById(medicationId);
+      if (!dbMed) return null;
+      let doctorName: string | null = null;
+      if (dbMed.prescribed_by) {
+        const doc = await fetchDoctorById(dbMed.prescribed_by);
+        doctorName = doc?.name ?? null;
+      }
+      return mapDbMedicationToMedication(dbMed, doctorName);
+    },
+    enabled: Boolean(medicationId),
   });
 }

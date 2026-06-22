@@ -12,9 +12,7 @@ import { Fonts } from '@/design-system/tokens/fonts';
 import { usePersonMedications } from '../hooks/usePersonMedications';
 import { MedicationCard } from './MedicationCard';
 import { AddMedicationModal } from './AddMedicationModal';
-import { EditMedicationModal } from './EditMedicationModal';
 import type { PersonColourSet } from '@/design-system/tokens/colours';
-import type { Medication } from '../types/medications.types';
 
 interface PersonMedicationsTabProps {
   personId: string;
@@ -25,13 +23,12 @@ interface PersonMedicationsTabProps {
 export const PersonMedicationsTab = ({ personId, colourSet, personName }: PersonMedicationsTabProps) => {
   const insets = useSafeAreaInsets();
   const [showAddModal, setShowAddModal]       = useState(false);
-  const [editingMedication, setEditingMedication] = useState<Medication | null>(null);
   const [search, setSearch]                   = useState('');
 
   const {
     groups, isLoading, error,
-    addMedication, updateMedication,
-    isAdding, isUpdating,
+    addMedication,
+    isAdding,
   } = usePersonMedications(personId);
 
   if (isLoading) return <LoadingState message="Loading medications..." />;
@@ -46,11 +43,9 @@ export const PersonMedicationsTab = ({ personId, colourSet, personName }: Person
     }))
     .filter((g) => g.medications.length > 0);
 
-  // Flat lookup so we can find the full Medication object by id on tap.
-  const allMeds = groups.flatMap((g) => g.medications);
+  // Tapping a card opens the medication detail screen.
   const handleCardPress = (medicationId: string) => {
-    const med = allMeds.find((m) => m.id === medicationId) ?? null;
-    setEditingMedication(med);
+    router.push(`/(app)/family/${personId}/medication/${medicationId}`);
   };
 
   return (
@@ -139,17 +134,6 @@ export const PersonMedicationsTab = ({ personId, colourSet, personName }: Person
         onDismiss={() => setShowAddModal(false)}
       />
 
-      {/* ── Edit modal ─────────────────────────────────────────────────── */}
-      <EditMedicationModal
-        visible={editingMedication !== null}
-        isLoading={isUpdating}
-        medication={editingMedication}
-        onSave={async (params) => {
-          await updateMedication(params);
-          setEditingMedication(null);
-        }}
-        onDismiss={() => setEditingMedication(null)}
-      />
     </View>
   );
 };
