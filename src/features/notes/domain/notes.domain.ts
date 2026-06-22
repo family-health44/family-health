@@ -16,6 +16,7 @@ export function mapDbNoteToNote(
   db: DbNote,
   doctorName: string | null = null,
   medicationName: string | null = null,
+  visitName: string | null = null,
 ): Note {
   return {
     id: db.id,
@@ -26,9 +27,11 @@ export function mapDbNoteToNote(
     medicationId: db.medication_id,
     medicationName,
     visitId: db.visit_id,
+    visitName,
     familyGroupId: db.family_group_id,
     hidden: db.hidden,
     noteDate: db.note_date,
+    createdAt: db.created_at,
   };
 }
 
@@ -93,6 +96,7 @@ export function getNotePreview(content: string, maxLength = 100): string {
   const stripped = content
     .replace(/\[EVENT:[^\]]+\]\s*/g, '')
     .replace(/\[SECTION:[^\]]+\]\s*/g, '')
+    .replace(/\[S:[^\]]+\]\s*/g, '')
     .trim();
 
   if (stripped.length <= maxLength) return stripped;

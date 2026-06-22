@@ -10,7 +10,7 @@ export async function fetchNotesByPerson(personId: string): Promise<DbNote[]> {
   try {
     const { data, error } = await db
       .from('notes')
-      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date')
+      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date, created_at')
       .eq('person_id', personId)
       .eq('hidden', false)
       .order('id', { ascending: false });
@@ -26,7 +26,7 @@ export async function fetchNotesByVisit(visitId: string): Promise<DbNote[]> {
   try {
     const { data, error } = await db
       .from('notes')
-      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date')
+      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date, created_at')
       .eq('visit_id', visitId)
       .eq('hidden', false)
       .order('id', { ascending: false });
@@ -42,7 +42,7 @@ export async function fetchNotesByDoctor(doctorId: string): Promise<DbNote[]> {
   try {
     const { data, error } = await db
       .from('notes')
-      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date')
+      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date, created_at')
       .eq('doctor_id', doctorId)
       .eq('hidden', false)
       .order('id', { ascending: false });
@@ -79,7 +79,7 @@ export async function insertNote(params: InsertNoteParams): Promise<DbNote> {
         hidden: params.hidden,
         note_date: params.noteDate ?? null,
       })
-      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date')
+      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date, created_at')
       .single();
 
     if (error) throw error;
@@ -95,6 +95,7 @@ export interface UpdateNoteParams {
   content: string;
   doctorId: string | null;
   medicationId: string | null;
+  visitId: string | null;
   hidden: boolean;
   noteDate?: string | null;
 }
@@ -107,11 +108,12 @@ export async function updateNote(params: UpdateNoteParams): Promise<DbNote> {
         content: params.content,
         doctor_id: params.doctorId,
         medication_id: params.medicationId,
+        visit_id: params.visitId,
         hidden: params.hidden,
         note_date: params.noteDate ?? null,
       })
       .eq('id', params.noteId)
-      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date')
+      .select('id, content, person_id, doctor_id, medication_id, visit_id, family_group_id, hidden, note_date, created_at')
       .single();
 
     if (error) throw error;

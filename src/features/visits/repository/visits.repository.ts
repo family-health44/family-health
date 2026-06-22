@@ -18,6 +18,16 @@ export async function fetchVisitsByDateRange(startDate: string, endDate: string)
   } catch (error) { handleNetworkError(error); }
 }
 
+export async function fetchVisitsByPerson(personId: string): Promise<DbVisit[]> {
+  try {
+    const { data, error } = await db.from('visits').select('id, title, visit_date, visit_time, doctor_id, person_id, family_group_id, pre_notes, post_notes, total_cost, out_of_pocket').eq('person_id', personId).order('visit_date', { ascending: false });
+    if (error) throw error;
+    return data ?? [];
+  } catch (error) {
+    handleNetworkError(error);
+  }
+}
+
 export async function fetchVisitById(visitId: string): Promise<DbVisit | null> {
   try {
     const { data, error } = await db.from('visits').select('id, title, visit_date, visit_time, doctor_id, person_id, family_group_id, pre_notes, post_notes, total_cost, out_of_pocket').eq('id', visitId).maybeSingle();

@@ -11,6 +11,7 @@ const makeDbNote = (content: string, overrides: Partial<DbNote> = {}): DbNote =>
   id: 'note-1',
   content,
   note_date: null,
+  created_at: null,
   person_id: 'person-1',
   doctor_id: null,
   medication_id: null,

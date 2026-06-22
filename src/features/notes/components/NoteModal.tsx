@@ -11,11 +11,14 @@ import { toISODateString } from '@/shared/utils/dates';
 import type { Note, NoteFormValues } from '../types/notes.types';
 import type { Doctor } from '@/features/doctors/types/doctors.types';
 import type { Medication } from '@/features/medications/types/medications.types';
+import type { Visit } from '@/features/visits/types/visits.types';
+import { formatDate } from '@/shared/utils/dates';
 
 const schema = z.object({
   content: z.string().min(1, 'Note content is required').max(5000),
   doctorId: z.string().nullable(),
   medicationId: z.string().nullable(),
+  visitId: z.string().nullable(),
   noteDate: z.string().nullable(),
   hidden: z.boolean(),
 });
@@ -27,24 +30,27 @@ interface NoteModalProps {
   editingNote: Note | null;
   doctors: Doctor[];
   medications: Medication[];
+  visits?: Visit[];
+  defaultVisitId?: string | null;
   onSave: (values: NoteFormValues) => Promise<void>;
   onDismiss: () => void;
 }
 
 
-export const NoteModal = ({ visible, isLoading, editingNote, doctors, medications, onSave, onDismiss }: NoteModalProps) => {
+export const NoteModal = ({ visible, isLoading, editingNote, doctors, medications, visits = [], defaultVisitId = null, onSave, onDismiss }: NoteModalProps) => {
   const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { content: '', doctorId: null, medicationId: null, hidden: false, noteDate: toISODateString(new Date()) },
+    defaultValues: { content: '', doctorId: null, medicationId: null, visitId: defaultVisitId, hidden: false, noteDate: toISODateString(new Date()) },
   });
   const doctorId = watch('doctorId');
   const medicationId = watch('medicationId');
+  const visitId = watch('visitId');
 
   useEffect(() => {
     if (editingNote) {
-      reset({ content: editingNote.content, doctorId: editingNote.doctorId, medicationId: editingNote.medicationId, hidden: editingNote.hidden, noteDate: editingNote.noteDate ?? '' });
+      reset({ content: editingNote.content, doctorId: editingNote.doctorId, medicationId: editingNote.medicationId, visitId: editingNote.visitId, hidden: editingNote.hidden, noteDate: editingNote.noteDate ?? '' });
     } else {
-      reset({ content: '', doctorId: null, medicationId: null, hidden: false, noteDate: toISODateString(new Date()) });
+      reset({ content: '', doctorId: null, medicationId: null, visitId: defaultVisitId, hidden: false, noteDate: toISODateString(new Date()) });
     }
   }, [editingNote, reset, visible]);
 
@@ -57,6 +63,10 @@ export const NoteModal = ({ visible, isLoading, editingNote, doctors, medication
   const medOptions = [
     { id: null, label: 'None' },
     ...medications.map((m) => ({ id: m.id, label: m.name + (m.dosage ? ` ${m.dosage}` : '') })),
+  ];
+  const visitOptions = [
+    { id: null, label: 'None' },
+    ...visits.map((v) => ({ id: v.id, label: `${v.title} — ${formatDate(v.visitDate)}` })),
   ];
 
   return (
@@ -79,6 +89,9 @@ export const NoteModal = ({ visible, isLoading, editingNote, doctors, medication
                 )}
                 {medications.length > 0 && (
                   <InlinePicker label="Link to medication (optional)" options={medOptions} value={medicationId} onChange={(id) => setValue('medicationId', id)} />
+                )}
+                {visits.length > 0 && (
+                  <InlinePicker label="Link to visit (optional)" options={visitOptions} value={visitId} onChange={(id) => setValue('visitId', id)} />
                 )}
                 <Controller control={control} name="hidden" render={({ field: { onChange, value } }) => (
                   <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>

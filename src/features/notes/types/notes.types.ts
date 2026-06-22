@@ -14,9 +14,11 @@ export interface Note {
   medicationId: string | null;
   medicationName: string | null;
   visitId: string | null;
+  visitName: string | null;
   familyGroupId: string;
   hidden: boolean;
   noteDate: string | null;
+  createdAt: string | null;
 }
 
 // Parsed segment of a note's content
@@ -34,6 +36,7 @@ export interface NoteFormValues {
   content: string;
   doctorId: string | null;
   medicationId: string | null;
+  visitId: string | null;
   hidden: boolean;
   noteDate: string | null;
 }

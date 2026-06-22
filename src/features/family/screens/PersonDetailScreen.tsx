@@ -38,6 +38,7 @@ export const PersonDetailScreen = () => {
   const { data: medicationGroups = [] } = usePersonMedicationsQuery(personId ?? '');
   const medications = medicationGroups.flatMap((g) => g.medications);
   const allVisits = (listGroups ?? []).flatMap((g) => g.visits);
+  const personVisits = allVisits.filter((v) => v.personId === personId);
 
   const promptEditName = () => {
     if (!person) return;
@@ -80,6 +81,7 @@ export const PersonDetailScreen = () => {
     { key: 'doctors',        label: 'Doctors',        emoji: '👨‍⚕️', bg: '#E8EFF8', route: `/(app)/family/${person.id}/doctors` },
     { key: 'medications',    label: 'Medications',    emoji: '💊',   bg: '#E6F0EC', route: `/(app)/family/${person.id}/medications` },
     { key: 'medical-events', label: 'Medical Events', emoji: '🏥',  bg: '#F5E8EB', route: `/(app)/family/${person.id}/medical-events` },
+    { key: 'notes',          label: 'Notes',          emoji: '📝',  bg: '#FBF3DD', route: `/(app)/family/${person.id}/notes` },
     { key: 'info-card',      label: 'Info Card',      emoji: '🪪',   bg: '#F5EBE0', route: `/(app)/family/${person.id}/info-card` },
     { key: 'documents',      label: 'Documents',      emoji: '📄',  bg: '#EEE8F7', route: `/(app)/family/${person.id}/documents` },
   ];
@@ -136,7 +138,7 @@ export const PersonDetailScreen = () => {
         </View>
       </ScrollView>
 
-      <NoteModal visible={showNoteModal} editingNote={null} doctors={doctors} medications={medications} isLoading={isAddingNote} onSave={async (values) => { await addNote(values); setShowNoteModal(false); }} onDismiss={() => setShowNoteModal(false)} />
+      <NoteModal visible={showNoteModal} editingNote={null} doctors={doctors} medications={medications} visits={personVisits} isLoading={isAddingNote} onSave={async (values) => { await addNote(values); setShowNoteModal(false); }} onDismiss={() => setShowNoteModal(false)} />
       <AddTodoModal visible={showTodoModal} isLoading={isAddingTodo} defaultPersonId={person.id} doctors={doctors} visits={allVisits} onAdd={async (input) => { await addTodo(input); setShowTodoModal(false); }} onDismiss={() => setShowTodoModal(false)} />
       <AddVisitModal visible={showVisitModal} isLoading={isAddingVisit} people={allPeople} doctors={allDoctors} defaultPersonId={person.id} onAdd={async (input) => { await addVisit(input); setShowVisitModal(false); }} onDismiss={() => setShowVisitModal(false)} />
     </View>

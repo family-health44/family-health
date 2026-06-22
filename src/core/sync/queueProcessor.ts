@@ -31,7 +31,7 @@ interface AddTodoPayload { title: string; notes: string | null; dueDate: string 
 interface ToggleTodoPayload { todoId: string; completed: boolean }
 interface DeleteTodoPayload { todoId: string }
 interface AddNotePayload { content: string; personId: string | null; doctorId: string | null; medicationId: string | null; visitId: string | null; familyGroupId: string; hidden: boolean }
-interface UpdateNotePayload { noteId: string; content: string; doctorId: string | null; medicationId: string | null; hidden: boolean }
+interface UpdateNotePayload { noteId: string; content: string; doctorId: string | null; medicationId: string | null; visitId: string | null; hidden: boolean }
 interface DeleteNotePayload { noteId: string }
 
 // ─── Executor ─────────────────────────────────────────────────────────────────

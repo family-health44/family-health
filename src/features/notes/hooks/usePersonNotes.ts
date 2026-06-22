@@ -39,7 +39,7 @@ export function usePersonNotes(personId: string): UsePersonNotesReturn {
       personId,
       doctorId: values.doctorId,
       medicationId: values.medicationId,
-      visitId: null,
+      visitId: values.visitId,
       hidden: values.hidden,
       noteDate: values.noteDate,
     });
@@ -51,6 +51,7 @@ export function usePersonNotes(personId: string): UsePersonNotesReturn {
       content: values.content,
       doctorId: values.doctorId,
       medicationId: values.medicationId,
+      visitId: values.visitId,
       hidden: values.hidden,
       noteDate: values.noteDate,
     });

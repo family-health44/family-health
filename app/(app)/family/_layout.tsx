@@ -9,6 +9,7 @@ export default function FamilyLayout() {
       <Stack.Screen name="[personId]/doctors" />
       <Stack.Screen name="[personId]/medications" />
       <Stack.Screen name="[personId]/medical-events" />
+      <Stack.Screen name="[personId]/notes" />
       <Stack.Screen name="[personId]/info-card" />
       <Stack.Screen name="[personId]/documents" />
       <Stack.Screen name="[personId]/doctor/[doctorId]" />

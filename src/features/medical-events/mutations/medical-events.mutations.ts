@@ -75,6 +75,7 @@ export function useUpdateMedicalEventMutation(personId: string) {
         content,
         doctorId: input.doctorId,
         medicationId: null,
+        visitId: null,
         hidden: false,
       });
     },
