@@ -28,6 +28,12 @@ module.exports = ({ config }) => ({
     },
     package: 'com.rowan44.familyhealth',
   },
+  updates: {
+    url: 'https://u.expo.dev/ba1462b3-731f-4539-9bbf-dbf563e815e0',
+  },
+  runtimeVersion: {
+    policy: 'appVersion',
+  },
   extra: {
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,
     supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
@@ -38,6 +44,7 @@ module.exports = ({ config }) => ({
   plugins: [
     'expo-router',
     'expo-font',
+    '@sentry/react-native',
   ],
   experiments: {
     typedRoutes: true,
