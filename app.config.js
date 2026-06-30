@@ -14,7 +14,7 @@ module.exports = ({ config }) => ({
   },
   ios: {
     supportsTablet: false,
-    bundleIdentifier: 'com.rowan44.familyhealth',
+    bundleIdentifier: 'com.familyhealth.app',
     developmentTeam: 'U63S68M7JJ',
     buildNumber: '1',
     infoPlist: {
@@ -26,7 +26,7 @@ module.exports = ({ config }) => ({
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#F7F5F0',
     },
-    package: 'com.rowan44.familyhealth',
+    package: 'com.familyhealth.app',
   },
   updates: {
     url: 'https://u.expo.dev/ba1462b3-731f-4539-9bbf-dbf563e815e0',
