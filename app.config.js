@@ -16,7 +16,7 @@ module.exports = ({ config }) => ({
     supportsTablet: false,
     bundleIdentifier: 'com.familyhealthapp.ios',
     developmentTeam: 'U63S68M7JJ',
-    buildNumber: '1',
+    buildNumber: '2',
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
     },
@@ -45,6 +45,19 @@ module.exports = ({ config }) => ({
     'expo-router',
     'expo-font',
     '@sentry/react-native',
+    '@react-native-community/datetimepicker',
+    'expo-sharing',
+    [
+      'expo-document-picker',
+      { iCloudContainerEnvironment: 'Production' },
+    ],
+    [
+      'expo-image-picker',
+      {
+        photosPermission:
+          'Family Health needs access to your photos so you can attach them to a person\u2019s records.',
+      },
+    ],
   ],
   experiments: {
     typedRoutes: true,

@@ -19,7 +19,7 @@ import { Input } from '@/design-system/components/Input';
 import { Button } from '@/design-system/components/Button';
 import type { PersonInfoCard } from '../types/family.types';
 import type { UpdatePersonInfoParams } from '../repository/family.repository';
-import { isoToInputDate, displayToIsoDate } from '@/shared/utils/dates';
+import { DateField } from '@/design-system/components/DateField';
 
 const BLOOD_TYPES = ['Unknown', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
@@ -58,7 +58,7 @@ export const EditInfoCardModal = ({
 
   useEffect(() => {
     if (visible) {
-      setDob(isoToInputDate(initial.dob));
+      setDob(initial.dob ?? '');
       setMedicare(initial.medicareNumber ?? '');
       setBloodType(initial.bloodType ?? null);
       setImmun(initial.immunisationsCurrent);
@@ -74,7 +74,7 @@ export const EditInfoCardModal = ({
 
   const handleSave = async () => {
     await onSave({
-      dob: displayToIsoDate(dob),
+      dob: dob || null,
       medicare_number: orNull(medicare),
       blood_type: bloodType === 'Unknown' ? null : bloodType,
       immunisations_current: immun,
@@ -100,7 +100,7 @@ export const EditInfoCardModal = ({
               <Text style={{ fontSize: 12, color: '#A8A09A', marginBottom: 16 }}>{personName}</Text>
 
               <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 14, paddingBottom: 8 }}>
-                <Input label="Date of birth" placeholder="DD-MM-YYYY" value={dob} onChangeText={setDob} />
+                <DateField label="Date of birth" value={dob} onChange={setDob} />
                 <Input label="Medicare number" placeholder="0000 00000 0" value={medicare} onChangeText={setMedicare} keyboardType="numbers-and-punctuation" />
                 <InlinePicker label="Blood type" options={BLOOD_TYPES.map((b) => ({ id: b, label: b }))} value={bloodType ?? 'Unknown'} onChange={setBloodType} />
                 <InlinePicker label="Immunisations" options={[{ id: 'yes', label: 'Up to date' }, { id: 'no', label: 'Outstanding' }]} value={immun === null ? null : immun ? 'yes' : 'no'} onChange={(id) => setImmun(id === null ? null : id === 'yes')} />

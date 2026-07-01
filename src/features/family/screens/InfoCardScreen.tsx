@@ -4,7 +4,7 @@
 // PWA, which edits these inside the person form. Flagged for A9.
 
 import { useState } from 'react';
-import { View, Text, ScrollView, Share } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -12,6 +12,7 @@ import { PressableBase } from '@/design-system/components/PressableBase';
 import { Button } from '@/design-system/components/Button';
 import { Fonts } from '@/design-system/tokens/fonts';
 import { isoToDisplayDate } from '@/shared/utils/dates';
+import { shareInfoCardPdf } from '@/shared/utils/pdfShare';
 import { EditInfoCardModal } from '@/features/family/components/EditInfoCardModal';
 import { useUpdatePersonInfoMutation } from '@/features/family/mutations/family.mutations';
 import type { Person, PersonInfoCard } from '@/features/family/types/family.types';
@@ -52,15 +53,11 @@ export const InfoCardScreen = ({ person }: InfoCardScreenProps) => {
 
   const handleShare = async () => {
     // Only include fields that are set — a card full of "Not set" isn't useful.
-    const lines = rows.filter((r) => r.value !== NOT_SET).map((r) => `${r.label}: ${r.value}`);
-    const body = lines.length > 0
-      ? `${person.name} — Info Card\n\n${lines.join('\n')}`
+    const setRows = rows.filter((r) => r.value !== NOT_SET);
+    const body = setRows.length > 0
+      ? `${person.name} — Info Card\n\n${setRows.map((r) => `${r.label}: ${r.value}`).join('\n')}`
       : `${person.name} — Info Card\n\nNo details recorded yet.`;
-    try {
-      await Share.share({ message: body });
-    } catch {
-      // user dismissed the share sheet — no-op
-    }
+    await shareInfoCardPdf(person.name, setRows, body);
   };
 
   return (

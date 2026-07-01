@@ -123,10 +123,15 @@ export interface DbTodo {
 export interface DbDocument {
   id: string;
   name: string;
-  file_url: string;
+  file_path: string;
+  file_size: number | null;
+  file_type: string | null;
+  hidden: boolean | null;
   person_id: string | null;
+  doctor_id: string | null;
   visit_id: string | null;
   family_group_id: string;
+  uploaded_at: string | null;
 }
 
 // ─── Insert types (id and defaults omitted) ───────────────────────────────────

@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
+import { DateField, TimeField } from '@/design-system/components/DateField';
 import type { UpdateVisitParams } from '../repository/visits.repository';
 import type { Visit } from '../types/visits.types';
 import type { Doctor } from '@/features/doctors/types/doctors.types';
@@ -88,11 +89,11 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
                 <Controller control={control} name="title" render={({ field: { onChange, onBlur, value } }) => (
                   <Input label="Title" isRequired placeholder="e.g. Annual checkup" autoCapitalize="sentences" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.title?.message} />
                 )} />
-                <Controller control={control} name="visitDate" render={({ field: { onChange, onBlur, value } }) => (
-                  <Input label="Date" isRequired placeholder="YYYY-MM-DD" keyboardType="numbers-and-punctuation" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.visitDate?.message} />
+                <Controller control={control} name="visitDate" render={({ field: { onChange, value } }) => (
+                  <DateField label="Date" isRequired value={value} onChange={onChange} error={errors.visitDate?.message} />
                 )} />
-                <Controller control={control} name="visitTime" render={({ field: { onChange, onBlur, value } }) => (
-                  <Input label="Time" placeholder="HH:MM (optional)" keyboardType="numbers-and-punctuation" value={value} onChangeText={onChange} onBlur={onBlur} />
+                <Controller control={control} name="visitTime" render={({ field: { onChange, value } }) => (
+                  <TimeField label="Time (optional)" value={value} onChange={onChange} />
                 )} />
                 {doctors.length > 0 && (
                   <InlinePicker label="Doctor (optional)" options={doctorOptions} value={doctorId} onChange={(id) => setValue('doctorId', id)} />

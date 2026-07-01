@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
+import { DateField } from '@/design-system/components/DateField';
 import { toISODateString } from '@/shared/utils/dates';
 import type { Note, NoteFormValues } from '../types/notes.types';
 import type { Doctor } from '@/features/doctors/types/doctors.types';
@@ -81,8 +82,8 @@ export const NoteModal = ({ visible, isLoading, editingNote, doctors, medication
                 <Controller control={control} name="content" render={({ field: { onChange, onBlur, value } }) => (
                   <Input label="Note" isRequired placeholder="Write your note here..." autoCapitalize="sentences" multiline numberOfLines={6} style={{ minHeight: 120, textAlignVertical: 'top' }} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.content?.message} />
                 )} />
-                <Controller control={control} name="noteDate" render={({ field: { onChange, onBlur, value } }) => (
-                  <Input label="Date (optional)" placeholder="YYYY-MM-DD" keyboardType="numbers-and-punctuation" value={value ?? ''} onChangeText={onChange} onBlur={onBlur} error={errors.noteDate?.message} />
+                <Controller control={control} name="noteDate" render={({ field: { onChange, value } }) => (
+                  <DateField label="Date (optional)" value={value} onChange={onChange} error={errors.noteDate?.message} />
                 )} />
                 {doctors.length > 0 && (
                   <InlinePicker label="Link to doctor (optional)" options={doctorOptions} value={doctorId} onChange={(id) => setValue('doctorId', id)} />

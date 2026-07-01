@@ -8,6 +8,7 @@ import { z } from 'zod';
 
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
+import { DateField } from '@/design-system/components/DateField';
 import { MEDICAL_EVENT_CONFIG, MEDICAL_EVENT_TYPES } from '../types/medical-events.types';
 
 import type { MedicalEventType } from '../types/medical-events.types';
@@ -88,10 +89,8 @@ export const AddMedicalEventModal = ({
 
                 {/* Date */}
                 <Controller control={control} name="eventDate"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <Input label="Date" isRequired placeholder="YYYY-MM-DD"
-                      keyboardType="numbers-and-punctuation"
-                      value={value} onChangeText={onChange} onBlur={onBlur}
+                  render={({ field: { onChange, value } }) => (
+                    <DateField label="Date" isRequired value={value} onChange={onChange}
                       error={errors.eventDate?.message} />
                   )}
                 />

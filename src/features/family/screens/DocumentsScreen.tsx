@@ -1,29 +1,216 @@
 // src/features/family/screens/DocumentsScreen.tsx
-import { PressableBase } from '@/design-system/components/PressableBase';
-import { View, Text, ScrollView } from 'react-native';
+// Documents — list, upload (Files/Photos), view/share, delete for a person.
+
+import { useCallback } from 'react';
+import { View, Text, ScrollView, Alert, ActivityIndicator, Linking } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { PressableBase } from '@/design-system/components/PressableBase';
 import { Fonts } from '@/design-system/tokens/fonts';
+import { EmptyState, ErrorState } from '@/design-system/components/EmptyState';
 
-interface DocumentsScreenProps { personName: string; }
+import { usePersonDocumentsQuery } from '@/features/documents/queries/documents.queries';
+import {
+  useAddDocumentMutation,
+  useDeleteDocumentMutation,
+  isStorageCapError,
+} from '@/features/documents/mutations/documents.mutations';
+import { pickFromFiles, pickFromPhotos } from '@/features/documents/hooks/useFilePicker';
+import { createSignedUrl } from '@/features/documents/repository/documents.repository';
+import {
+  formatFileSize,
+  totalBytes,
+  kindLabel,
+} from '@/features/documents/domain/documents.domain';
+import { FAMILY_STORAGE_CAP_BYTES } from '@/features/documents/types/documents.types';
+import type { Document, DocumentKind } from '@/features/documents/types/documents.types';
+import { isoToDisplayDate } from '@/shared/utils/dates';
 
-export const DocumentsScreen = ({ personName }: DocumentsScreenProps) => {
+interface DocumentsScreenProps {
+  personId: string;
+  personName: string;
+}
+
+const KIND_ICON: Record<DocumentKind, string> = {
+  pdf: '📕',
+  image: '🖼️',
+  doc: '📄',
+  other: '📎',
+};
+
+export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) => {
   const insets = useSafeAreaInsets();
+  const { data: documents, isLoading, isError, refetch } = usePersonDocumentsQuery(personId);
+  const addDoc = useAddDocumentMutation(personId);
+  const deleteDoc = useDeleteDocumentMutation(personId);
+
+  const used = totalBytes(documents ?? []);
+  const pct = Math.min(100, Math.round((used / FAMILY_STORAGE_CAP_BYTES) * 100));
+
+  const runUpload = useCallback(
+    async (source: 'files' | 'photos') => {
+      try {
+        const file = source === 'files' ? await pickFromFiles() : await pickFromPhotos();
+        if (!file) return;
+        await addDoc.mutateAsync({ file, personId });
+      } catch (error) {
+        if (isStorageCapError(error)) {
+          Alert.alert('Storage full', 'This family has reached the 50 MB limit. Delete a file to add more.');
+        } else {
+          Alert.alert('Upload failed', 'Could not add the document. Please try again.');
+        }
+      }
+    },
+    [addDoc, personId],
+  );
+
+  const onAdd = useCallback(() => {
+    Alert.alert('Add document', 'Choose a source', [
+      { text: 'Files', onPress: () => void runUpload('files') },
+      { text: 'Photos', onPress: () => void runUpload('photos') },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  }, [runUpload]);
+
+  const onOpen = useCallback(async (doc: Document) => {
+    try {
+      const url = await createSignedUrl(doc.filePath);
+      const supported = await Linking.canOpenURL(url);
+      if (supported) await Linking.openURL(url);
+      else Alert.alert('Cannot open', 'No app is available to open this file.');
+    } catch {
+      Alert.alert('Cannot open', 'Could not open the document. Please try again.');
+    }
+  }, []);
+
+  const onRowMenu = useCallback(
+    (doc: Document) => {
+      Alert.alert(doc.name, undefined, [
+        { text: 'View / share', onPress: () => void onOpen(doc) },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () =>
+            Alert.alert('Delete document?', `"${doc.name}" will be permanently removed.`, [
+              { text: 'Cancel', style: 'cancel' },
+              {
+                text: 'Delete',
+                style: 'destructive',
+                onPress: () => {
+                  deleteDoc.mutate(
+                    { id: doc.id, file_path: doc.filePath },
+                    { onError: () => Alert.alert('Delete failed', 'Could not delete. Please try again.') },
+                  );
+                },
+              },
+            ]),
+        },
+        { text: 'Cancel', style: 'cancel' },
+      ]);
+    },
+    [deleteDoc, onOpen],
+  );
+
+  const isBusy = addDoc.isPending;
+
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
-        <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}>
+        <PressableBase
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}
+        >
           <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
           <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
         </PressableBase>
         <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32 }}>Documents</Text>
         <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 2 }}>{personName}</Text>
+
+        <View style={{ marginTop: 10 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ fontSize: 11, color: '#A8A09A' }}>
+              {(documents?.length ?? 0)} file{(documents?.length ?? 0) === 1 ? '' : 's'} · {formatFileSize(used)} used
+            </Text>
+            <Text style={{ fontSize: 11, color: '#A8A09A' }}>50 MB limit</Text>
+          </View>
+          <View style={{ height: 5, backgroundColor: '#E6E2DA', borderRadius: 3, marginTop: 5, overflow: 'hidden' }}>
+            <View style={{ width: `${pct}%`, height: '100%', backgroundColor: pct >= 90 ? '#A32D2D' : '#3E7D62' }} />
+          </View>
+        </View>
       </View>
-      <ScrollView contentContainerStyle={{ padding: 16, flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontSize: 40, marginBottom: 16 }}>📄</Text>
-        <Text style={{ fontSize: 17, fontWeight: '600', color: '#1C1917', marginBottom: 8 }}>No documents yet</Text>
-        <Text style={{ fontSize: 14, color: '#A8A09A', textAlign: 'center', lineHeight: 20 }}>Document upload is coming soon.</Text>
-      </ScrollView>
+
+      {isError ? (
+        <ErrorState message="Couldn't load documents." onRetry={() => void refetch()} />
+      ) : isLoading ? (
+        <ScrollView contentContainerStyle={{ padding: 16, flexGrow: 1, justifyContent: 'center' }}>
+          <ActivityIndicator color="#3E7D62" />
+        </ScrollView>
+      ) : (documents?.length ?? 0) === 0 ? (
+        <ScrollView contentContainerStyle={{ padding: 16, flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <EmptyState title="No documents yet" message="Add a PDF, photo, or file to keep it with this person's records." />
+        </ScrollView>
+      ) : (
+        <ScrollView contentContainerStyle={{ padding: 12, paddingBottom: 100 }}>
+          {documents!.map((doc) => (
+            <PressableBase
+              key={doc.id}
+              onPress={() => onRowMenu(doc)}
+              accessibilityRole="button"
+              accessibilityLabel={doc.name}
+              style={(pressed) => ({
+                opacity: pressed ? 0.7 : 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 10,
+                backgroundColor: '#fff',
+                borderWidth: 0.5,
+                borderColor: '#E6E2DA',
+                borderRadius: 10,
+                paddingVertical: 10,
+                paddingHorizontal: 12,
+                marginBottom: 8,
+              })}
+            >
+              <Text style={{ fontSize: 22 }}>{KIND_ICON[doc.kind]}</Text>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Text numberOfLines={1} style={{ fontSize: 14, color: '#1C1917' }}>{doc.name}</Text>
+                <Text style={{ fontSize: 11, color: '#A8A09A', marginTop: 2 }}>
+                  {kindLabel(doc.kind)} · {formatFileSize(doc.fileSize)}
+                  {doc.uploadedAt ? ` · ${isoToDisplayDate(doc.uploadedAt.slice(0, 10))}` : ''}
+                </Text>
+              </View>
+              <Text style={{ fontSize: 18, color: '#A8A09A' }}>⋯</Text>
+            </PressableBase>
+          ))}
+        </ScrollView>
+      )}
+
+      <View style={{ position: 'absolute', left: 16, right: 16, bottom: insets.bottom + 12 }}>
+        <PressableBase
+          onPress={onAdd}
+          disabled={isBusy}
+          accessibilityRole="button"
+          accessibilityLabel="Add document"
+          style={(pressed) => ({
+            opacity: pressed || isBusy ? 0.7 : 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            backgroundColor: '#3E7D62',
+            borderRadius: 10,
+            paddingVertical: 14,
+          })}
+        >
+          {isBusy ? (
+            <ActivityIndicator color="#fff" size="small" />
+          ) : (
+            <Text style={{ color: '#fff', fontSize: 15, fontWeight: '500' }}>＋  Add document</Text>
+          )}
+        </PressableBase>
+      </View>
     </View>
   );
 };
