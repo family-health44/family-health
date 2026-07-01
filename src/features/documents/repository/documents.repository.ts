@@ -12,7 +12,7 @@ import { handleNetworkError } from '@/core/network/errorHandler';
 import type { DbDocument } from '@/shared/types/database';
 import type { PickedFile } from '../types/documents.types';
 
-const BUCKET = 'documents';
+const BUCKET = 'Documents';
 
 // Column list — one source of truth (prevents silent field-drop).
 const COLS =
