@@ -18,7 +18,9 @@
         "simulator": false
       }
     },
-    "production": {}
+    "production": {
+      "channel": "production"
+    }
   },
   "submit": {
     "production": {}
