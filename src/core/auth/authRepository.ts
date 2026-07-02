@@ -70,7 +70,7 @@ export async function createFamilyGroup(params: CreateFamilyGroupParams): Promis
 
   const { data: group, error: groupError } = await db
     .from('family_groups')
-    .insert({ name: familyGroupName })
+    .insert({ name: familyGroupName, owner_id: userId })
     .select('id')
     .single();
 

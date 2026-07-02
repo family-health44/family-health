@@ -38,12 +38,13 @@ export const Input = forwardRef<TextInput, InputProps>(
           accessibilityLabel={label}
           accessibilityHint={helperText}
           className={[
-            'rounded-xl border px-4 py-3 text-base text-[#1A1A1A]',
+            'rounded-xl border px-4 text-base text-[#1A1A1A]',
             'bg-white',
             hasError
               ? 'border-[#9B3A4A]'
               : 'border-[#C8C4BC] focus:border-[#2A6049]',
           ].join(' ')}
+          style={{ minHeight: 48, paddingTop: 12, paddingBottom: 12, fontSize: 16, lineHeight: 22 }}
           placeholderTextColor="#A8A09A"
           autoCapitalize="none"
           autoCorrect={false}
