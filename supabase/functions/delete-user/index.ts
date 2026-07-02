@@ -53,12 +53,14 @@ Deno.serve(async (req) => {
       auth: { persistSession: false },
     });
 
-    // ── 2. Find this user's family group membership ───────────────────────────
-    const { data: membership, error: membershipError } = await adminClient
+    // ── 2. Find ALL of this user's family group memberships ───────────────────
+    // A user may transiently have >1 membership (interrupted onboarding that
+    // created duplicate groups). Handle every one — .maybeSingle() threw
+    // PGRST116 on 2 rows and 500'd the whole delete.
+    const { data: memberships, error: membershipError } = await adminClient
       .from('family_group_members')
       .select('id, family_group_id')
-      .eq('user_id', userId)
-      .maybeSingle();
+      .eq('user_id', userId);
 
     if (membershipError) {
       console.error('Membership lookup error:', membershipError);
@@ -68,7 +70,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    if (membership) {
+    for (const membership of memberships ?? []) {
       // ── 3a. Count other members in the same group ─────────────────────────
       const { count, error: countError } = await adminClient
         .from('family_group_members')

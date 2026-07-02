@@ -68,6 +68,18 @@ export interface CreateFamilyGroupParams {
 export async function createFamilyGroup(params: CreateFamilyGroupParams): Promise<string> {
   const { userId, familyGroupName } = params;
 
+  // Guard: if this user already belongs to a group, do NOT create another.
+  // Prevents duplicate-group creation when onboarding is re-submitted off a
+  // stale "no membership" cache (the 2026-07-02 double-create incident).
+  const { data: existing, error: existingError } = await db
+    .from('family_group_members')
+    .select('family_group_id')
+    .eq('user_id', userId)
+    .limit(1)
+    .maybeSingle();
+  if (existingError) throw toAppError(existingError);
+  if (existing?.family_group_id) return existing.family_group_id;
+
   const { data: group, error: groupError } = await db
     .from('family_groups')
     .insert({ name: familyGroupName, owner_id: userId })
