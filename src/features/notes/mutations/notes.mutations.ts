@@ -28,7 +28,7 @@ export function useAddNoteMutation(personId: string | null) {
     },
     onSuccess: (_data, input) => {
       if (personId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.notes.byPerson(personId) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.notes.byPersonBase(personId) });
       }
       if (input.visitId) {
         queryClient.invalidateQueries({ queryKey: queryKeys.notes.byVisit(input.visitId) });
@@ -48,7 +48,7 @@ export function useUpdateNoteMutation(personId: string | null, visitId?: string 
       ),
     onSuccess: () => {
       if (personId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.notes.byPerson(personId) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.notes.byPersonBase(personId) });
       }
       if (visitId) {
         queryClient.invalidateQueries({ queryKey: queryKeys.notes.byVisit(visitId) });
@@ -68,7 +68,7 @@ export function useDeleteNoteMutation(personId: string | null, visitId?: string 
       ),
     onSuccess: () => {
       if (personId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.notes.byPerson(personId) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.notes.byPersonBase(personId) });
       }
       if (visitId) {
         queryClient.invalidateQueries({ queryKey: queryKeys.notes.byVisit(visitId) });

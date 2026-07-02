@@ -48,7 +48,7 @@ export function useAddMedicalEventMutation(personId: string) {
         queryKey: queryKeys.medicalEvents.byPerson(personId),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.notes.byPerson(personId),
+        queryKey: queryKeys.notes.byPersonBase(personId),
       });
     },
   });
@@ -84,7 +84,7 @@ export function useUpdateMedicalEventMutation(personId: string) {
         queryKey: queryKeys.medicalEvents.byPerson(personId),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.notes.byPerson(personId),
+        queryKey: queryKeys.notes.byPersonBase(personId),
       });
     },
   });
@@ -99,7 +99,7 @@ export function useDeleteMedicalEventMutation(personId: string) {
         queryKey: queryKeys.medicalEvents.byPerson(personId),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.notes.byPerson(personId),
+        queryKey: queryKeys.notes.byPersonBase(personId),
       });
     },
   });

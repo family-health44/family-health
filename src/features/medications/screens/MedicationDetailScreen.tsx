@@ -3,7 +3,7 @@
 // Tapping a medication opens this; the ✎ in the header opens the existing edit modal.
 
 import { useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -45,7 +45,7 @@ export const MedicationDetailScreen = ({
 
   const { data: medication, isLoading, error } = useMedicationDetailQuery(medicationId);
   const { logs, stats, isLoading: logsLoading, addLog, updateLog, deleteLog, isSubmitting } = useMedicationLogs(medicationId);
-  const { updateMedication, isUpdating } = usePersonMedications(personId);
+  const { updateMedication, isUpdating, deleteMedication } = usePersonMedications(personId);
 
   const openAddLog = () => { setEditingLog(null); setLogSheetOpen(true); };
   const openEditLog = (log: MedicationLog) => { setEditingLog(log); setLogSheetOpen(true); };
@@ -56,6 +56,17 @@ export const MedicationDetailScreen = ({
     } else {
       await addLog({ personId, familyGroupId, values });
     }
+  };
+
+  const handleDelete = () => {
+    Alert.alert(
+      'Delete medication',
+      `${medication?.name ?? 'This medication'} and all its log entries will be permanently removed.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: async () => { await deleteMedication(medicationId); router.back(); } },
+      ],
+    );
   };
 
   if (isLoading) return <LoadingState message="Loading medication..." />;
@@ -113,6 +124,10 @@ export const MedicationDetailScreen = ({
         {tab === 'details' ? <MedicationDetailsTab medication={medication} personName={personName} /> : null}
 
         {tab === 'notes' ? <MedicationNotesTab personId={personId} medicationId={medicationId} /> : null}
+
+        <PressableBase onPress={handleDelete} accessibilityRole="button" accessibilityLabel="Delete medication" style={(p) => ({ opacity: p ? 0.6 : 1, alignItems: 'center', paddingVertical: 16, marginTop: 12 })}>
+          <Text style={{ fontSize: 15, fontWeight: '600', color: '#C0392B' }}>Delete medication</Text>
+        </PressableBase>
       </ScrollView>
 
       <EditMedicationModal

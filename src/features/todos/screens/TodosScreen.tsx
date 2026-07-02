@@ -21,7 +21,7 @@ export const TodosScreen = () => {
   const [showCompleted, setShowCompleted] = useState(false);
   const { openDrawer } = useDrawer();
   const insets = useSafeAreaInsets();
-  const { groups, isLoading, isRefreshing, error, addTodo, toggleTodo, deleteTodo, isAdding, refetch } = useTodos();
+  const { groups, isLoading, isRefreshing, error, addTodo, toggleTodo, deleteTodo, isAdding, refetch, refresh } = useTodos();
   const { data: familyData } = useFamilyHome();
   const { data: doctorGroups } = useDoctorsQuery();
   const { calendarVisits } = useVisits();
@@ -61,7 +61,7 @@ export const TodosScreen = () => {
         data={groups}
         keyExtractor={(item) => item.personId ?? 'general'}
         contentContainerStyle={{ padding: 16, paddingTop: 8, flexGrow: 1 }}
-        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refetch} tintColor="#2A6049" />}
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor="#2A6049" />}
         ListEmptyComponent={<EmptyState title="All done!" message="No active to-do items." />}
         renderItem={({ item }) => (
           <TodoPersonSection group={item} showCompleted={showCompleted} onToggle={toggleTodo} onDelete={deleteTodo} />

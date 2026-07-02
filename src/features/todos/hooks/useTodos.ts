@@ -1,7 +1,7 @@
 // src/features/todos/hooks/useTodos.ts
 // Hook — composes todo queries and mutations for TodosScreen.
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useTodosQuery } from '../queries/todos.queries';
 import {
@@ -27,13 +27,22 @@ export interface UseTodosReturn {
   deleteTodo: (todoId: string) => void;
   isAdding: boolean;
   refetch: () => void;
+  refresh: () => Promise<void>;
 }
 
 export function useTodos(): UseTodosReturn {
-  const { data: groups = [], isLoading, isFetching, error: queryError, refetch } = useTodosQuery();
+  const { data: groups = [], isLoading, error: queryError, refetch } = useTodosQuery();
   const addMutation = useAddTodoMutation();
   const toggleMutation = useToggleTodoMutation();
   const deleteMutation = useDeleteTodoMutation();
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Spinner tracks manual pull-to-refresh only — never background refetches.
+  const refresh = useCallback(async () => {
+    setIsRefreshing(true);
+    try { await refetch(); } finally { setIsRefreshing(false); }
+  }, [refetch]);
 
   const addTodo = useCallback(async (input: AddTodoInput) => {
     await addMutation.mutateAsync(input);
@@ -54,12 +63,13 @@ export function useTodos(): UseTodosReturn {
   return {
     groups,
     isLoading,
-    isRefreshing: isFetching && !isLoading,
+    isRefreshing,
     error,
     addTodo,
     toggleTodo,
     deleteTodo,
     isAdding: addMutation.isPending,
     refetch,
+    refresh,
   };
 }

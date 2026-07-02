@@ -162,7 +162,7 @@ export function useActiveAppointment(): UseActiveAppointmentReturn {
       ]);
 
       // Invalidate everything affected
-      queryClient.invalidateQueries({ queryKey: queryKeys.notes.byPerson(appointment.personId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.notes.byPersonBase(appointment.personId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.todos.list() });
       queryClient.invalidateQueries({ queryKey: queryKeys.medicalEvents.byPerson(appointment.personId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.visits.all });

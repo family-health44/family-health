@@ -9,6 +9,7 @@ import {
   insertMedication,
   updateMedication,
   updateMedicationStatus,
+  deleteMedication,
 } from '../repository/medications.repository';
 
 import type { InsertMedicationParams, UpdateMedicationParams } from '../repository/medications.repository';
@@ -41,6 +42,19 @@ export function useUpdateMedicationMutation(personId: string) {
     onSuccess: (_data, { medicationId }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.medications.byPerson(personId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.medications.detail(medicationId) });
+    },
+  });
+}
+
+export function useDeleteMedicationMutation(personId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (medicationId: string) => deleteMedication(medicationId),
+    onSuccess: (_data, medicationId) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.medications.byPerson(personId) });
+      queryClient.removeQueries({ queryKey: queryKeys.medications.detail(medicationId) });
+      queryClient.removeQueries({ queryKey: queryKeys.medicationLogs.byMedication(medicationId) });
     },
   });
 }

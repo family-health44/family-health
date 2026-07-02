@@ -11,6 +11,8 @@ import { z } from 'zod';
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
 import { InlinePicker } from '@/design-system/components/InlinePicker';
+import { DateField } from '@/design-system/components/DateField';
+import { FORM_OPTIONS, TIME_OF_DAY_OPTIONS, WITH_FOOD_OPTIONS } from './medicationFieldOptions';
 
 import type { Medication, MedicationStatus } from '../types/medications.types';
 import type { UpdateMedicationParams } from '../repository/medications.repository';
@@ -23,15 +25,6 @@ const PICKER_OPTIONS: { value: PickerStatus; label: string }[] = [
   { value: 'as_needed', label: 'As Needed' },
   { value: 'inactive',  label: 'Inactive' },
 ];
-
-// Details-tab dropdown options. Stored value is the label text itself.
-const toOpts = (vals: string[]) => [
-  { id: null as string | null, label: 'Not set' },
-  ...vals.map((v) => ({ id: v, label: v })),
-];
-const FORM_OPTIONS = toOpts(['Tablet', 'Capsule', 'Liquid', 'Injection', 'Inhaler', 'Patch', 'Drops', 'Cream', 'Other']);
-const TIME_OF_DAY_OPTIONS = toOpts(['Morning', 'Midday', 'Evening', 'Night', 'As needed']);
-const WITH_FOOD_OPTIONS = toOpts(['With food', 'Without food', 'Preferred', 'No preference']);
 
 // ── Zod schema ──────────────────────────────────────────────────────────────
 const schema = z.object({
@@ -180,16 +173,12 @@ export const EditMedicationModal = ({
                     autoCapitalize="sentences" value={value} onChangeText={onChange} onBlur={onBlur} />
                 )} />
 
-                <Controller control={control} name="startDate" render={({ field: { onChange, onBlur, value } }) => (
-                  <Input label="Start date" placeholder="YYYY-MM-DD"
-                    keyboardType="numbers-and-punctuation"
-                    value={value} onChangeText={onChange} onBlur={onBlur} />
+                <Controller control={control} name="startDate" render={({ field: { onChange, value } }) => (
+                  <DateField label="Start date" value={value || null} onChange={onChange} />
                 )} />
 
-                <Controller control={control} name="endDate" render={({ field: { onChange, onBlur, value } }) => (
-                  <Input label="End date" placeholder="YYYY-MM-DD"
-                    keyboardType="numbers-and-punctuation"
-                    value={value} onChangeText={onChange} onBlur={onBlur} />
+                <Controller control={control} name="endDate" render={({ field: { onChange, value } }) => (
+                  <DateField label="End date" value={value || null} onChange={onChange} />
                 )} />
 
                 <Controller control={control} name="form" render={({ field: { onChange, value } }) => (
@@ -210,10 +199,8 @@ export const EditMedicationModal = ({
                     value={value} onChangeText={onChange} onBlur={onBlur} />
                 )} />
 
-                <Controller control={control} name="nextRefill" render={({ field: { onChange, onBlur, value } }) => (
-                  <Input label="Next refill" placeholder="YYYY-MM-DD"
-                    keyboardType="numbers-and-punctuation"
-                    value={value} onChangeText={onChange} onBlur={onBlur} />
+                <Controller control={control} name="nextRefill" render={({ field: { onChange, value } }) => (
+                  <DateField label="Next refill" value={value || null} onChange={onChange} />
                 )} />
 
                 <Controller control={control} name="pharmacy" render={({ field: { onChange, onBlur, value } }) => (

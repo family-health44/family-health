@@ -7,6 +7,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
+import { InlinePicker } from '@/design-system/components/InlinePicker';
+import { SPECIALTY_LIST, SPECIALTY_OPTIONS, OTHER_SPECIALTY } from '../domain/specialties';
 import { isoToDisplayDate } from '@/shared/utils/dates';
 import { usePersonDoctors } from '../hooks/usePersonDoctors';
 import { updateDoctor } from '../repository/doctors.repository';
@@ -47,6 +49,7 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
   const [showEditModal, setShowEditModal] = useState(false);
   const [editName, setEditName] = useState('');
   const [editType, setEditType] = useState('');
+  const [editTypeChoice, setEditTypeChoice] = useState<string | null>(null);
   const [editPhone, setEditPhone] = useState('');
   const [editAddress, setEditAddress] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -85,7 +88,10 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
 
   const handleOpenEdit = () => {
     setEditName(doctor.name);
-    setEditType(doctor.type ?? '');
+    const currentType = (doctor.type ?? '').trim();
+    const match = SPECIALTY_LIST.find((s) => s.toLowerCase() === currentType.toLowerCase());
+    setEditType(match ?? currentType);
+    setEditTypeChoice(currentType ? (match ?? OTHER_SPECIALTY) : null);
     setEditPhone(doctor.phone ?? '');
     setEditAddress(doctor.address ?? '');
     setShowEditModal(true);
@@ -207,7 +213,11 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
                 <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
                   <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>Edit doctor</Text>
                   <Input label="Name" isRequired value={editName} onChangeText={setEditName} autoCapitalize="words" />
-                  <Input label="Specialty / Type" placeholder="e.g. GP, Dentist" value={editType} onChangeText={setEditType} autoCapitalize="words" />
+                  <InlinePicker label="Specialty / Type" options={SPECIALTY_OPTIONS} value={editTypeChoice}
+                    onChange={(id) => { setEditTypeChoice(id); setEditType(id && id !== OTHER_SPECIALTY ? id : ''); }} />
+                  {editTypeChoice === OTHER_SPECIALTY ? (
+                    <Input label="Specialty (other)" placeholder="e.g. Vascular surgeon" value={editType} onChangeText={setEditType} autoCapitalize="words" />
+                  ) : null}
                   <Input label="Phone" placeholder="e.g. 02 1234 5678" value={editPhone} onChangeText={setEditPhone} keyboardType="phone-pad" />
                   <Input label="Address" placeholder="Practice address" value={editAddress} onChangeText={setEditAddress} autoCapitalize="words" multiline numberOfLines={2} />
                   <View style={{ gap: 12, marginTop: 8 }}>

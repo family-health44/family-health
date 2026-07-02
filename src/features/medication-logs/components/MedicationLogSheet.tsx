@@ -2,7 +2,7 @@
 // Slide-up sheet for adding or editing a medication log entry.
 // Add mode: editingLog = null. Edit mode: editingLog provided (adds Delete action).
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, TextInput, Alert } from 'react-native';
 
 import { PressableBase } from '@/design-system/components/PressableBase';
@@ -103,6 +103,8 @@ export const MedicationLogSheet = ({
     ]);
   };
 
+  const scrollRef = useRef<ScrollView>(null);
+
   const allTagChips = [...PRESET_TAGS, ...tags.filter((t) => !PRESET_TAGS.includes(t))];
 
   return (
@@ -123,7 +125,7 @@ export const MedicationLogSheet = ({
                 <View style={{ width: 22 }} />
               </View>
 
-              <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 12 }} keyboardShouldPersistTaps="handled">
+              <ScrollView ref={scrollRef} contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 12 }} keyboardShouldPersistTaps="handled">
                 <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E8E4DC', borderRadius: 12, padding: 12, marginBottom: 18 }}>
                   <Text style={{ fontSize: 14, fontWeight: '700', color: '#1C1917' }}>{medicationLabel}</Text>
                   {medicationSubLabel ? <Text style={{ fontSize: 12, color: '#6B6866', marginTop: 2 }}>{medicationSubLabel}</Text> : null}
@@ -169,7 +171,9 @@ export const MedicationLogSheet = ({
                 </View>
 
                 <Label text="Notes (optional)" />
-                <TextInput value={note} onChangeText={setNote} placeholder="How are you feeling on this medication?" placeholderTextColor="#A8A09A" multiline style={[inputStyle, { height: 90, textAlignVertical: 'top', paddingTop: 12 }]} />
+                <TextInput value={note} onChangeText={setNote} placeholder="How are you feeling on this medication?" placeholderTextColor="#A8A09A" multiline
+                  onFocus={() => setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 300)}
+                  style={[inputStyle, { height: 90, textAlignVertical: 'top', paddingTop: 12 }]} />
 
                 <Label text="Dose" />
                 <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E8E4DC', borderRadius: 12, overflow: 'hidden', marginBottom: 20 }}>

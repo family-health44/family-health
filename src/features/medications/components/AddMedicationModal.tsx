@@ -9,6 +9,9 @@ import { z } from 'zod';
 
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
+import { InlinePicker } from '@/design-system/components/InlinePicker';
+import { DateField } from '@/design-system/components/DateField';
+import { FORM_OPTIONS, TIME_OF_DAY_OPTIONS, WITH_FOOD_OPTIONS } from './medicationFieldOptions';
 
 import type { MedicationStatus } from '../types/medications.types';
 import type { InsertMedicationParams } from '../repository/medications.repository';
@@ -24,12 +27,19 @@ const PICKER_OPTIONS: { value: PickerStatus; label: string }[] = [
 
 // ── Zod schema ──────────────────────────────────────────────────────────────
 const schema = z.object({
-  name:      z.string().min(1, 'Name is required').max(100),
-  dosage:    z.string().max(100).optional(),
-  frequency: z.string().max(100).optional(),
-  reason:    z.string().max(200).optional(),
-  startDate: z.string().optional(),
-  status:    z.enum(['active', 'as_needed', 'inactive']),
+  name:        z.string().min(1, 'Name is required').max(100),
+  dosage:      z.string().max(100).optional(),
+  frequency:   z.string().max(100).optional(),
+  reason:      z.string().max(200).optional(),
+  startDate:   z.string().optional(),
+  endDate:     z.string().optional(),
+  status:      z.enum(['active', 'as_needed', 'inactive']),
+  form:        z.string().nullable(),
+  timeOfDay:   z.string().nullable(),
+  withFood:    z.string().nullable(),
+  repeatsLeft: z.string().max(6).optional(),
+  nextRefill:  z.string().optional(),
+  pharmacy:    z.string().max(120).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -53,7 +63,8 @@ export const AddMedicationModal = ({
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: '', dosage: '', frequency: '', reason: '', startDate: '', status: 'active',
+      name: '', dosage: '', frequency: '', reason: '', startDate: '', endDate: '', status: 'active',
+      form: null, timeOfDay: null, withFood: null, repeatsLeft: '', nextRefill: '', pharmacy: '',
     },
   });
 
@@ -61,22 +72,25 @@ export const AddMedicationModal = ({
   const selectedLabel  = PICKER_OPTIONS.find((o) => o.value === selectedStatus)?.label ?? 'Active';
 
   const onSubmit = async (values: FormValues) => {
+    const repeatsParsed = values.repeatsLeft && values.repeatsLeft.trim() !== ''
+      ? Number.parseInt(values.repeatsLeft, 10)
+      : null;
     await onAdd({
       name:        values.name,
       dosage:      values.dosage      ?? null,
       frequency:   values.frequency   ?? null,
       reason:      values.reason      ?? null,
       status:      values.status      as MedicationStatus,
-      startDate:   values.startDate   ?? null,
-      endDate:     null,
+      startDate:   values.startDate && values.startDate.trim() !== '' ? values.startDate : null,
+      endDate:     values.endDate && values.endDate.trim() !== '' ? values.endDate : null,
       personId,
       prescribedBy: null,
-      form:        null,
-      timeOfDay:   null,
-      withFood:    null,
-      repeatsLeft: null,
-      nextRefill:  null,
-      pharmacy:    null,
+      form:        values.form        ?? null,
+      timeOfDay:   values.timeOfDay   ?? null,
+      withFood:    values.withFood    ?? null,
+      repeatsLeft: Number.isNaN(repeatsParsed as number) ? null : repeatsParsed,
+      nextRefill:  values.nextRefill && values.nextRefill.trim() !== '' ? values.nextRefill : null,
+      pharmacy:    values.pharmacy && values.pharmacy.trim() !== '' ? values.pharmacy : null,
     });
     reset();
     onDismiss();
@@ -138,10 +152,39 @@ export const AddMedicationModal = ({
                     autoCapitalize="sentences" value={value} onChangeText={onChange} onBlur={onBlur} />
                 )} />
 
-                <Controller control={control} name="startDate" render={({ field: { onChange, onBlur, value } }) => (
-                  <Input label="Start date" placeholder="YYYY-MM-DD"
-                    keyboardType="numbers-and-punctuation"
+                <Controller control={control} name="startDate" render={({ field: { onChange, value } }) => (
+                  <DateField label="Start date" value={value || null} onChange={onChange} />
+                )} />
+
+                <Controller control={control} name="endDate" render={({ field: { onChange, value } }) => (
+                  <DateField label="End date" value={value || null} onChange={onChange} />
+                )} />
+
+                <Controller control={control} name="form" render={({ field: { onChange, value } }) => (
+                  <InlinePicker label="Form" options={FORM_OPTIONS} value={value} onChange={onChange} />
+                )} />
+
+                <Controller control={control} name="timeOfDay" render={({ field: { onChange, value } }) => (
+                  <InlinePicker label="Time of day" options={TIME_OF_DAY_OPTIONS} value={value} onChange={onChange} />
+                )} />
+
+                <Controller control={control} name="withFood" render={({ field: { onChange, value } }) => (
+                  <InlinePicker label="With food" options={WITH_FOOD_OPTIONS} value={value} onChange={onChange} />
+                )} />
+
+                <Controller control={control} name="repeatsLeft" render={({ field: { onChange, onBlur, value } }) => (
+                  <Input label="Repeats left" placeholder="e.g. 3"
+                    keyboardType="number-pad"
                     value={value} onChangeText={onChange} onBlur={onBlur} />
+                )} />
+
+                <Controller control={control} name="nextRefill" render={({ field: { onChange, value } }) => (
+                  <DateField label="Next refill" value={value || null} onChange={onChange} />
+                )} />
+
+                <Controller control={control} name="pharmacy" render={({ field: { onChange, onBlur, value } }) => (
+                  <Input label="Pharmacy" placeholder="e.g. Chemist Warehouse"
+                    autoCapitalize="words" value={value} onChangeText={onChange} onBlur={onBlur} />
                 )} />
 
                 {/* ── Status picker (styled to match the To Do doctor selector) ── */}

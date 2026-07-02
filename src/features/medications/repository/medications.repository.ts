@@ -144,6 +144,20 @@ export async function updateMedication(params: UpdateMedicationParams): Promise<
   }
 }
 
+// Delete a medication. medication_logs cascade on medication_id at the DB level.
+export async function deleteMedication(medicationId: string): Promise<void> {
+  try {
+    const { error } = await db
+      .from('medications')
+      .delete()
+      .eq('id', medicationId);
+
+    if (error) throw error;
+  } catch (error) {
+    handleNetworkError(error);
+  }
+}
+
 // Quickly update just the status — used for active/inactive toggle
 export async function updateMedicationStatus(
   medicationId: string,

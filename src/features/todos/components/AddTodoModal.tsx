@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
+import { DateField } from '@/design-system/components/DateField';
 import type { InsertTodoParams } from '../repository/todos.repository';
 import type { Doctor } from '@/features/doctors/types/doctors.types';
 import type { Visit } from '@/features/visits/types/visits.types';
@@ -95,8 +96,8 @@ export const AddTodoModal = ({ visible, isLoading, people = [], defaultPersonId,
                 <Controller control={control} name="notes" render={({ field: { onChange, onBlur, value } }) => (
                   <Input label="Notes" placeholder="Additional details (optional)" autoCapitalize="sentences" multiline numberOfLines={2} value={value} onChangeText={onChange} onBlur={onBlur} />
                 )} />
-                <Controller control={control} name="dueDate" render={({ field: { onChange, onBlur, value } }) => (
-                  <Input label="Due date" placeholder="YYYY-MM-DD (optional)" keyboardType="numbers-and-punctuation" value={value} onChangeText={onChange} onBlur={onBlur} />
+                <Controller control={control} name="dueDate" render={({ field: { onChange, value } }) => (
+                  <DateField label="Due date" placeholder="Select a date (optional)" value={value || null} onChange={onChange} />
                 )} />
                 {doctors.length > 0 && (
                   <InlinePicker label="Link to doctor (optional)" options={doctorOptions} value={doctorId} onChange={(id) => setValue('doctorId', id)} />

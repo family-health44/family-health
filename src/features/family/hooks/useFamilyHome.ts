@@ -2,7 +2,7 @@
 // Hook — composes queries and mutations for FamilyHomeScreen.
 // Screen imports only this hook — no direct query/mutation imports.
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/queryClient';
@@ -25,11 +25,15 @@ export interface UseFamilyHomeReturn {
 
 export function useFamilyHome(): UseFamilyHomeReturn {
   const queryClient = useQueryClient();
-  const { data, isLoading, isFetching, error: queryError, refetch } = useFamilyHomeQuery();
+  const { data, isLoading, error: queryError, refetch } = useFamilyHomeQuery();
   const addMutation = useAddPersonMutation();
 
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Spinner tracks manual pull-to-refresh only — never background refetches.
   const refresh = useCallback(async () => {
-    await refetch();
+    setIsRefreshing(true);
+    try { await refetch(); } finally { setIsRefreshing(false); }
   }, [refetch]);
 
   const addPerson = useCallback(async (name: string): Promise<void> => {
@@ -45,7 +49,7 @@ export function useFamilyHome(): UseFamilyHomeReturn {
   return {
     data,
     isLoading,
-    isRefreshing: isFetching && !isLoading,
+    isRefreshing,
     error,
     refresh,
     addPerson,

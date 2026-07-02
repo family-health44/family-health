@@ -2,6 +2,7 @@
 // Modal for adding a new doctor — name, type, phone, address.
 // React Hook Form + Zod. No business logic.
 
+import { useState, useEffect } from 'react';
 import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,6 +10,8 @@ import { z } from 'zod';
 
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
+import { InlinePicker } from '@/design-system/components/InlinePicker';
+import { SPECIALTY_OPTIONS, OTHER_SPECIALTY } from '../domain/specialties';
 
 const addDoctorSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -27,10 +30,16 @@ interface AddDoctorModalProps {
 }
 
 export const AddDoctorModal = ({ visible, isLoading, onAdd, onDismiss }: AddDoctorModalProps) => {
-  const { control, handleSubmit, reset, formState: { errors } } = useForm<AddDoctorFormValues>({
+  const [typeChoice, setTypeChoice] = useState<string | null>(null);
+  const { control, handleSubmit, reset, setValue, formState: { errors } } = useForm<AddDoctorFormValues>({
     resolver: zodResolver(addDoctorSchema),
     defaultValues: { name: '', type: '', phone: '', address: '' },
   });
+
+  // Reset the picker whenever the modal closes so a reopened form starts clean.
+  useEffect(() => {
+    if (!visible) { setTypeChoice(null); reset(); }
+  }, [visible, reset]);
 
   const onSubmit = async (values: AddDoctorFormValues) => {
     await onAdd({
@@ -80,10 +89,14 @@ export const AddDoctorModal = ({ visible, isLoading, onAdd, onDismiss }: AddDoct
                     onBlur={onBlur} error={errors.name?.message} />
                 )} />
 
-                <Controller control={control} name="type" render={({ field: { onChange, onBlur, value } }) => (
-                  <Input label="Specialty / type" placeholder="e.g. GP, Cardiologist"
-                    autoCapitalize="words" value={value} onChangeText={onChange} onBlur={onBlur} />
-                )} />
+                <InlinePicker label="Specialty / type" options={SPECIALTY_OPTIONS} value={typeChoice}
+                  onChange={(id) => { setTypeChoice(id); setValue('type', id && id !== OTHER_SPECIALTY ? id : ''); }} />
+                {typeChoice === OTHER_SPECIALTY ? (
+                  <Controller control={control} name="type" render={({ field: { onChange, onBlur, value } }) => (
+                    <Input label="Specialty (other)" placeholder="e.g. Vascular surgeon"
+                      autoCapitalize="words" value={value} onChangeText={onChange} onBlur={onBlur} />
+                  )} />
+                ) : null}
 
                 <Controller control={control} name="phone" render={({ field: { onChange, onBlur, value } }) => (
                   <Input label="Phone number" placeholder="02 1234 5678"
