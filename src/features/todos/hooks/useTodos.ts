@@ -6,13 +6,14 @@ import { useCallback, useState } from 'react';
 import { useTodosQuery } from '../queries/todos.queries';
 import {
   useAddTodoMutation,
+  useUpdateTodoMutation,
   useToggleTodoMutation,
   useDeleteTodoMutation,
 } from '../mutations/todos.mutations';
 import { isAppError, toAppError } from '@/shared/types/errors';
 
 import type { TodoPersonGroup } from '../types/todos.types';
-import type { InsertTodoParams } from '../repository/todos.repository';
+import type { InsertTodoParams, UpdateTodoParams } from '../repository/todos.repository';
 import type { AppError } from '@/shared/types/errors';
 
 type AddTodoInput = Omit<InsertTodoParams, 'familyGroupId'>;
@@ -23,9 +24,11 @@ export interface UseTodosReturn {
   isRefreshing: boolean;
   error: AppError | null;
   addTodo: (input: AddTodoInput) => Promise<void>;
+  updateTodo: (params: UpdateTodoParams) => Promise<void>;
   toggleTodo: (todoId: string, completed: boolean) => void;
   deleteTodo: (todoId: string) => void;
   isAdding: boolean;
+  isUpdating: boolean;
   refetch: () => void;
   refresh: () => Promise<void>;
 }
@@ -33,6 +36,7 @@ export interface UseTodosReturn {
 export function useTodos(): UseTodosReturn {
   const { data: groups = [], isLoading, error: queryError, refetch } = useTodosQuery();
   const addMutation = useAddTodoMutation();
+  const updateMutation = useUpdateTodoMutation();
   const toggleMutation = useToggleTodoMutation();
   const deleteMutation = useDeleteTodoMutation();
 
@@ -47,6 +51,10 @@ export function useTodos(): UseTodosReturn {
   const addTodo = useCallback(async (input: AddTodoInput) => {
     await addMutation.mutateAsync(input);
   }, [addMutation]);
+
+  const updateTodo = useCallback(async (params: UpdateTodoParams) => {
+    await updateMutation.mutateAsync(params);
+  }, [updateMutation]);
 
   const toggleTodo = useCallback((todoId: string, completed: boolean) => {
     toggleMutation.mutate({ todoId, completed });
@@ -66,9 +74,11 @@ export function useTodos(): UseTodosReturn {
     isRefreshing,
     error,
     addTodo,
+    updateTodo,
     toggleTodo,
     deleteTodo,
     isAdding: addMutation.isPending,
+    isUpdating: updateMutation.isPending,
     refetch,
     refresh,
   };

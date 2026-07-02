@@ -17,6 +17,16 @@ export interface InsertTodoParams {
   familyGroupId: string;
 }
 
+export interface UpdateTodoParams {
+  todoId: string;
+  title: string;
+  notes: string | null;
+  dueDate: string | null;
+  personId: string | null;
+  doctorId?: string | null;
+  visitId?: string | null;
+}
+
 export function mapDbTodoToTodo(row: DbTodo, personName: string | null = null): Todo {
   return {
     id: row.id,
@@ -61,6 +71,27 @@ export async function insertTodo(params: InsertTodoParams): Promise<DbTodo> {
       .single();
     if (error) throw error;
     if (!data) throw new Error('Insert returned no data.');
+    return data;
+  } catch (error) { handleNetworkError(error); }
+}
+
+export async function updateTodo(params: UpdateTodoParams): Promise<DbTodo> {
+  try {
+    const { data, error } = await db
+      .from('todos')
+      .update({
+        title: params.title,
+        notes: params.notes,
+        due_date: params.dueDate,
+        person_id: params.personId,
+        doctor_id: params.doctorId ?? null,
+        visit_id: params.visitId ?? null,
+      })
+      .eq('id', params.todoId)
+      .select(COLS)
+      .single();
+    if (error) throw error;
+    if (!data) throw new Error('Update returned no data.');
     return data;
   } catch (error) { handleNetworkError(error); }
 }

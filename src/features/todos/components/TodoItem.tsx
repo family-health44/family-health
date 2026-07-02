@@ -1,7 +1,8 @@
 // src/features/todos/components/TodoItem.tsx
-// Single todo row — checkbox toggle, title, due date badge, delete on long press.
+// Single todo row. Checkbox (own hit target) toggles completion; tapping the row
+// opens edit; long press deletes.
 import { PressableBase } from '@/design-system/components/PressableBase';
-import { View, Text, Pressable, Alert } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import { formatRelativeDate } from '@/shared/utils/dates';
 import { isTodoOverdue } from '../domain/todos.domain';
 import type { Todo } from '../types/todos.types';
@@ -11,10 +12,11 @@ interface TodoItemProps {
   todo: Todo;
   colourSet: PersonColourSet | null;
   onToggle: (todoId: string, completed: boolean) => void;
+  onEdit: (todo: Todo) => void;
   onDelete: (todoId: string) => void;
 }
 
-export const TodoItem = ({ todo, colourSet, onToggle, onDelete }: TodoItemProps) => {
+export const TodoItem = ({ todo, colourSet, onToggle, onEdit, onDelete }: TodoItemProps) => {
   const isOverdue = isTodoOverdue(todo);
 
   const handleLongPress = () => {
@@ -32,12 +34,11 @@ export const TodoItem = ({ todo, colourSet, onToggle, onDelete }: TodoItemProps)
 
   return (
     <PressableBase
-      onPress={() => onToggle(todo.id, !todo.completed)}
+      onPress={() => onEdit(todo)}
       onLongPress={handleLongPress}
-      accessibilityRole="checkbox"
-      accessibilityState={{ checked: todo.completed }}
+      accessibilityRole="button"
       accessibilityLabel={`${todo.title}${todo.completed ? ', completed' : ''}`}
-      accessibilityHint="Double tap to toggle, long press to delete"
+      accessibilityHint="Tap to edit, long press to delete"
       style={(pressed) => ({
         flexDirection: 'row',
         alignItems: 'center',
@@ -51,22 +52,30 @@ export const TodoItem = ({ todo, colourSet, onToggle, onDelete }: TodoItemProps)
         gap: 10,
       })}
     >
-      {/* Checkbox */}
-      <View style={{
-        width: 18,
-        height: 18,
-        borderRadius: 9,
-        borderWidth: 2,
-        borderColor: todo.completed ? checkboxColour : '#1C1917',
-        backgroundColor: todo.completed ? checkboxColour : 'white',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-      }}>
-        {todo.completed && (
-          <Text style={{ color: '#FFFFFF', fontSize: 10, fontWeight: '700', lineHeight: 12 }}>✓</Text>
-        )}
-      </View>
+      {/* Checkbox — own hit target, does not trigger row edit */}
+      <PressableBase
+        onPress={() => onToggle(todo.id, !todo.completed)}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: todo.completed }}
+        accessibilityLabel={`Mark ${todo.title} ${todo.completed ? 'incomplete' : 'complete'}`}
+        hitSlop={12}
+        style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexShrink: 0 })}
+      >
+        <View style={{
+          width: 22,
+          height: 22,
+          borderRadius: 11,
+          borderWidth: 2,
+          borderColor: todo.completed ? checkboxColour : '#1C1917',
+          backgroundColor: todo.completed ? checkboxColour : 'white',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          {todo.completed && (
+            <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '700', lineHeight: 13 }}>✓</Text>
+          )}
+        </View>
+      </PressableBase>
 
       {/* Content */}
       <View style={{ flex: 1 }}>

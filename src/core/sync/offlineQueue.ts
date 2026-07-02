@@ -19,6 +19,7 @@ export type QueuedMutationType =
   | 'UPDATE_MEDICATION_STATUS'
   | 'ADD_VISIT'
   | 'ADD_TODO'
+  | 'UPDATE_TODO'
   | 'TOGGLE_TODO'
   | 'DELETE_TODO'
   | 'ADD_NOTE'

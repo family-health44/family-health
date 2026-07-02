@@ -8,12 +8,13 @@ import { queryKeys } from '@/lib/queryClient';
 import { fetchFamilyGroup } from '@/features/family/repository/family.repository';
 import {
   insertTodo,
+  updateTodo,
   updateTodoCompleted,
   deleteTodo,
 } from '../repository/todos.repository';
 import { withOfflineQueue } from '@/core/sync/withOfflineQueue';
 
-import type { InsertTodoParams } from '../repository/todos.repository';
+import type { InsertTodoParams, UpdateTodoParams } from '../repository/todos.repository';
 
 type AddTodoInput = Omit<InsertTodoParams, 'familyGroupId'>;
 
@@ -30,6 +31,21 @@ export function useAddTodoMutation() {
         { type: 'ADD_TODO', payload: params },
       );
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.todos.list() });
+    },
+  });
+}
+
+export function useUpdateTodoMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: UpdateTodoParams) =>
+      withOfflineQueue(
+        () => updateTodo(params),
+        { type: 'UPDATE_TODO', payload: params },
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.todos.list() });
     },

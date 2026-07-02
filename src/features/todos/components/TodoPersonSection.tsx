@@ -5,12 +5,13 @@ import { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { PERSON_COLOURS } from '@/design-system/tokens/colours';
 import { TodoItem } from './TodoItem';
-import type { TodoPersonGroup } from '../types/todos.types';
+import type { Todo, TodoPersonGroup } from '../types/todos.types';
 
 interface TodoPersonSectionProps {
   group: TodoPersonGroup;
   showCompleted: boolean;
   onToggle: (todoId: string, completed: boolean) => void;
+  onEdit: (todo: Todo) => void;
   onDelete: (todoId: string) => void;
 }
 
@@ -22,7 +23,7 @@ const NEUTRAL_COLOUR = {
 } as const;
 
 export const TodoPersonSection = ({
-  group, showCompleted, onToggle, onDelete,
+  group, showCompleted, onToggle, onEdit, onDelete,
 }: TodoPersonSectionProps) => {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -73,6 +74,7 @@ export const TodoPersonSection = ({
                 todo={todo}
                 colourSet={isGeneral ? null : colourSet}
                 onToggle={onToggle}
+                onEdit={onEdit}
                 onDelete={onDelete}
               />
             ))

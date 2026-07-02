@@ -7,7 +7,7 @@ import { insertPerson, updatePersonName } from '@/features/family/repository/fam
 import { insertDoctor, linkDoctorToPerson, unlinkDoctorFromPerson } from '@/features/doctors/repository/doctors.repository';
 import { insertMedication, updateMedicationStatus } from '@/features/medications/repository/medications.repository';
 import { insertVisit } from '@/features/visits/repository/visits.repository';
-import { insertTodo, updateTodoCompleted, deleteTodo } from '@/features/todos/repository/todos.repository';
+import { insertTodo, updateTodo, updateTodoCompleted, deleteTodo } from '@/features/todos/repository/todos.repository';
 import { insertNote, updateNote, deleteNote } from '@/features/notes/repository/notes.repository';
 import {
   getQueue,
@@ -28,6 +28,7 @@ interface AddMedicationPayload { name: string; dosage: string | null; frequency:
 interface UpdateMedicationStatusPayload { medicationId: string; status: 'active' | 'as_needed' | 'inactive' }
 interface AddVisitPayload { title: string; visitDate: string; visitTime: string | null; doctorId: string | null; personId: string; familyGroupId: string; preNotes: string | null; postNotes: string | null; totalCost: number | null; outOfPocket: number | null }
 interface AddTodoPayload { title: string; notes: string | null; dueDate: string | null; personId: string | null; familyGroupId: string }
+interface UpdateTodoPayload { todoId: string; title: string; notes: string | null; dueDate: string | null; personId: string | null; doctorId: string | null; visitId: string | null }
 interface ToggleTodoPayload { todoId: string; completed: boolean }
 interface DeleteTodoPayload { todoId: string }
 interface AddNotePayload { content: string; personId: string | null; doctorId: string | null; medicationId: string | null; visitId: string | null; familyGroupId: string; hidden: boolean }
@@ -83,6 +84,11 @@ async function executeMutation(mutation: QueuedMutation): Promise<void> {
     case 'ADD_TODO': {
       const p = payload as AddTodoPayload;
       await insertTodo(p);
+      break;
+    }
+    case 'UPDATE_TODO': {
+      const p = payload as UpdateTodoPayload;
+      await updateTodo(p);
       break;
     }
     case 'TOGGLE_TODO': {

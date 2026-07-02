@@ -10,18 +10,20 @@ import { useDrawer } from '@/design-system/components/DrawerContext';
 import { useTodos } from '../hooks/useTodos';
 import { TodoPersonSection } from '../components/TodoPersonSection';
 import { AddTodoModal } from '../components/AddTodoModal';
+import { EditTodoModal } from '../components/EditTodoModal';
 import { useFamilyHome } from '@/features/family/hooks/useFamilyHome';
 import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
 import { useVisits } from '../../visits/hooks/useVisits';
 import { countIncompleteTodos, countOverdueTodos } from '../domain/todos.domain';
-import type { TodoPersonGroup } from '../types/todos.types';
+import type { Todo, TodoPersonGroup } from '../types/todos.types';
 
 export const TodosScreen = () => {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [showCompleted, setShowCompleted] = useState(false);
   const { openDrawer } = useDrawer();
   const insets = useSafeAreaInsets();
-  const { groups, isLoading, isRefreshing, error, addTodo, toggleTodo, deleteTodo, isAdding, refetch, refresh } = useTodos();
+  const { groups, isLoading, isRefreshing, error, addTodo, updateTodo, toggleTodo, deleteTodo, isAdding, isUpdating, refetch, refresh } = useTodos();
   const { data: familyData } = useFamilyHome();
   const { data: doctorGroups } = useDoctorsQuery();
   const { calendarVisits } = useVisits();
@@ -64,12 +66,13 @@ export const TodosScreen = () => {
         refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor="#2A6049" />}
         ListEmptyComponent={<EmptyState title="All done!" message="No active to-do items." />}
         renderItem={({ item }) => (
-          <TodoPersonSection group={item} showCompleted={showCompleted} onToggle={toggleTodo} onDelete={deleteTodo} />
+          <TodoPersonSection group={item} showCompleted={showCompleted} onToggle={toggleTodo} onEdit={setEditingTodo} onDelete={deleteTodo} />
         )}
       />
 
       <FAB onPress={() => setShowAddModal(true)} accessibilityLabel="Add to-do" />
       <AddTodoModal visible={showAddModal} isLoading={isAdding} people={people} doctors={doctors} visits={visits} onAdd={addTodo} onDismiss={() => setShowAddModal(false)} />
+      <EditTodoModal visible={editingTodo !== null} isLoading={isUpdating} todo={editingTodo} people={people} doctors={doctors} visits={visits} onSave={updateTodo} onDismiss={() => setEditingTodo(null)} />
     </View>
   );
 };

@@ -1,27 +1,28 @@
-// src/features/todos/components/AddTodoModal.tsx
-// Thin wrapper over the shared TodoFormModal for the create flow.
+// src/features/todos/components/EditTodoModal.tsx
+// Thin wrapper over the shared TodoFormModal for the edit flow.
 import { TodoFormModal, type TodoFormValues } from './TodoFormModal';
-import type { InsertTodoParams } from '../repository/todos.repository';
+import type { UpdateTodoParams } from '../repository/todos.repository';
+import type { Todo } from '../types/todos.types';
 import type { Doctor } from '@/features/doctors/types/doctors.types';
 import type { Visit } from '@/features/visits/types/visits.types';
 import type { Person } from '@/features/family/types/family.types';
 
-type AddTodoInput = Omit<InsertTodoParams, 'familyGroupId'>;
-
-interface AddTodoModalProps {
+interface EditTodoModalProps {
   visible: boolean;
   isLoading: boolean;
+  todo: Todo | null;
   people?: Person[];
-  defaultPersonId?: string | null;
   doctors?: Doctor[];
   visits?: Visit[];
-  onAdd: (input: AddTodoInput) => Promise<void>;
+  onSave: (params: UpdateTodoParams) => Promise<void>;
   onDismiss: () => void;
 }
 
-export const AddTodoModal = ({ visible, isLoading, people = [], defaultPersonId, doctors = [], visits = [], onAdd, onDismiss }: AddTodoModalProps) => {
+export const EditTodoModal = ({ visible, isLoading, todo, people = [], doctors = [], visits = [], onSave, onDismiss }: EditTodoModalProps) => {
   const handleSubmit = async (values: TodoFormValues) => {
-    await onAdd({
+    if (!todo) return;
+    await onSave({
+      todoId: todo.id,
       title: values.title,
       notes: values.notes ?? null,
       dueDate: values.dueDate ?? null,
@@ -33,8 +34,8 @@ export const AddTodoModal = ({ visible, isLoading, people = [], defaultPersonId,
 
   return (
     <TodoFormModal
-      visible={visible} isLoading={isLoading} initialTodo={null}
-      people={people} defaultPersonId={defaultPersonId} doctors={doctors} visits={visits}
+      visible={visible} isLoading={isLoading} initialTodo={todo}
+      people={people} doctors={doctors} visits={visits}
       onSubmit={handleSubmit} onDismiss={onDismiss}
     />
   );
