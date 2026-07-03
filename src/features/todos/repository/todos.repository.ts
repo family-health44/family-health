@@ -60,7 +60,7 @@ export async function insertTodo(params: InsertTodoParams): Promise<DbTodo> {
       .insert({
         title: params.title,
         notes: params.notes,
-        due_date: params.dueDate,
+        due_date: params.dueDate || null,
         completed: false,
         person_id: params.personId,
         doctor_id: params.doctorId ?? null,
@@ -82,7 +82,7 @@ export async function updateTodo(params: UpdateTodoParams): Promise<DbTodo> {
       .update({
         title: params.title,
         notes: params.notes,
-        due_date: params.dueDate,
+        due_date: params.dueDate || null,
         person_id: params.personId,
         doctor_id: params.doctorId ?? null,
         visit_id: params.visitId ?? null,

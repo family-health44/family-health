@@ -105,7 +105,7 @@ export const EditMedicationModal = ({
       frequency:    values.frequency   ?? null,
       reason:       values.reason      ?? null,
       status:       values.status      as MedicationStatus,
-      startDate:    values.startDate   ?? null,
+      startDate:    values.startDate && values.startDate.trim() !== '' ? values.startDate : null,
       endDate:      values.endDate && values.endDate.trim() !== '' ? values.endDate : null,
       prescribedBy: medication.prescribedBy,
       form:         values.form        ?? null,
