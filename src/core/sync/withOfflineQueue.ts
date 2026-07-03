@@ -1,11 +1,12 @@
 // src/core/sync/withOfflineQueue.ts
-// Higher-order function that wraps any async mutation.
-// If the mutation fails with a network error, it's queued for later.
-// If the device is already known to be offline, it's queued immediately.
-// Used by mutation hooks to add offline support transparently.
+// Guards a mutation against being run offline.
+// Option 3 (decided 2026-07-03): offline writes FAIL CLEANLY rather than
+// silently queue. Cold-start offline is unsupported (no query-cache persister),
+// so a write queue delivered little value and carried data-loss risk.
+// See PROJECT_KNOWLEDGE.md §10.
 
 import NetInfo from '@react-native-community/netinfo';
-import { enqueue, isNetworkError } from './offlineQueue';
+import { AppError } from '@/shared/types/errors';
 import type { QueuedMutationType } from './offlineQueue';
 
 interface WithOfflineQueueOptions {
@@ -13,31 +14,15 @@ interface WithOfflineQueueOptions {
   payload: unknown;
 }
 
-// Wraps a mutation function with offline queue fallback.
-// Usage in a mutation hook:
-//   await withOfflineQueue(
-//     () => insertTodo(params),
-//     { type: 'ADD_TODO', payload: params }
-//   );
+// Signature preserved so existing call sites need no change.
+// `options` is retained for a future re-introduction of queuing if ever wanted.
 export async function withOfflineQueue<T>(
   mutationFn: () => Promise<T>,
-  options: WithOfflineQueueOptions,
+  _options: WithOfflineQueueOptions,
 ): Promise<T | null> {
-  // Check connectivity first — queue immediately if offline
   const netState = await NetInfo.fetch();
   if (!netState.isConnected) {
-    enqueue(options.type, options.payload);
-    return null;
+    throw new AppError('You\u2019re offline. Connect to save.', 'NETWORK_ERROR');
   }
-
-  try {
-    return await mutationFn();
-  } catch (error) {
-    if (isNetworkError(error)) {
-      enqueue(options.type, options.payload);
-      return null;
-    }
-    // Non-network error — rethrow for normal error handling
-    throw error;
-  }
+  return await mutationFn();
 }
