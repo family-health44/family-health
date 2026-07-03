@@ -1,6 +1,6 @@
 // src/features/doctors/components/PersonDoctorsTab.tsx
 import { PressableBase } from '@/design-system/components/PressableBase';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, FlatList } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -118,10 +118,17 @@ export const PersonDoctorsTab = ({ personId, personName }: PersonDoctorsTabProps
   const [showAddModal, setShowAddModal] = useState(false);
   const [search, setSearch] = useState('');
 
-  // Auto-open the Add modal when arriving via a "Get started" nudge (?add=1).
   const { add } = useLocalSearchParams<{ add?: string }>();
+  const handledAddToken = useRef<string | null>(null);
   useEffect(() => {
-    if (add === '1') setShowAddModal(true);
+    // The nudge sends a unique ?add token each tap, so this fires every time —
+    // even when this screen is already mounted (e.g. the Visits tab) and not
+    // remounted. Track the last handled token to avoid reopening on unrelated
+    // re-renders.
+    if (add && add !== handledAddToken.current) {
+      handledAddToken.current = add;
+      setShowAddModal(true);
+    }
   }, [add]);
 
   const { doctors, isLoading, error, addDoctor, unlinkDoctor, isAdding } = usePersonDoctors(personId);

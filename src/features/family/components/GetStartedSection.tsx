@@ -39,7 +39,7 @@ const ROW_CONFIG: Record<GetStartedKey, RowConfig> = {
     title: 'No medications yet',
     subtitle: 'Track dosages & repeats',
     scope: 'person',
-    personHref: (id) => `/(app)/family/${id}/medications?add=1`,
+    personHref: (id) => `/(app)/family/${id}/medications`,
   },
   doctors: {
     emoji: '👨‍⚕️',
@@ -47,7 +47,7 @@ const ROW_CONFIG: Record<GetStartedKey, RowConfig> = {
     title: 'No doctors yet',
     subtitle: 'GP or specialist',
     scope: 'person',
-    personHref: (id) => `/(app)/family/${id}/doctors?add=1`,
+    personHref: (id) => `/(app)/family/${id}/doctors`,
   },
   appointments: {
     emoji: '📅',
@@ -55,7 +55,7 @@ const ROW_CONFIG: Record<GetStartedKey, RowConfig> = {
     title: 'No visits yet',
     subtitle: 'Upcoming visits',
     scope: 'family',
-    familyHref: '/(app)/visits?add=1',
+    familyHref: '/(app)/visits',  // ?add token appended per-tap in handleAdd
   },
 };
 
@@ -72,23 +72,35 @@ export const GetStartedSection = ({ onRequestAddPerson }: GetStartedSectionProps
   // Picker state: which nudge is choosing a person (null = closed).
   const [pickerFor, setPickerFor] = useState<GetStartedKey | null>(null);
 
+  // A unique value each tap so the destination screen's effect always re-fires,
+  // even when that screen (e.g. the Visits tab) is already mounted.
+  const withAddToken = (href: string) =>
+    `${href}${href.includes('?') ? '&' : '?'}add=${Date.now()}`;
+
   const goToPerson = (key: GetStartedKey, personId: string) => {
     const href = ROW_CONFIG[key].personHref?.(personId);
-    if (href) router.navigate(href as never);
+    if (href) router.navigate(withAddToken(href) as never);
   };
 
   const handleAdd = (key: GetStartedKey) => {
     const cfg = ROW_CONFIG[key];
-    if (cfg.scope === 'family') {
-      if (cfg.familyHref) router.navigate(cfg.familyHref as never);
-      return;
-    }
-    // person-scoped
+
+    // Every add path needs at least one family member: medications and doctors
+    // live under a person, and a visit requires a person to be selected. With
+    // no people yet, send the user to create one first rather than opening a
+    // form they can't submit.
     if (people.length === 0) {
-      // Medications/doctors live under a person — get one created first.
       onRequestAddPerson();
       return;
     }
+
+    // Visits are family-level (their own modal has a person picker) — just open
+    // the tab, which auto-opens the Add modal.
+    if (cfg.scope === 'family') {
+      if (cfg.familyHref) router.navigate(withAddToken(cfg.familyHref) as never);
+      return;
+    }
+    // person-scoped (medications, doctors)
     if (people.length === 1) {
       goToPerson(key, people[0]!.id);
       return;

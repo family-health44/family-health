@@ -2,7 +2,7 @@
 // Medications screen for a person — matches PWA design.
 
 import { PressableBase } from '@/design-system/components/PressableBase';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, FlatList } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,11 +25,17 @@ export const PersonMedicationsTab = ({ personId, colourSet, personName }: Person
   const [showAddModal, setShowAddModal]       = useState(false);
   const [search, setSearch]                   = useState('');
 
-  // Auto-open the Add modal when arriving via a "Get started" nudge (?add=1).
-  // Guarded so it fires once, not on every render.
   const { add } = useLocalSearchParams<{ add?: string }>();
+  const handledAddToken = useRef<string | null>(null);
   useEffect(() => {
-    if (add === '1') setShowAddModal(true);
+    // The nudge sends a unique ?add token each tap, so this fires every time —
+    // even when this screen is already mounted (e.g. the Visits tab) and not
+    // remounted. Track the last handled token to avoid reopening on unrelated
+    // re-renders.
+    if (add && add !== handledAddToken.current) {
+      handledAddToken.current = add;
+      setShowAddModal(true);
+    }
   }, [add]);
 
   const {

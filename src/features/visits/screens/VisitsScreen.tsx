@@ -1,7 +1,7 @@
 // src/features/visits/screens/VisitsScreen.tsx
 // Visits screen — list, week, and month views switchable via toggle.
 // Thin screen: imports hook + components only. No business logic.
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, FlatList, RefreshControl } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ScreenWrapper } from '@/design-system/components/ScreenWrapper';
@@ -24,10 +24,17 @@ export const VisitsScreen = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [jumpDate, setJumpDate] = useState<string | null>(null);
 
-  // Auto-open the Add modal when arriving via a "Get started" nudge (?add=1).
   const { add } = useLocalSearchParams<{ add?: string }>();
+  const handledAddToken = useRef<string | null>(null);
   useEffect(() => {
-    if (add === '1') setShowAddModal(true);
+    // The nudge sends a unique ?add token each tap, so this fires every time —
+    // even when this screen is already mounted (e.g. the Visits tab) and not
+    // remounted. Track the last handled token to avoid reopening on unrelated
+    // re-renders.
+    if (add && add !== handledAddToken.current) {
+      handledAddToken.current = add;
+      setShowAddModal(true);
+    }
   }, [add]);
   const {
     viewMode, setViewMode,
