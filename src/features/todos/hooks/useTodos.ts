@@ -54,6 +54,7 @@ export function useTodos(): UseTodosReturn {
     } catch (e: any) {
       const { Alert } = require('react-native');
       Alert.alert('ADD_TODO_DEBUG', JSON.stringify({
+        bundle: 'OFFLINE-FIX-B',
         msg: e?.message, code: e?.code, name: e?.name,
         cause: e?.cause?.message ?? String(e?.cause ?? ''),
         input,
