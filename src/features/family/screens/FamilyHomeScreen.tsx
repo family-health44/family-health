@@ -10,6 +10,7 @@ import { useDrawer } from '@/design-system/components/DrawerContext';
 import { useFamilyHome } from '../hooks/useFamilyHome';
 import { PersonCard } from '../components/PersonCard';
 import { AddPersonModal } from '../components/AddPersonModal';
+import { GetStartedSection } from '../components/GetStartedSection';
 import type { Person } from '../types/family.types';
 
 export const FamilyHomeScreen = () => {
@@ -37,7 +38,7 @@ export const FamilyHomeScreen = () => {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 16, paddingBottom: 100 }}
           refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor="#2A6049" />}
-          ListHeaderComponent={null}
+          ListHeaderComponent={<GetStartedSection />}
           ListEmptyComponent={
             <EmptyState title="No family members yet" message="Add your first family member to get started."
               actionLabel="Add person" onAction={() => setShowAddModal(true)} />

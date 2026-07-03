@@ -64,6 +64,7 @@ export const queryKeys = {
     all: ['medications'] as const,
     byPerson: (personId: string) => [...queryKeys.medications.all, 'byPerson', personId] as const,
     detail: (medicationId: string) => [...queryKeys.medications.all, medicationId] as const,
+    count: () => [...queryKeys.medications.all, 'count'] as const,
   },
 
   // Medication logs

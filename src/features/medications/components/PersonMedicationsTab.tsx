@@ -2,9 +2,9 @@
 // Medications screen for a person — matches PWA design.
 
 import { PressableBase } from '@/design-system/components/PressableBase';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TextInput, FlatList } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EmptyState, ErrorState, LoadingState } from '@/design-system/components/EmptyState';
 import { FAB } from '@/design-system/components/FAB';
@@ -24,6 +24,13 @@ export const PersonMedicationsTab = ({ personId, colourSet, personName }: Person
   const insets = useSafeAreaInsets();
   const [showAddModal, setShowAddModal]       = useState(false);
   const [search, setSearch]                   = useState('');
+
+  // Auto-open the Add modal when arriving via a "Get started" nudge (?add=1).
+  // Guarded so it fires once, not on every render.
+  const { add } = useLocalSearchParams<{ add?: string }>();
+  useEffect(() => {
+    if (add === '1') setShowAddModal(true);
+  }, [add]);
 
   const {
     groups, isLoading, error,

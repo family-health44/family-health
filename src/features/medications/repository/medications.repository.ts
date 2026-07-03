@@ -174,3 +174,19 @@ export async function updateMedicationStatus(
     handleNetworkError(error);
   }
 }
+
+
+// Count of all medications across the family group (head request — 0 rows transferred).
+// Used by the Family home "Get started" nudges to detect whether any medication exists.
+export async function fetchMedicationsCount(): Promise<number> {
+  try {
+    const { count, error } = await db
+      .from('medications')
+      .select('id', { count: 'exact', head: true });
+
+    if (error) throw error;
+    return count ?? 0;
+  } catch (error) {
+    handleNetworkError(error);
+  }
+}

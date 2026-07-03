@@ -4,7 +4,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/queryClient';
-import { fetchMedicationsByPerson, fetchMedicationById } from '../repository/medications.repository';
+import { fetchMedicationsByPerson, fetchMedicationById, fetchMedicationsCount } from '../repository/medications.repository';
 import { fetchDoctorById } from '@/features/doctors/repository/doctors.repository';
 import {
   mapDbMedicationToMedication,
@@ -63,5 +63,15 @@ export function useMedicationDetailQuery(medicationId: string) {
       return mapDbMedicationToMedication(dbMed, doctorName);
     },
     enabled: Boolean(medicationId),
+  });
+}
+
+
+// Count of all medications in the family group — for the Family "Get started" nudges.
+// head+count query: transfers no rows, just the total.
+export function useMedicationsCountQuery() {
+  return useQuery<number, Error>({
+    queryKey: queryKeys.medications.count(),
+    queryFn: fetchMedicationsCount,
   });
 }
