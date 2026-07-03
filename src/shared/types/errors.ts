@@ -45,7 +45,7 @@ export function toAppError(error: unknown): AppError {
       return new AppError('Your session has expired. Please sign in again.', 'AUTH_ERROR', error);
     }
     // Network errors
-    if (error.message.includes('fetch') || error.message.includes('network')) {
+    if (/network request failed|fetch|network|timeout/i.test(error.message)) {
       return new AppError('Network error. Please check your connection.', 'NETWORK_ERROR', error);
     }
     return new AppError(error.message, 'UNKNOWN', error);
