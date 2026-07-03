@@ -1,7 +1,8 @@
 // src/features/notes/components/NoteModal.tsx
 import { InlinePicker } from '@/design-system/components/InlinePicker';
 import { useEffect, useState } from 'react';
-import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, Switch } from 'react-native';
+import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, Switch, Alert } from 'react-native';
+import { toAppError } from '@/shared/types/errors';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -55,7 +56,14 @@ export const NoteModal = ({ visible, isLoading, editingNote, doctors, medication
     }
   }, [editingNote, reset, visible]);
 
-  const onSubmit = async (values: FormValues) => { await onSave({ ...values, noteDate: values.noteDate?.trim() || null }); reset(); };
+  const onSubmit = async (values: FormValues) => {
+    try {
+      await onSave({ ...values, noteDate: values.noteDate?.trim() || null });
+      reset();
+    } catch (e) {
+      Alert.alert('Could not save', toAppError(e).message);
+    }
+  };
 
   const doctorOptions = [
     { id: null, label: 'None' },

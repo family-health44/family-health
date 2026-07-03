@@ -1,7 +1,8 @@
 // src/features/visits/components/EditVisitModal.tsx
 import { InlinePicker } from '@/design-system/components/InlinePicker';
 import { useEffect, useState } from 'react';
-import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import { toAppError } from '@/shared/types/errors';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -56,6 +57,7 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
   }, [visible, visit, reset]);
 
   const onSubmit = async (values: FormValues) => {
+    try {
     await onSave({
       title: values.title,
       visitDate: values.visitDate,
@@ -67,6 +69,9 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
       outOfPocket: visit.outOfPocket,
     });
     onDismiss();
+    } catch (e) {
+      Alert.alert('Could not save', toAppError(e).message);
+    }
   };
 
   const doctorOptions = [{ id: null, label: 'None' }, ...doctors.map((d) => ({ id: d.id, label: d.name + (d.type ? ` — ${d.type}` : '') }))];

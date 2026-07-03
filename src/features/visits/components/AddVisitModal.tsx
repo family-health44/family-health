@@ -1,7 +1,8 @@
 // src/features/visits/components/AddVisitModal.tsx
 import { InlinePicker } from '@/design-system/components/InlinePicker';
 import { useState } from 'react';
-import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import { toAppError } from '@/shared/types/errors';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -53,6 +54,7 @@ export const AddVisitModal = ({ visible, isLoading, people = [], doctors = [], d
   };
 
   const onSubmit = async (values: FormValues) => {
+    try {
     await onAdd({
       title: values.title,
       visitDate: values.visitDate,
@@ -66,6 +68,9 @@ export const AddVisitModal = ({ visible, isLoading, people = [], doctors = [], d
     });
     reset();
     onDismiss();
+    } catch (e) {
+      Alert.alert('Could not save', toAppError(e).message);
+    }
   };
 
   const personOptions = people.map((p) => ({ id: p.id, label: p.name }));
