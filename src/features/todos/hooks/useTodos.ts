@@ -49,18 +49,7 @@ export function useTodos(): UseTodosReturn {
   }, [refetch]);
 
   const addTodo = useCallback(async (input: AddTodoInput) => {
-    try {
-      await addMutation.mutateAsync(input);
-    } catch (e: any) {
-      const { Alert } = require('react-native');
-      Alert.alert('ADD_TODO_DEBUG', JSON.stringify({
-        bundle: 'OFFLINE-FIX-C',
-        msg: e?.message, code: e?.code, name: e?.name,
-        cause: e?.cause?.message ?? String(e?.cause ?? ''),
-        input,
-      }, null, 2));
-      throw e;
-    }
+    await addMutation.mutateAsync(input);
   }, [addMutation]);
 
   const updateTodo = useCallback(async (params: UpdateTodoParams) => {
