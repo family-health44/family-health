@@ -12,13 +12,16 @@
 import { useCallback, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { useFamilyHomeQuery } from '../queries/family.queries';
 import { useMedicationsCountQuery } from '@/features/medications/queries/medications.queries';
 import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
 import { useVisitsListQuery } from '@/features/visits/queries/visits.queries';
 
 export type GetStartedKey = 'medications' | 'doctors' | 'appointments';
 
-const STORAGE_KEY = 'get_started_dismissed_v1';
+// Scoped per family group — dismissing rows for one family (or a test account)
+// must not hide them for a different family on the same device.
+const storageKey = (familyGroupId: string) => `get_started_dismissed_v1:${familyGroupId}`;
 const ALL_KEYS: readonly GetStartedKey[] = ['medications', 'doctors', 'appointments'];
 
 export interface GetStartedRow {
@@ -42,6 +45,8 @@ export function useGetStarted(): UseGetStartedReturn {
   const [dismissed, setDismissed] = useState<Set<GetStartedKey>>(new Set());
   const [hydrated, setHydrated] = useState(false);
 
+  const familyGroupId = useFamilyHomeQuery().data?.familyGroup.id;
+
   // Presence checks. Undefined while loading => treat as "unknown", not "empty",
   // so we don't briefly show a nudge for something that actually exists.
   const medsCount = useMedicationsCountQuery();
@@ -49,10 +54,11 @@ export function useGetStarted(): UseGetStartedReturn {
   const visits = useVisitsListQuery();
 
   useEffect(() => {
+    if (!familyGroupId) return; // hydrate once the family is known
     let active = true;
     (async () => {
       try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEY);
+        const raw = await AsyncStorage.getItem(storageKey(familyGroupId));
         const parsed: unknown = raw ? JSON.parse(raw) : [];
         const next = new Set<GetStartedKey>(
           Array.isArray(parsed) ? parsed.filter(isGetStartedKey) : [],
@@ -68,14 +74,15 @@ export function useGetStarted(): UseGetStartedReturn {
     return () => {
       active = false;
     };
-  }, []);
+  }, [familyGroupId]);
 
   const persist = useCallback((next: Set<GetStartedKey>) => {
     setDismissed(next);
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([...next])).catch(() => {
+    if (!familyGroupId) return; // can't persist without a scope; state-only
+    AsyncStorage.setItem(storageKey(familyGroupId), JSON.stringify([...next])).catch(() => {
       // Non-fatal: worst case the row reappears next launch.
     });
-  }, []);
+  }, [familyGroupId]);
 
   const dismiss = useCallback(
     (key: GetStartedKey) => {
