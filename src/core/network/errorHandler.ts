@@ -44,16 +44,14 @@ function postgrestCodeToAppCode(code: string): AppErrorCode {
 export function handleNetworkError(error: unknown): never {
   if (error instanceof AppError) throw error;
 
-  // Network failures (RN throws `TypeError: Network request failed`) can also
-  // satisfy the loose PostgREST shape check, so classify them FIRST.
-  if (error instanceof Error && /network request failed|fetch|network|timeout/i.test(error.message)) {
-    throw new AppError('You\u2019re offline. Connect to save.', 'NETWORK_ERROR', error);
-  }
-
-  // Network failures (RN throws `TypeError: Network request failed`) can also
-  // satisfy the loose PostgREST shape check, so classify them FIRST.
-  if (error instanceof Error && /network request failed|fetch|network|timeout/i.test(error.message)) {
-    throw new AppError('You\u2019re offline. Connect to save.', 'NETWORK_ERROR', error);
+  // Network failures (RN throws `TypeError: Network request failed`, sometimes as a
+  // plain object not an Error) can also satisfy the loose PostgREST shape check, so
+  // classify them FIRST. Match on message regardless of the object's prototype.
+  {
+    const m = (error as { message?: unknown })?.message;
+    if (typeof m === 'string' && /network request failed|fetch|network|timeout/i.test(m)) {
+      throw new AppError('You\u2019re offline. Connect to save.', 'NETWORK_ERROR', error);
+    }
   }
 
   if (isPostgrestError(error)) {
