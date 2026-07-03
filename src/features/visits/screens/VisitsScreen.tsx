@@ -1,9 +1,9 @@
 // src/features/visits/screens/VisitsScreen.tsx
 // Visits screen — list, week, and month views switchable via toggle.
 // Thin screen: imports hook + components only. No business logic.
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, FlatList, RefreshControl } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { ScreenWrapper } from '@/design-system/components/ScreenWrapper';
 import { EmptyState, ErrorState, LoadingState } from '@/design-system/components/EmptyState';
 import { FAB } from '@/design-system/components/FAB';
@@ -23,6 +23,12 @@ import type { Visit } from '../types/visits.types';
 export const VisitsScreen = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [jumpDate, setJumpDate] = useState<string | null>(null);
+
+  // Auto-open the Add modal when arriving via a "Get started" nudge (?add=1).
+  const { add } = useLocalSearchParams<{ add?: string }>();
+  useEffect(() => {
+    if (add === '1') setShowAddModal(true);
+  }, [add]);
   const {
     viewMode, setViewMode,
     listGroups, calendarVisits,

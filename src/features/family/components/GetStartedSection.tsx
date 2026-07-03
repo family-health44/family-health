@@ -55,11 +55,16 @@ const ROW_CONFIG: Record<GetStartedKey, RowConfig> = {
     title: 'No visits yet',
     subtitle: 'Upcoming visits',
     scope: 'family',
-    familyHref: '/(app)/visits',
+    familyHref: '/(app)/visits?add=1',
   },
 };
 
-export const GetStartedSection = () => {
+export interface GetStartedSectionProps {
+  /** Opens the Add person modal — used when a person-scoped nudge is tapped with no people yet. */
+  onRequestAddPerson: () => void;
+}
+
+export const GetStartedSection = ({ onRequestAddPerson }: GetStartedSectionProps) => {
   const { rows, hydrated, dismiss, dismissAll } = useGetStarted();
   const { data } = useFamilyHomeQuery();
   const people = data?.people ?? [];
@@ -79,7 +84,11 @@ export const GetStartedSection = () => {
       return;
     }
     // person-scoped
-    if (people.length === 0) return; // guard — nothing to target
+    if (people.length === 0) {
+      // Medications/doctors live under a person — get one created first.
+      onRequestAddPerson();
+      return;
+    }
     if (people.length === 1) {
       goToPerson(key, people[0]!.id);
       return;

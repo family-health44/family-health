@@ -4,10 +4,14 @@
 
 import { useState, useCallback } from 'react';
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { createFamilyGroup } from '@/core/auth/authRepository';
 import { getCurrentUser } from '@/core/auth/sessionManager';
 import { toAppError, isAppError } from '@/shared/types/errors';
+
+// Read + cleared by the Family home welcome tour.
+export const WELCOME_TOUR_PENDING_KEY = 'welcome_tour_pending_v1';
 
 import type { OnboardingFormValues } from '../types/auth.types';
 import type { AppError } from '@/shared/types/errors';
@@ -38,6 +42,12 @@ export function useOnboarding(): UseOnboardingReturn {
       await createFamilyGroup({
         userId: user.id,
         familyGroupName: values.familyGroupName,
+      });
+
+      // Mark the welcome tour as pending BEFORE navigating — awaited so the
+      // Family screen can't race ahead and read a missing flag.
+      await AsyncStorage.setItem(WELCOME_TOUR_PENDING_KEY, '1').catch(() => {
+        // Non-fatal: worst case the tour doesn't show.
       });
 
       router.replace('/(app)/family');

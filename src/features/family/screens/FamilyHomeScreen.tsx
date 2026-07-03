@@ -11,11 +11,14 @@ import { useFamilyHome } from '../hooks/useFamilyHome';
 import { PersonCard } from '../components/PersonCard';
 import { AddPersonModal } from '../components/AddPersonModal';
 import { GetStartedSection } from '../components/GetStartedSection';
+import { WelcomeTourModal } from '../components/WelcomeTourModal';
+import { useWelcomeTour } from '../hooks/useWelcomeTour';
 import type { Person } from '../types/family.types';
 
 export const FamilyHomeScreen = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const { openDrawer } = useDrawer();
+  const { showTour, closeTour } = useWelcomeTour();
   const { data, isLoading, isRefreshing, error, refresh, addPerson, isAddingPerson } = useFamilyHome();
 
   const handlePersonPress = (personId: string) => router.push(`/(app)/family/${personId}`);
@@ -38,7 +41,7 @@ export const FamilyHomeScreen = () => {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 16, paddingBottom: 100 }}
           refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor="#2A6049" />}
-          ListHeaderComponent={<GetStartedSection />}
+          ListHeaderComponent={<GetStartedSection onRequestAddPerson={() => setShowAddModal(true)} />}
           ListEmptyComponent={
             <EmptyState title="No family members yet" message="Add your first family member to get started."
               actionLabel="Add person" onAction={() => setShowAddModal(true)} />
@@ -64,6 +67,14 @@ export const FamilyHomeScreen = () => {
         />
       </SafeAreaView>
       <AddPersonModal visible={showAddModal} isLoading={isAddingPerson} onAdd={handleAddPerson} onDismiss={() => setShowAddModal(false)} />
+      <WelcomeTourModal
+        visible={showTour}
+        onClose={closeTour}
+        onAddPerson={() => {
+          closeTour();
+          setShowAddModal(true);
+        }}
+      />
     </View>
   );
 };
