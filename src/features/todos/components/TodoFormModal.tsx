@@ -3,7 +3,7 @@
 // Edit mode: initialTodo provided (title changes to "Edit To Do", button to "Save changes").
 import { InlinePicker } from '@/design-system/components/InlinePicker';
 import { useEffect } from 'react';
-import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,6 +13,7 @@ import { DateField } from '@/design-system/components/DateField';
 import type { Todo } from '../types/todos.types';
 import type { Doctor } from '@/features/doctors/types/doctors.types';
 import type { Visit } from '@/features/visits/types/visits.types';
+import { toAppError } from '@/shared/types/errors';
 import type { Person } from '@/features/family/types/family.types';
 
 const schema = z.object({
@@ -80,9 +81,14 @@ export const TodoFormModal = ({
   const visitId = watch('visitId');
 
   const submit = async (values: TodoFormValues) => {
-    await onSubmit(values);
-    if (!isEdit) reset();
-    onDismiss();
+    try {
+      await onSubmit(values);
+      if (!isEdit) reset();
+      onDismiss();
+    } catch (e) {
+      // Keep the modal open so input isn't lost; surface a clean message.
+      Alert.alert('Could not save', toAppError(e).message);
+    }
   };
 
   const personOptions = people.map((pp) => ({ id: pp.id, label: pp.name }));
