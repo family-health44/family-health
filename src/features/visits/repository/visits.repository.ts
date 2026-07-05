@@ -60,3 +60,10 @@ export async function updateVisit(params: UpdateVisitParams): Promise<DbVisit> {
     return data;
   } catch (error) { handleNetworkError(error); }
 }
+
+export async function deleteVisit(visitId: string): Promise<void> {
+  try {
+    const { error } = await db.from('visits').delete().eq('id', visitId);
+    if (error) throw error;
+  } catch (error) { handleNetworkError(error); }
+}

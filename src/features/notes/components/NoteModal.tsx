@@ -92,7 +92,7 @@ export const NoteModal = ({ visible, isLoading, editingNote, doctors, medication
                   <Input label="Note" isRequired placeholder="Write your note here..." autoCapitalize="sentences" multiline numberOfLines={6} style={{ minHeight: 120, textAlignVertical: 'top' }} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.content?.message} />
                 )} />
                 <Controller control={control} name="noteDate" render={({ field: { onChange, value } }) => (
-                  <DateField label="Date (optional)" value={value} onChange={onChange} error={errors.noteDate?.message} />
+                  <DateField label="Date (optional)" value={value} onChange={onChange} error={errors.noteDate?.message} onClear={() => onChange('')} />
                 )} />
                 {doctors.length > 0 && (
                   <InlinePicker label="Link to doctor (optional)" options={doctorOptions} value={doctorId} onChange={(id) => setValue('doctorId', id)} />

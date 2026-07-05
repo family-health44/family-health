@@ -54,6 +54,7 @@ interface FieldShellProps {
   error?: string;
   open: boolean;
   onToggle: () => void;
+  onClear?: () => void;
   children: React.ReactNode;
 }
 
@@ -65,32 +66,56 @@ function FieldShell({
   error,
   open,
   onToggle,
+  onClear,
   children,
 }: FieldShellProps) {
+  const showClear = !!onClear && !!displayText;
   return (
     <View style={{ marginBottom: 16 }}>
       <View style={{ flexDirection: 'row', marginBottom: 6 }}>
         <Text style={{ fontSize: 14, fontWeight: '500', color: '#3D3D3D' }}>{label}</Text>
         {isRequired ? <Text style={{ color: '#A32D2D' }}> *</Text> : null}
       </View>
-      <PressableBase
-        onPress={onToggle}
-        accessibilityRole="button"
-        accessibilityLabel={`${label}: ${displayText || placeholder}`}
-        style={(pressed) => ({
-          opacity: pressed ? 0.7 : 1,
-          borderWidth: 1,
-          borderColor: error ? '#A32D2D' : open ? '#3E7D62' : '#D8D4CC',
-          borderRadius: 10,
-          paddingHorizontal: 12,
-          paddingVertical: 12,
-          backgroundColor: '#fff',
-        })}
-      >
-        <Text style={{ fontSize: 16, color: displayText ? '#17211C' : 'rgba(23,33,28,0.55)' }}>
-          {displayText || placeholder}
-        </Text>
-      </PressableBase>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <PressableBase
+          onPress={onToggle}
+          accessibilityRole="button"
+          accessibilityLabel={`${label}: ${displayText || placeholder}`}
+          style={(pressed) => ({
+            flex: 1,
+            opacity: pressed ? 0.7 : 1,
+            borderWidth: 1,
+            borderColor: error ? '#A32D2D' : open ? '#3E7D62' : '#D8D4CC',
+            borderRadius: 10,
+            paddingHorizontal: 12,
+            paddingVertical: 12,
+            backgroundColor: '#fff',
+          })}
+        >
+          <Text style={{ fontSize: 16, color: displayText ? '#17211C' : 'rgba(23,33,28,0.55)' }}>
+            {displayText || placeholder}
+          </Text>
+        </PressableBase>
+        {showClear ? (
+          <PressableBase
+            onPress={onClear}
+            accessibilityRole="button"
+            accessibilityLabel={`Clear ${label}`}
+            style={(pressed) => ({
+              marginLeft: 8,
+              width: 32,
+              height: 32,
+              borderRadius: 16,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#F0EFEA',
+              opacity: pressed ? 0.6 : 1,
+            })}
+          >
+            <Text style={{ fontSize: 15, color: 'rgba(23,33,28,0.55)' }}>✕</Text>
+          </PressableBase>
+        ) : null}
+      </View>
       {open ? <View style={{ marginTop: 8 }}>{children}</View> : null}
       {error ? <Text style={{ fontSize: 12, color: '#A32D2D', marginTop: 4 }}>{error}</Text> : null}
     </View>
@@ -106,6 +131,7 @@ interface DateFieldProps {
   isRequired?: boolean;
   placeholder?: string;
   error?: string;
+  onClear?: () => void;
 }
 
 export function DateField({
@@ -115,6 +141,7 @@ export function DateField({
   isRequired,
   placeholder = 'Select a date',
   error,
+  onClear,
 }: DateFieldProps) {
   const [open, setOpen] = useState(false);
 
@@ -133,6 +160,7 @@ export function DateField({
       error={error}
       open={open}
       onToggle={() => setOpen((o) => !o)}
+      onClear={onClear ? () => { setOpen(false); onClear(); } : undefined}
     >
       <DateTimePicker
         value={isoToLocalDate(value)}

@@ -3,15 +3,16 @@
 // Title/date/time/doctor are edited via the ✎ modal.
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TextInput, Linking, Alert } from 'react-native';
+import { View, Text, ScrollView, TextInput, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { useVisitsListQuery } from '../queries/visits.queries';
-import { useUpdateVisitMutation } from '../mutations/visits.mutations';
+import { useUpdateVisitMutation, useDeleteVisitMutation } from '../mutations/visits.mutations';
 import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
 import { EditVisitModal } from '../components/EditVisitModal';
 import { formatDate, formatTime, todayISO } from '@/shared/utils/dates';
+import { toAppError } from '@/shared/types/errors';
 import type { Visit } from '../types/visits.types';
 
 interface VisitDetailScreenProps {
@@ -31,6 +32,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
   const { data: groups, isLoading, error } = useVisitsListQuery();
   const { data: doctorGroups } = useDoctorsQuery();
   const updateVisit = useUpdateVisitMutation();
+  const deleteVisit = useDeleteVisitMutation();
   const [showEditModal, setShowEditModal] = useState(false);
   const doctors = (doctorGroups ?? []).flatMap((g) => g.doctors);
 
@@ -97,11 +99,14 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
     }
   };
 
-  const handleAddToCalendar = async () => {
-    const url = `webcal://calendar.google.com/calendar/r/eventedit?text=${encodeURIComponent(v.title)}&dates=${v.visitDate.replace(/-/g, '')}`;
-    const supported = await Linking.canOpenURL(url);
-    if (supported) await Linking.openURL(url);
-    else Alert.alert('Cannot open calendar', 'Unable to open calendar app.');
+  const handleDelete = async () => {
+    try {
+      await deleteVisit.mutateAsync(v.id);
+      setShowEditModal(false);
+      router.navigate('/(app)/visits');
+    } catch (e) {
+      Alert.alert('Could not delete', toAppError(e).message);
+    }
   };
 
   const inlineInputStyle = { fontSize: 14, color: '#17211C', padding: 0, margin: 0 } as const;
@@ -164,14 +169,12 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
         </View>
 
         {/* Actions */}
-        <PressableBase onPress={handleAddToCalendar} accessibilityRole="button" style={(pressed) => ({ backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 })}>
-          <Text style={{ fontSize: 18 }}>📅</Text>
-          <Text style={{ fontSize: 14, fontWeight: '500', color: '#2C5282' }}>Add to Google / iOS Calendar</Text>
-        </PressableBase>
-        <PressableBase accessibilityRole="button" style={(pressed) => ({ backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10 })}>
-          <Text style={{ fontSize: 18 }}>📄</Text>
-          <Text style={{ fontSize: 14, fontWeight: '500', color: '#2C5282' }}>Add Document</Text>
-        </PressableBase>
+        {v.personId ? (
+          <PressableBase onPress={() => router.push(`/(app)/family/${v.personId}/documents` as never)} accessibilityRole="button" style={(pressed) => ({ backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10 })}>
+            <Text style={{ fontSize: 18 }}>📄</Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: '#2C5282' }}>Add Document</Text>
+          </PressableBase>
+        ) : null}
       </ScrollView>
 
       {isUpcoming && (
@@ -183,7 +186,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
         </View>
       )}
 
-      <EditVisitModal visible={showEditModal} isLoading={updateVisit.isPending} visit={v} doctors={doctors} onSave={handleSaveEdit} onDismiss={() => setShowEditModal(false)} />
+      <EditVisitModal visible={showEditModal} isLoading={updateVisit.isPending} visit={v} doctors={doctors} onSave={handleSaveEdit} onDismiss={() => setShowEditModal(false)} onDelete={handleDelete} isDeleting={deleteVisit.isPending} />
     </View>
   );
 };

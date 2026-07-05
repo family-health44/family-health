@@ -30,10 +30,12 @@ interface EditVisitModalProps {
   doctors?: Doctor[];
   onSave: (input: EditVisitInput) => Promise<void>;
   onDismiss: () => void;
+  onDelete?: () => void;
+  isDeleting?: boolean;
 }
 
 
-export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave, onDismiss }: EditVisitModalProps) => {
+export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave, onDismiss, onDelete, isDeleting }: EditVisitModalProps) => {
   const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -107,6 +109,21 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
                 <View style={{ gap: 12, marginTop: 8 }}>
                   <Button label="Save changes" variant="primary" size="lg" isFullWidth isLoading={isLoading} onPress={handleSubmit(onSubmit)} />
                   <Button label="Cancel" variant="ghost" size="lg" isFullWidth onPress={onDismiss} />
+                  {onDelete ? (
+                    <Button
+                      label="Delete visit"
+                      variant="danger"
+                      size="lg"
+                      isFullWidth
+                      isLoading={isDeleting}
+                      onPress={() =>
+                        Alert.alert('Delete visit', `Delete "${visit.title}"? This can't be undone.`, [
+                          { text: 'Cancel', style: 'cancel' },
+                          { text: 'Delete', style: 'destructive', onPress: () => onDelete() },
+                        ])
+                      }
+                    />
+                  ) : null}
                 </View>
               </ScrollView>
             </View>

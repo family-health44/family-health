@@ -120,7 +120,7 @@ export const TodoFormModal = ({
                   <Input label="Notes" placeholder="Additional details (optional)" autoCapitalize="sentences" multiline numberOfLines={2} value={value} onChangeText={onChange} onBlur={onBlur} />
                 )} />
                 <Controller control={control} name="dueDate" render={({ field: { onChange, value } }) => (
-                  <DateField label="Due date" placeholder="Select a date (optional)" value={value || null} onChange={onChange} />
+                  <DateField label="Due date" placeholder="Select a date (optional)" value={value || null} onChange={onChange} onClear={() => onChange('')} />
                 )} />
                 {doctors.length > 0 && (
                   <InlinePicker label="Link to doctor (optional)" options={doctorOptions} value={doctorId} onChange={(id) => setValue('doctorId', id)} />

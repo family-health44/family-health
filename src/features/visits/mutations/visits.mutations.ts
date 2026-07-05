@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/queryClient';
 import { fetchFamilyGroup } from '@/features/family/repository/family.repository';
-import { insertVisit, updateVisit } from '../repository/visits.repository';
+import { insertVisit, updateVisit, deleteVisit } from '../repository/visits.repository';
 
 import type { InsertVisitParams, UpdateVisitParams } from '../repository/visits.repository';
 
@@ -34,6 +34,17 @@ export function useUpdateVisitMutation() {
     onSuccess: (_data, { visitId }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.visits.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.visits.detail(visitId) });
+    },
+  });
+}
+
+export function useDeleteVisitMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (visitId: string) => deleteVisit(visitId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.visits.all });
     },
   });
 }

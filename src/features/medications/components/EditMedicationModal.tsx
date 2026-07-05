@@ -175,11 +175,11 @@ export const EditMedicationModal = ({
                 )} />
 
                 <Controller control={control} name="startDate" render={({ field: { onChange, value } }) => (
-                  <DateField label="Start date" value={value || null} onChange={onChange} />
+                  <DateField label="Start date" value={value || null} onChange={onChange} onClear={() => onChange('')} />
                 )} />
 
                 <Controller control={control} name="endDate" render={({ field: { onChange, value } }) => (
-                  <DateField label="End date" value={value || null} onChange={onChange} />
+                  <DateField label="End date" value={value || null} onChange={onChange} onClear={() => onChange('')} />
                 )} />
 
                 <Controller control={control} name="form" render={({ field: { onChange, value } }) => (
@@ -201,7 +201,7 @@ export const EditMedicationModal = ({
                 )} />
 
                 <Controller control={control} name="nextRefill" render={({ field: { onChange, value } }) => (
-                  <DateField label="Next refill" value={value || null} onChange={onChange} />
+                  <DateField label="Next refill" value={value || null} onChange={onChange} onClear={() => onChange('')} />
                 )} />
 
                 <Controller control={control} name="pharmacy" render={({ field: { onChange, onBlur, value } }) => (
