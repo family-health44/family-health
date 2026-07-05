@@ -19,7 +19,6 @@ export const SettingsScreen = () => {
   const { data } = useFamilyHomeQuery();
   const queryClient = useQueryClient();
   const [isSigningOut, setIsSigningOut] = useState(false);
-  const [largeText, setLargeText] = useState(false);
   const [editingName, setEditingName] = useState(false);
   const [familyName, setFamilyName] = useState('');
   const [isSavingName, setIsSavingName] = useState(false);
@@ -152,16 +151,16 @@ export const SettingsScreen = () => {
 
         <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Display</Text>
         <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
-          <PressableBase onPress={() => setLargeText(!largeText)} style={(pressed) => ({ padding: 14, borderBottomWidth: 1, borderBottomColor: '#F0EFEA', flexDirection: 'row', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
+          <View style={{ padding: 14, borderBottomWidth: 1, borderBottomColor: '#F0EFEA', flexDirection: 'row', alignItems: 'center' }}>
             <Text style={{ fontSize: 14, flex: 1, color: '#17211C' }}>Large text</Text>
-            <View style={{ width: 40, height: 22, borderRadius: 11, backgroundColor: largeText ? '#1F5C41' : '#ECEBE5', justifyContent: 'center', paddingHorizontal: 2 }}>
-              <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: 'white', alignSelf: largeText ? 'flex-end' : 'flex-start', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.15, shadowRadius: 2, elevation: 2 }} />
+            <View style={{ backgroundColor: '#ECEBE5', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 }}>
+              <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', fontWeight: '500' }}>Coming soon</Text>
             </View>
-          </PressableBase>
+          </View>
           <View style={{ padding: 14, flexDirection: 'row', alignItems: 'center' }}>
             <Text style={{ fontSize: 14, flex: 1, color: '#17211C' }}>Dark mode</Text>
             <View style={{ backgroundColor: '#ECEBE5', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 }}>
-              <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', fontWeight: '500' }}>Soon</Text>
+              <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', fontWeight: '500' }}>Coming soon</Text>
             </View>
           </View>
         </View>

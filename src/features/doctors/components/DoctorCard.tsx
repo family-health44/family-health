@@ -42,25 +42,28 @@ export const DoctorCard = ({ doctor, colourSet: colourSetProp, colourIndex = 0, 
       accessibilityRole="button"
       accessibilityLabel={`${doctor.name}, ${doctor.type ?? 'Doctor'}`}
       style={(pressed) => ({
-        backgroundColor: colourSet?.bg,
-        borderColor: colourSet?.border,
-        borderWidth: 1.5,
-        borderRadius: 14,
-        padding: 14,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        padding: 13,
         marginBottom: 10,
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
+        gap: 11,
+        shadowColor: '#17211C',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        elevation: 2,
         opacity: pressed ? 0.85 : 1,
       })}
     >
-      <View style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: colourSet?.dot, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        <Text style={{ color: 'white', fontSize: 14, fontWeight: '700' }}>{initials}</Text>
+      <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colourSet?.dot, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <Text style={{ color: 'white', fontSize: 13, fontWeight: '700' }}>{initials}</Text>
       </View>
       <View style={{ flex: 1, gap: 5 }}>
-        <Text style={{ fontSize: 15, fontWeight: '700', color: colourSet?.text }}>{doctor.name}</Text>
+        <Text style={{ fontSize: 15, fontWeight: '600', color: '#17211C' }}>{doctor.name}</Text>
         {doctor.type ? (
-          <View style={{ alignSelf: 'flex-start', backgroundColor: colourSet?.border, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 2 }}>
+          <View style={{ alignSelf: 'flex-start', backgroundColor: colourSet?.bg, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 2 }}>
             <Text style={{ fontSize: 11, fontWeight: '600', color: colourSet?.text }}>{doctor.type}</Text>
           </View>
         ) : null}
@@ -70,7 +73,7 @@ export const DoctorCard = ({ doctor, colourSet: colourSetProp, colourIndex = 0, 
           <Text style={{ fontSize: 18, color: '#B33A4A' }}>×</Text>
         </PressableBase>
       ) : (
-        <Text style={{ color: colourSet?.border, fontSize: 16 }}>›</Text>
+        <Text style={{ color: 'rgba(23,33,28,0.3)', fontSize: 16 }}>›</Text>
       )}
     </PressableBase>
   );

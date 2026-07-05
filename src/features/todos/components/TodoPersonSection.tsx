@@ -50,11 +50,10 @@ export const TodoPersonSection = ({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: '#FFFFFF',
+          backgroundColor: isGeneral ? '#FFFFFF' : colourSet.dot,
           borderRadius: 16,
-          paddingHorizontal: 13,
-          paddingVertical: 11,
-          gap: 11,
+          padding: 14,
+          gap: 12,
           shadowColor: '#17211C',
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.06,
@@ -62,15 +61,15 @@ export const TodoPersonSection = ({
           elevation: 2,
         }}
       >
-        <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: colourSet.dot, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ color: 'white', fontSize: 11, fontWeight: '700' }}>{initials}</Text>
+        <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: isGeneral ? colourSet.dot : 'rgba(255,255,255,0.22)', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ color: 'white', fontSize: 12, fontWeight: '700' }}>{initials}</Text>
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 14, fontWeight: '600', color: '#17211C' }}>
+          <Text style={{ fontSize: 15, fontWeight: '600', color: isGeneral ? '#17211C' : '#FFFFFF' }}>
             {group.personName}
           </Text>
         </View>
-        <Text style={{ color: 'rgba(23,33,28,0.4)', fontSize: 13 }}>
+        <Text style={{ color: isGeneral ? 'rgba(23,33,28,0.4)' : 'rgba(255,255,255,0.7)', fontSize: 15 }}>
           {collapsed ? '∨' : '∧'}
         </Text>
       </Pressable>
