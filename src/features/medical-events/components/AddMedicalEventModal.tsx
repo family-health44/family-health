@@ -68,7 +68,7 @@ export const AddMedicalEventModal = ({
         >
           <Pressable>
             <View style={{
-              backgroundColor: '#F7F5F0',
+              backgroundColor: '#F7F7F4',
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
               paddingBottom: Platform.OS === 'ios' ? 40 : 24,
@@ -98,7 +98,7 @@ export const AddMedicalEventModal = ({
                 {/* Event type selector */}
                 <View style={{ gap: 8 }}>
                   <Text style={{ fontSize: 14, fontWeight: '600', color: '#3D3D3D' }}>
-                    Event type <Text style={{ color: '#9B3A4A' }}>*</Text>
+                    Event type <Text style={{ color: '#B33A4A' }}>*</Text>
                   </Text>
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                     {MEDICAL_EVENT_TYPES.map((type) => {
@@ -112,13 +112,13 @@ export const AddMedicalEventModal = ({
                           style={{
                             paddingHorizontal: 12, paddingVertical: 7,
                             borderRadius: 20, borderWidth: 1,
-                            borderColor: isSelected ? '#2A6049' : '#C8C4BC',
-                            backgroundColor: isSelected ? '#E6F0EC' : 'transparent',
+                            borderColor: isSelected ? '#1F5C41' : '#C8C4BC',
+                            backgroundColor: isSelected ? '#E4EFE9' : 'transparent',
                           }}
                         >
                           <Text style={{
                             fontSize: 13,
-                            color: isSelected ? '#1A4D35' : '#4A4744',
+                            color: isSelected ? '#17452F' : '#4A4744',
                             fontWeight: isSelected ? '600' : '400',
                           }}>
                             {MEDICAL_EVENT_CONFIG[type].label}

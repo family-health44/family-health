@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { Avatar } from '@/design-system/components/Avatar';
 import type { Person } from '../types/family.types';
 interface PersonCardProps {
   person: Person;
@@ -17,22 +16,27 @@ export const PersonCard = ({ person, onPress }: PersonCardProps) => {
       accessibilityRole="button"
       accessibilityLabel={`View ${person.name}'s health records`}
       style={{
-        backgroundColor: pressed ? colourSet.border : colourSet.bg,
-        borderColor: colourSet.border,
-        borderWidth: 1.5,
+        backgroundColor: pressed ? '#F0EFEA' : '#FFFFFF',
         borderRadius: 16,
-        padding: 16,
-        marginBottom: 12,
+        padding: 14,
+        marginBottom: 10,
+        shadowColor: '#17211C',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        elevation: 2,
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-        <Avatar initials={person.initials} colourSet={colourSet} size="md" />
+        <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colourSet.dot, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ color: 'white', fontSize: 12, fontWeight: '700' }}>{person.initials}</Text>
+        </View>
         <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 17, fontWeight: '600', color: colourSet.text }}>
+          <Text style={{ fontSize: 15, fontWeight: '600', color: '#17211C' }}>
             {person.name}
           </Text>
         </View>
-        <Text style={{ color: colourSet.border, fontSize: 18 }}>›</Text>
+        <Text style={{ color: 'rgba(23,33,28,0.4)', fontSize: 18 }}>›</Text>
       </View>
     </Pressable>
   );

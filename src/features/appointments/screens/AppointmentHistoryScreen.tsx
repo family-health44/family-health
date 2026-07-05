@@ -15,7 +15,7 @@ import { usePersonMedicalEvents } from '@/features/medical-events/hooks/usePerso
 import { MEDICAL_EVENT_CONFIG } from '@/features/medical-events/types/medical-events.types';
 
 const SectionLabel = ({ text }: { text: string }) => (
-  <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', letterSpacing: 0.8, marginBottom: 8 }}>
+  <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', letterSpacing: 0.8, marginBottom: 8 }}>
     {text}
   </Text>
 );
@@ -63,21 +63,21 @@ export const AppointmentHistoryScreen = () => {
     .sort((a, b) => (b.noteDate ?? '').localeCompare(a.noteDate ?? ''));
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
-      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E3DDD5' }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E3E2DB' }}>
         <PressableBase onPress={() => router.back()} style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}>
-          <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
+          <Text style={{ fontSize: 15, color: '#1F5C41' }}>‹</Text>
+          <Text style={{ fontSize: 14, color: '#1F5C41', fontWeight: '500' }}>Back</Text>
         </PressableBase>
-        <Text style={{ fontSize: 21, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917' }}>History</Text>
-        <Text style={{ fontSize: 12, color: '#6B6866', marginTop: 2 }}>
+        <Text style={{ fontSize: 21, fontWeight: '300', fontFamily: Fonts.serif, color: '#17211C' }}>History</Text>
+        <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.65)', marginTop: 2 }}>
           {params.personName ?? ''}{params.doctorName ? ` · ${params.doctorName}` : ''}
         </Text>
       </View>
 
       {isLoading ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator color="#2A6049" />
+          <ActivityIndicator color="#1F5C41" />
         </View>
       ) : (
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
@@ -92,16 +92,16 @@ export const AppointmentHistoryScreen = () => {
           {/* Past visits */}
           <SectionLabel text={`PAST VISITS${pastVisits.length ? ` · ${pastVisits.length}` : ''}`} />
           {pastVisits.length === 0 ? (
-            <Text style={{ fontSize: 13, color: '#A8A09A', marginBottom: 16 }}>No past visits{doctorId ? ' with this doctor' : ''}.</Text>
+            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', marginBottom: 16 }}>No past visits{doctorId ? ' with this doctor' : ''}.</Text>
           ) : (
             pastVisits.map((v) => (
-              <View key={v.id} style={{ backgroundColor: '#FFFFFF', borderWidth: 0.5, borderColor: '#E3DDD5', borderRadius: 10, padding: 10, paddingHorizontal: 12, marginBottom: 6 }}>
+              <View key={v.id} style={{ backgroundColor: '#FFFFFF', borderWidth: 0.5, borderColor: '#E3E2DB', borderRadius: 10, padding: 10, paddingHorizontal: 12, marginBottom: 6 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <Text style={{ fontSize: 13, fontWeight: '500', color: '#1C1917', flex: 1 }}>{v.title || 'Visit'}</Text>
-                  <Text style={{ fontSize: 11, color: '#A8A09A', marginLeft: 8 }}>{isoToDisplayDate(v.visitDate)}</Text>
+                  <Text style={{ fontSize: 13, fontWeight: '500', color: '#17211C', flex: 1 }}>{v.title || 'Visit'}</Text>
+                  <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginLeft: 8 }}>{isoToDisplayDate(v.visitDate)}</Text>
                 </View>
                 {v.postNotes?.trim() ? (
-                  <Text style={{ fontSize: 12, color: '#6B6866', marginTop: 3, lineHeight: 17 }}>{v.postNotes}</Text>
+                  <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.65)', marginTop: 3, lineHeight: 17 }}>{v.postNotes}</Text>
                 ) : null}
               </View>
             ))
@@ -112,12 +112,12 @@ export const AppointmentHistoryScreen = () => {
             <SectionLabel text={`MEDICAL EVENTS${events.length ? ` · ${events.length}` : ''}`} />
           </View>
           {events.length === 0 ? (
-            <Text style={{ fontSize: 13, color: '#A8A09A', marginBottom: 16 }}>No medical events{doctorId ? ' with this doctor' : ''}.</Text>
+            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', marginBottom: 16 }}>No medical events{doctorId ? ' with this doctor' : ''}.</Text>
           ) : (
             events.map((e) => (
               <View key={e.id} style={{ backgroundColor: '#FFFFFF', borderWidth: 0.5, borderColor: '#C7DAF0', borderLeftWidth: 3, borderLeftColor: '#185FA5', borderTopRightRadius: 10, borderBottomRightRadius: 10, padding: 10, paddingHorizontal: 12, marginBottom: 6 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <Text style={{ fontSize: 13, color: '#1C1917', flex: 1 }}>{e.description}</Text>
+                  <Text style={{ fontSize: 13, color: '#17211C', flex: 1 }}>{e.description}</Text>
                   <Text style={{ fontSize: 11, color: '#185FA5', marginLeft: 8 }}>{isoToDisplayDate(e.eventDate)}</Text>
                 </View>
                 <Text style={{ fontSize: 10, color: '#185FA5', marginTop: 3 }}>{MEDICAL_EVENT_CONFIG[e.eventType].label}</Text>
@@ -130,13 +130,13 @@ export const AppointmentHistoryScreen = () => {
             <SectionLabel text={`NOTES${plainNotes.length ? ` · ${plainNotes.length}` : ''}`} />
           </View>
           {plainNotes.length === 0 ? (
-            <Text style={{ fontSize: 13, color: '#A8A09A' }}>No notes{doctorId ? ' for this doctor' : ''}.</Text>
+            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>No notes{doctorId ? ' for this doctor' : ''}.</Text>
           ) : (
             plainNotes.map((n) => (
-              <View key={n.id} style={{ backgroundColor: '#FFFFFF', borderWidth: 0.5, borderColor: '#E3DDD5', borderRadius: 10, padding: 10, paddingHorizontal: 12, marginBottom: 6 }}>
-                <Text style={{ fontSize: 13, color: '#1C1917', lineHeight: 18 }}>{noteText(n.content)}</Text>
+              <View key={n.id} style={{ backgroundColor: '#FFFFFF', borderWidth: 0.5, borderColor: '#E3E2DB', borderRadius: 10, padding: 10, paddingHorizontal: 12, marginBottom: 6 }}>
+                <Text style={{ fontSize: 13, color: '#17211C', lineHeight: 18 }}>{noteText(n.content)}</Text>
                 {n.noteDate ? (
-                  <Text style={{ fontSize: 11, color: '#A8A09A', marginTop: 3 }}>{isoToDisplayDate(n.noteDate)}</Text>
+                  <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginTop: 3 }}>{isoToDisplayDate(n.noteDate)}</Text>
                 ) : null}
               </View>
             ))

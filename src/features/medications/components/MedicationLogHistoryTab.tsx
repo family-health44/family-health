@@ -26,7 +26,7 @@ export const MedicationLogHistoryTab = ({
     />
 
     {isLoading ? (
-      <Text style={{ fontSize: 13, color: '#A8A09A', textAlign: 'center', paddingVertical: 20 }}>Loading entries...</Text>
+      <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', textAlign: 'center', paddingVertical: 20 }}>Loading entries...</Text>
     ) : logs.length === 0 ? (
       <EmptyState title="No log entries yet" message="Tap Add log entry to record how this medication is going." />
     ) : (
@@ -42,7 +42,7 @@ export const MedicationLogHistoryTab = ({
     <PressableBase
       onPress={onAddLog}
       accessibilityRole="button"
-      style={(p) => ({ backgroundColor: p ? '#1F4D38' : '#2A6049', borderRadius: 12, paddingVertical: 14, alignItems: 'center' })}
+      style={(p) => ({ backgroundColor: p ? '#1F4D38' : '#1F5C41', borderRadius: 12, paddingVertical: 14, alignItems: 'center' })}
     >
       <Text style={{ fontSize: 15, fontWeight: '700', color: '#FFFFFF' }}>+ Add log entry</Text>
     </PressableBase>
@@ -57,20 +57,20 @@ const LogEntryCard = ({ log }: { log: MedicationLog }) => {
       <View style={{ width: 10, alignItems: 'center', paddingTop: 16 }}>
         <View style={{ width: 9, height: 9, borderRadius: 5, backgroundColor: feeling?.colour ?? '#D0CCC4' }} />
       </View>
-      <View style={{ flex: 1, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E8E4DC', borderRadius: 12, padding: 12 }}>
+      <View style={{ flex: 1, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, padding: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-          <Text style={{ fontSize: 11, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.6 }}>{when}</Text>
+          <Text style={{ fontSize: 11, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.6 }}>{when}</Text>
           {feeling ? <Text style={{ fontSize: 16 }}>{feeling.emoji}</Text> : null}
         </View>
         {log.note ? <Text style={{ fontSize: 14, color: '#1A1A1A', lineHeight: 20 }}>{log.note}</Text> : null}
         {log.doseStatus ? (
-          <Text style={{ fontSize: 12, color: '#6B6866', marginTop: 4 }}>{doseStatusLabel(log.doseStatus)}</Text>
+          <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.65)', marginTop: 4 }}>{doseStatusLabel(log.doseStatus)}</Text>
         ) : null}
         {log.tags.length > 0 ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
             {log.tags.map((t) => (
-              <View key={t} style={{ backgroundColor: '#F0EDE8', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 3 }}>
-                <Text style={{ fontSize: 11, color: '#6B6866' }}>{t}</Text>
+              <View key={t} style={{ backgroundColor: '#F0EFEA', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 3 }}>
+                <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.65)' }}>{t}</Text>
               </View>
             ))}
           </View>

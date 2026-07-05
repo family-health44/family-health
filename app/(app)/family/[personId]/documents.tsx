@@ -7,6 +7,6 @@ import { DocumentsScreen } from '@/features/family/screens/DocumentsScreen';
 export default function DocumentsRoute() {
   const { personId } = useLocalSearchParams<{ personId: string }>();
   const { person, isLoading } = usePersonDetail(personId ?? '');
-  if (isLoading || !person) return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><LoadingState message="Loading..." /></View>;
+  if (isLoading || !person) return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><LoadingState message="Loading..." /></View>;
   return <DocumentsScreen personId={personId ?? ''} personName={person.name} />;
 }

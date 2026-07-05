@@ -112,29 +112,29 @@ export const MedicationLogSheet = ({
       <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }} onPress={onDismiss}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, justifyContent: 'flex-end' }}>
           <Pressable>
-            <View style={{ backgroundColor: '#F7F5F0', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '92%' }}>
+            <View style={{ backgroundColor: '#F7F7F4', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '92%' }}>
               <View style={{ width: 40, height: 4, backgroundColor: '#D0CCC4', borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 16 }} />
 
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, marginBottom: 12 }}>
                 <PressableBase onPress={onDismiss} hitSlop={10} style={(p) => ({ opacity: p ? 0.5 : 1 })}>
-                  <Text style={{ fontSize: 22, color: '#6B6866' }}>×</Text>
+                  <Text style={{ fontSize: 22, color: 'rgba(23,33,28,0.65)' }}>×</Text>
                 </PressableBase>
-                <Text style={{ fontSize: 17, fontWeight: '700', color: '#1C1917' }}>
+                <Text style={{ fontSize: 17, fontWeight: '700', color: '#17211C' }}>
                   {editingLog ? 'Edit log entry' : 'Add log entry'}
                 </Text>
                 <View style={{ width: 22 }} />
               </View>
 
               <ScrollView ref={scrollRef} contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 12 }} keyboardShouldPersistTaps="handled">
-                <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E8E4DC', borderRadius: 12, padding: 12, marginBottom: 18 }}>
-                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#1C1917' }}>{medicationLabel}</Text>
-                  {medicationSubLabel ? <Text style={{ fontSize: 12, color: '#6B6866', marginTop: 2 }}>{medicationSubLabel}</Text> : null}
+                <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, padding: 12, marginBottom: 18 }}>
+                  <Text style={{ fontSize: 14, fontWeight: '700', color: '#17211C' }}>{medicationLabel}</Text>
+                  {medicationSubLabel ? <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.65)', marginTop: 2 }}>{medicationSubLabel}</Text> : null}
                 </View>
 
                 <Label text="Date" />
-                <TextInput value={loggedDate} onChangeText={setLoggedDate} placeholder="YYYY-MM-DD" placeholderTextColor="#A8A09A" keyboardType="numbers-and-punctuation" style={inputStyle} />
+                <TextInput value={loggedDate} onChangeText={setLoggedDate} placeholder="YYYY-MM-DD" placeholderTextColor="#8B928E" keyboardType="numbers-and-punctuation" style={inputStyle} />
                 <Label text="Time" />
-                <TextInput value={loggedTime} onChangeText={setLoggedTime} placeholder="HH:MM (optional)" placeholderTextColor="#A8A09A" keyboardType="numbers-and-punctuation" style={inputStyle} />
+                <TextInput value={loggedTime} onChangeText={setLoggedTime} placeholder="HH:MM (optional)" placeholderTextColor="#8B928E" keyboardType="numbers-and-punctuation" style={inputStyle} />
 
                 <Label text="How did it make you feel?" />
                 <View style={{ flexDirection: 'row', gap: 8, marginBottom: 18 }}>
@@ -143,9 +143,9 @@ export const MedicationLogSheet = ({
                     const active = feeling === f;
                     return (
                       <PressableBase key={f} onPress={() => setFeeling(active ? null : f)} accessibilityRole="button" accessibilityLabel={cfg.label} accessibilityState={{ selected: active }}
-                        style={{ flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 12, borderWidth: 1.5, borderColor: active ? '#2A6049' : '#E8E4DC', backgroundColor: active ? '#E6F0EC' : '#FFFFFF' }}>
+                        style={{ flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 12, borderWidth: 1.5, borderColor: active ? '#1F5C41' : '#E3E2DB', backgroundColor: active ? '#E4EFE9' : '#FFFFFF' }}>
                         <Text style={{ fontSize: 22 }}>{cfg.emoji}</Text>
-                        <Text style={{ fontSize: 10, color: active ? '#1A4D35' : '#6B6866', marginTop: 3, fontWeight: active ? '700' : '400' }}>{cfg.label}</Text>
+                        <Text style={{ fontSize: 10, color: active ? '#17452F' : 'rgba(23,33,28,0.65)', marginTop: 3, fontWeight: active ? '700' : '400' }}>{cfg.label}</Text>
                       </PressableBase>
                     );
                   })}
@@ -157,33 +157,33 @@ export const MedicationLogSheet = ({
                     const active = tags.includes(t);
                     return (
                       <PressableBase key={t} onPress={() => toggleTag(t)} accessibilityRole="button" accessibilityState={{ selected: active }}
-                        style={{ paddingHorizontal: 13, paddingVertical: 7, borderRadius: 20, borderWidth: 1, borderColor: active ? '#2A6049' : '#E3DDD5', backgroundColor: active ? '#E6F0EC' : '#FFFFFF' }}>
-                        <Text style={{ fontSize: 13, color: active ? '#1A4D35' : '#3D3D3D', fontWeight: active ? '600' : '400' }}>{t}</Text>
+                        style={{ paddingHorizontal: 13, paddingVertical: 7, borderRadius: 20, borderWidth: 1, borderColor: active ? '#1F5C41' : '#E3E2DB', backgroundColor: active ? '#E4EFE9' : '#FFFFFF' }}>
+                        <Text style={{ fontSize: 13, color: active ? '#17452F' : '#3D3D3D', fontWeight: active ? '600' : '400' }}>{t}</Text>
                       </PressableBase>
                     );
                   })}
                 </View>
                 <View style={{ flexDirection: 'row', gap: 8, marginBottom: 18 }}>
-                  <TextInput value={customTag} onChangeText={setCustomTag} placeholder="Add a tag" placeholderTextColor="#A8A09A" onSubmitEditing={addCustomTag} returnKeyType="done" style={[inputStyle, { flex: 1, marginBottom: 0 }]} />
-                  <PressableBase onPress={addCustomTag} accessibilityRole="button" accessibilityLabel="Add tag" style={(p) => ({ paddingHorizontal: 16, justifyContent: 'center', borderRadius: 10, backgroundColor: p ? '#1F4D38' : '#2A6049' })}>
+                  <TextInput value={customTag} onChangeText={setCustomTag} placeholder="Add a tag" placeholderTextColor="#8B928E" onSubmitEditing={addCustomTag} returnKeyType="done" style={[inputStyle, { flex: 1, marginBottom: 0 }]} />
+                  <PressableBase onPress={addCustomTag} accessibilityRole="button" accessibilityLabel="Add tag" style={(p) => ({ paddingHorizontal: 16, justifyContent: 'center', borderRadius: 10, backgroundColor: p ? '#1F4D38' : '#1F5C41' })}>
                     <Text style={{ fontSize: 14, fontWeight: '600', color: '#FFFFFF' }}>Add</Text>
                   </PressableBase>
                 </View>
 
                 <Label text="Notes (optional)" />
-                <TextInput value={note} onChangeText={setNote} placeholder="How are you feeling on this medication?" placeholderTextColor="#A8A09A" multiline
+                <TextInput value={note} onChangeText={setNote} placeholder="How are you feeling on this medication?" placeholderTextColor="#8B928E" multiline
                   onFocus={() => setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 300)}
                   style={[inputStyle, { height: 90, textAlignVertical: 'top', paddingTop: 12 }]} />
 
                 <Label text="Dose" />
-                <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E8E4DC', borderRadius: 12, overflow: 'hidden', marginBottom: 20 }}>
+                <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden', marginBottom: 20 }}>
                   {DOSE_OPTIONS.map((opt, i) => {
                     const active = doseStatus === opt.value;
                     return (
                       <PressableBase key={opt.value} onPress={() => setDoseStatus(active ? null : opt.value)} accessibilityRole="button" accessibilityState={{ selected: active }}
-                        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 13, paddingHorizontal: 14, borderBottomWidth: i < DOSE_OPTIONS.length - 1 ? 1 : 0, borderBottomColor: '#F0EDE8', backgroundColor: active ? '#E6F0EC' : '#FFFFFF' }}>
-                        <Text style={{ fontSize: 14, color: active ? '#1A4D35' : '#1C1917', fontWeight: active ? '600' : '400' }}>{opt.label}</Text>
-                        {active ? <Text style={{ fontSize: 14, color: '#2A6049' }}>✓</Text> : null}
+                        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 13, paddingHorizontal: 14, borderBottomWidth: i < DOSE_OPTIONS.length - 1 ? 1 : 0, borderBottomColor: '#F0EFEA', backgroundColor: active ? '#E4EFE9' : '#FFFFFF' }}>
+                        <Text style={{ fontSize: 14, color: active ? '#17452F' : '#17211C', fontWeight: active ? '600' : '400' }}>{opt.label}</Text>
+                        {active ? <Text style={{ fontSize: 14, color: '#1F5C41' }}>✓</Text> : null}
                       </PressableBase>
                     );
                   })}
@@ -205,17 +205,17 @@ export const MedicationLogSheet = ({
 };
 
 const Label = ({ text }: { text: string }) => (
-  <Text style={{ fontSize: 11, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 8 }}>{text}</Text>
+  <Text style={{ fontSize: 11, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 8 }}>{text}</Text>
 );
 
 const inputStyle = {
   backgroundColor: '#FFFFFF',
   borderWidth: 1,
-  borderColor: '#E3DDD5',
+  borderColor: '#E3E2DB',
   borderRadius: 10,
   paddingHorizontal: 14,
   paddingVertical: 12,
   fontSize: 15,
-  color: '#1C1917',
+  color: '#17211C',
   marginBottom: 18,
 } as const;

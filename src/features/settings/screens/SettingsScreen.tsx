@@ -1,4 +1,5 @@
 // src/features/settings/screens/SettingsScreen.tsx
+import { BUILD_STAMP } from '@/core/config/buildStamp';
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
 import { View, Text, ScrollView, Alert, TextInput, ActivityIndicator } from 'react-native';
@@ -87,91 +88,93 @@ export const SettingsScreen = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
       {isDeletingAccount && (
         <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 99, alignItems: 'center', justifyContent: 'center' }}>
           <View style={{ backgroundColor: 'white', borderRadius: 16, padding: 24, alignItems: 'center', gap: 12 }}>
-            <ActivityIndicator size="large" color="#9B3A4A" />
-            <Text style={{ fontSize: 14, color: '#1C1917' }}>Deleting account…</Text>
+            <ActivityIndicator size="large" color="#B33A4A" />
+            <Text style={{ fontSize: 14, color: '#17211C' }}>Deleting account…</Text>
           </View>
         </View>
       )}
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
-          <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
+          <Text style={{ fontSize: 15, color: '#1F5C41' }}>‹</Text>
+          <Text style={{ fontSize: 14, color: '#1F5C41', fontWeight: '500' }}>Back</Text>
         </PressableBase>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4 }}>
-        <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32, marginBottom: 8 }}>Settings</Text>
+        <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#17211C', lineHeight: 32, marginBottom: 8 }}>Settings</Text>
 
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Family</Text>
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
+        <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Family</Text>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
           {editingName ? (
             <View style={{ padding: 14, gap: 10 }}>
-              <Text style={{ fontSize: 13, color: '#A8A09A' }}>Family name</Text>
+              <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>Family name</Text>
               <TextInput
                 value={familyName}
                 onChangeText={setFamilyName}
                 autoFocus
                 autoCapitalize="words"
-                style={{ fontSize: 14, color: '#1C1917', borderWidth: 1, borderColor: '#2A6049', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8 }}
+                style={{ fontSize: 14, color: '#17211C', borderWidth: 1, borderColor: '#1F5C41', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8 }}
               />
               <View style={{ flexDirection: 'row', gap: 8 }}>
-                <PressableBase onPress={() => setEditingName(false)} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#E3DDD5', alignItems: 'center', opacity: pressed ? 0.6 : 1 })}>
-                  <Text style={{ fontSize: 14, color: '#6B6866' }}>Cancel</Text>
+                <PressableBase onPress={() => setEditingName(false)} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#E3E2DB', alignItems: 'center', opacity: pressed ? 0.6 : 1 })}>
+                  <Text style={{ fontSize: 14, color: 'rgba(23,33,28,0.65)' }}>Cancel</Text>
                 </PressableBase>
-                <PressableBase onPress={handleSaveFamilyName} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, backgroundColor: '#2A6049', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
+                <PressableBase onPress={handleSaveFamilyName} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, backgroundColor: '#1F5C41', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
                   <Text style={{ fontSize: 14, color: 'white', fontWeight: '600' }}>{isSavingName ? 'Saving...' : 'Save'}</Text>
                 </PressableBase>
               </View>
             </View>
           ) : (
             <PressableBase onPress={handleEditFamilyName} style={(pressed) => ({ padding: 14, flexDirection: 'row', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
-              <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Family name</Text>
-              <Text style={{ fontSize: 13, color: '#1C1917', marginRight: 8 }}>{data?.familyGroup.name ?? '—'}</Text>
-              <Text style={{ fontSize: 13, color: '#A8A09A' }}>✎</Text>
+              <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', flex: 1 }}>Family name</Text>
+              <Text style={{ fontSize: 13, color: '#17211C', marginRight: 8 }}>{data?.familyGroup.name ?? '—'}</Text>
+              <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>✎</Text>
             </PressableBase>
           )}
         </View>
 
         <InviteFamilyMemberSection />
 
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Account</Text>
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
-          <View style={{ padding: 14, borderBottomWidth: 1, borderBottomColor: '#F0EDE8', flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Email</Text>
-            <Text style={{ fontSize: 13, color: '#1C1917' }}>{session?.user?.email ?? '—'}</Text>
+        <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Account</Text>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
+          <View style={{ padding: 14, borderBottomWidth: 1, borderBottomColor: '#F0EFEA', flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', flex: 1 }}>Email</Text>
+            <Text style={{ fontSize: 13, color: '#17211C' }}>{session?.user?.email ?? '—'}</Text>
           </View>
           <PressableBase onPress={handleSignOut} accessibilityRole="button" style={(pressed) => ({ padding: 14, opacity: pressed ? 0.6 : 1 })}>
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#9B3A4A' }}>{isSigningOut ? 'Signing out…' : 'Sign out'}</Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: '#B33A4A' }}>{isSigningOut ? 'Signing out…' : 'Sign out'}</Text>
           </PressableBase>
         </View>
 
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Display</Text>
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
-          <PressableBase onPress={() => setLargeText(!largeText)} style={(pressed) => ({ padding: 14, borderBottomWidth: 1, borderBottomColor: '#F0EDE8', flexDirection: 'row', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
-            <Text style={{ fontSize: 14, flex: 1, color: '#1C1917' }}>Large text</Text>
-            <View style={{ width: 40, height: 22, borderRadius: 11, backgroundColor: largeText ? '#2A6049' : '#EEEAE3', justifyContent: 'center', paddingHorizontal: 2 }}>
+        <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Display</Text>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
+          <PressableBase onPress={() => setLargeText(!largeText)} style={(pressed) => ({ padding: 14, borderBottomWidth: 1, borderBottomColor: '#F0EFEA', flexDirection: 'row', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
+            <Text style={{ fontSize: 14, flex: 1, color: '#17211C' }}>Large text</Text>
+            <View style={{ width: 40, height: 22, borderRadius: 11, backgroundColor: largeText ? '#1F5C41' : '#ECEBE5', justifyContent: 'center', paddingHorizontal: 2 }}>
               <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: 'white', alignSelf: largeText ? 'flex-end' : 'flex-start', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.15, shadowRadius: 2, elevation: 2 }} />
             </View>
           </PressableBase>
           <View style={{ padding: 14, flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ fontSize: 14, flex: 1, color: '#1C1917' }}>Dark mode</Text>
-            <View style={{ backgroundColor: '#EEEAE3', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 }}>
-              <Text style={{ fontSize: 11, color: '#A8A09A', fontWeight: '500' }}>Soon</Text>
+            <Text style={{ fontSize: 14, flex: 1, color: '#17211C' }}>Dark mode</Text>
+            <View style={{ backgroundColor: '#ECEBE5', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 }}>
+              <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', fontWeight: '500' }}>Soon</Text>
             </View>
           </View>
         </View>
 
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#9B3A4A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Danger Zone</Text>
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden' }}>
+        <Text style={{ fontSize: 10, fontWeight: '700', color: '#B33A4A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Danger Zone</Text>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden' }}>
           <PressableBase onPress={handleDeleteAccount} accessibilityRole="button" style={(pressed) => ({ padding: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: pressed ? 0.6 : 1 })}>
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#9B3A4A' }}>Delete account</Text>
-            <Text style={{ color: '#A8A09A', fontSize: 14 }}>›</Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: '#B33A4A' }}>Delete account</Text>
+            <Text style={{ color: 'rgba(23,33,28,0.55)', fontSize: 14 }}>›</Text>
           </PressableBase>
         </View>
+
+        <Text style={{ fontSize: 10, color: 'rgba(23,33,28,0.55)', textAlign: 'center', marginTop: 20 }}>{BUILD_STAMP}</Text>
       </ScrollView>
     </View>
   );

@@ -39,7 +39,7 @@ const CollapsibleSection = ({ title, bg, border, text, children }: { title: stri
 };
 
 const EmptyRow = ({ text }: { text: string }) => (
-  <View style={{ padding: 14 }}><Text style={{ fontSize: 12, color: '#A8A09A', fontStyle: 'italic' }}>{text}</Text></View>
+  <View style={{ padding: 14 }}><Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)', fontStyle: 'italic' }}>{text}</Text></View>
 );
 
 export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenProps) => {
@@ -116,42 +116,42 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
-          <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
+          <Text style={{ fontSize: 15, color: '#1F5C41' }}>‹</Text>
+          <Text style={{ fontSize: 14, color: '#1F5C41', fontWeight: '500' }}>Back</Text>
         </PressableBase>
-        <PressableBase onPress={handleOpenEdit} accessibilityRole="button" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEEAE3', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
-          <Text style={{ fontSize: 14, color: '#6B6866' }}>✎</Text>
+        <PressableBase onPress={handleOpenEdit} accessibilityRole="button" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: '#ECEBE5', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
+          <Text style={{ fontSize: 14, color: 'rgba(23,33,28,0.65)' }}>✎</Text>
         </PressableBase>
       </View>
       <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4 }}>
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 14, padding: 14, marginBottom: 12 }}>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 14, padding: 14, marginBottom: 12 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: showMoreInfo ? 12 : 0 }}>
             <View style={{ width: 46, height: 46, borderRadius: 11, backgroundColor: '#E8EFF8', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <Text style={{ fontSize: 20 }}>🩺</Text>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: '#1C1917' }}>{doctor.name}</Text>
-              {doctor.type ? <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 2 }}>{doctor.type}</Text> : null}
+              <Text style={{ fontSize: 16, fontWeight: '700', color: '#17211C' }}>{doctor.name}</Text>
+              {doctor.type ? <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)', marginTop: 2 }}>{doctor.type}</Text> : null}
             </View>
-            <PressableBase onPress={() => setShowMoreInfo(!showMoreInfo)} style={(pressed) => ({ backgroundColor: '#EEEAE3', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5, opacity: pressed ? 0.7 : 1 })}>
-              <Text style={{ fontSize: 11, fontWeight: '600', color: '#2A6049' }}>{showMoreInfo ? 'Less Info ↑' : 'More Info ↓'}</Text>
+            <PressableBase onPress={() => setShowMoreInfo(!showMoreInfo)} style={(pressed) => ({ backgroundColor: '#ECEBE5', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5, opacity: pressed ? 0.7 : 1 })}>
+              <Text style={{ fontSize: 11, fontWeight: '600', color: '#1F5C41' }}>{showMoreInfo ? 'Less Info ↑' : 'More Info ↓'}</Text>
             </PressableBase>
           </View>
           {showMoreInfo && (
-            <View style={{ borderTopWidth: 1, borderTopColor: '#F0EDE8', paddingTop: 10, gap: 8 }}>
+            <View style={{ borderTopWidth: 1, borderTopColor: '#F0EFEA', paddingTop: 10, gap: 8 }}>
               {doctor.address ? (
-                <View style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: '#F0EDE8' }}>
-                  <Text style={{ fontSize: 12, color: '#A8A09A', width: 60 }}>Address</Text>
-                  <Text style={{ fontSize: 12, color: '#1C1917', flex: 1, textAlign: 'right' }}>{doctor.address}</Text>
+                <View style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: '#F0EFEA' }}>
+                  <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)', width: 60 }}>Address</Text>
+                  <Text style={{ fontSize: 12, color: '#17211C', flex: 1, textAlign: 'right' }}>{doctor.address}</Text>
                 </View>
               ) : null}
               {doctor.phone ? (
-                <PressableBase onPress={handlePhone} style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: '#F0EDE8' }}>
-                  <Text style={{ fontSize: 12, color: '#A8A09A', width: 60 }}>Phone</Text>
-                  <Text style={{ fontSize: 12, color: '#2A6049', flex: 1, textAlign: 'right' }}>{doctor.phone}</Text>
+                <PressableBase onPress={handlePhone} style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: '#F0EFEA' }}>
+                  <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)', width: 60 }}>Phone</Text>
+                  <Text style={{ fontSize: 12, color: '#1F5C41', flex: 1, textAlign: 'right' }}>{doctor.phone}</Text>
                 </PressableBase>
               ) : null}
             </View>
@@ -163,10 +163,10 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
             <EmptyRow text="No visits with this doctor yet" />
           ) : (
             doctorVisits.map((v, i) => (
-              <PressableBase key={v.id} onPress={() => router.push(`/(app)/visits/${v.id}` as never)} style={(pressed) => ({ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EDE8', opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center' })}>
+              <PressableBase key={v.id} onPress={() => router.push(`/(app)/visits/${v.id}` as never)} style={(pressed) => ({ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EFEA', opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center' })}>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 13, color: '#1C1917' }}>{v.title || 'Visit'}</Text>
-                  <Text style={{ fontSize: 11, color: '#A8A09A', marginTop: 2 }}>{isoToDisplayDate(v.visitDate)}</Text>
+                  <Text style={{ fontSize: 13, color: '#17211C' }}>{v.title || 'Visit'}</Text>
+                  <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginTop: 2 }}>{isoToDisplayDate(v.visitDate)}</Text>
                 </View>
                 <Text style={{ fontSize: 14, color: '#C8C4BC' }}>›</Text>
               </PressableBase>
@@ -174,14 +174,14 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
           )}
         </CollapsibleSection>
 
-        <CollapsibleSection title="Notes" bg="#E6F0EC" border="#C0D8CA" text="#1A4D35">
+        <CollapsibleSection title="Notes" bg="#E4EFE9" border="#BFD4C8" text="#17452F">
           {doctorNotes.length === 0 ? (
             <EmptyRow text="No notes for this doctor yet" />
           ) : (
             doctorNotes.map((n, i) => (
-              <View key={n.id} style={{ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EDE8' }}>
-                <Text style={{ fontSize: 13, color: '#1C1917', lineHeight: 18 }}>{noteText(n.content)}</Text>
-                {n.noteDate ? <Text style={{ fontSize: 11, color: '#A8A09A', marginTop: 2 }}>{isoToDisplayDate(n.noteDate)}</Text> : null}
+              <View key={n.id} style={{ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EFEA' }}>
+                <Text style={{ fontSize: 13, color: '#17211C', lineHeight: 18 }}>{noteText(n.content)}</Text>
+                {n.noteDate ? <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginTop: 2 }}>{isoToDisplayDate(n.noteDate)}</Text> : null}
               </View>
             ))
           )}
@@ -192,10 +192,10 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
             <EmptyRow text="No medications prescribed yet" />
           ) : (
             doctorMeds.map((m, i) => (
-              <View key={m.id} style={{ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EDE8' }}>
-                <Text style={{ fontSize: 13, color: '#1C1917' }}>{m.name}</Text>
+              <View key={m.id} style={{ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EFEA' }}>
+                <Text style={{ fontSize: 13, color: '#17211C' }}>{m.name}</Text>
                 {(m.dosage || m.frequency) ? (
-                  <Text style={{ fontSize: 11, color: '#A8A09A', marginTop: 2 }}>
+                  <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginTop: 2 }}>
                     {[m.dosage, m.frequency].filter(Boolean).join(' · ')}
                   </Text>
                 ) : null}
@@ -208,7 +208,7 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
         <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }} onPress={() => setShowEditModal(false)}>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, justifyContent: 'flex-end' }}>
             <Pressable>
-              <View style={{ backgroundColor: '#F7F5F0', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '85%' }}>
+              <View style={{ backgroundColor: '#F7F7F4', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '85%' }}>
                 <View style={{ width: 40, height: 4, backgroundColor: '#D0CCC4', borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 20 }} />
                 <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
                   <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>Edit doctor</Text>

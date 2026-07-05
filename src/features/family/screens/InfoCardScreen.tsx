@@ -6,11 +6,10 @@
 import { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { PressableBase } from '@/design-system/components/PressableBase';
+import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { Button } from '@/design-system/components/Button';
-import { Fonts } from '@/design-system/tokens/fonts';
 import { isoToDisplayDate } from '@/shared/utils/dates';
 import { shareInfoCardPdf } from '@/shared/utils/pdfShare';
 import { EditInfoCardModal } from '@/features/family/components/EditInfoCardModal';
@@ -41,7 +40,6 @@ const buildRows = (i: PersonInfoCard): { label: string; value: string }[] => [
 ];
 
 export const InfoCardScreen = ({ person }: InfoCardScreenProps) => {
-  const insets = useSafeAreaInsets();
   const [editing, setEditing] = useState(false);
   const updateInfo = useUpdatePersonInfoMutation();
 
@@ -61,22 +59,15 @@ export const InfoCardScreen = ({ person }: InfoCardScreenProps) => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
-      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
-        <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}>
-          <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
-        </PressableBase>
-        <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32 }}>Info Card</Text>
-        <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 2 }}>{person.name}</Text>
-      </View>
+    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+      <SubScreenHeader title="Info Card" subtitle={person.name} />
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 14, overflow: 'hidden' }}>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 14, overflow: 'hidden' }}>
           {rows.map((row, index) => (
-            <View key={row.label} style={{ flexDirection: 'row', alignItems: 'flex-start', padding: 14, borderBottomWidth: index < rows.length - 1 ? 1 : 0, borderBottomColor: '#F0EDE8' }}>
-              <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>{row.label}</Text>
-              <Text style={{ fontSize: 13, color: row.value === NOT_SET ? '#C8C4BC' : '#1C1917', fontWeight: row.value === NOT_SET ? '400' : '500', flex: 1.4, textAlign: 'right' }}>{row.value}</Text>
+            <View key={row.label} style={{ flexDirection: 'row', alignItems: 'flex-start', padding: 14, borderBottomWidth: index < rows.length - 1 ? 1 : 0, borderBottomColor: '#F0EFEA' }}>
+              <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', flex: 1 }}>{row.label}</Text>
+              <Text style={{ fontSize: 13, color: row.value === NOT_SET ? '#C8C4BC' : '#17211C', fontWeight: row.value === NOT_SET ? '400' : '500', flex: 1.4, textAlign: 'right' }}>{row.value}</Text>
             </View>
           ))}
         </View>

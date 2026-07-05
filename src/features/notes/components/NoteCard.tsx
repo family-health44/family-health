@@ -26,7 +26,7 @@ const NoteSegmentView = ({ segment }: { segment: NoteSegment }) => {
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6, marginVertical: 4 }}>
         <Badge label={segment.eventType ?? 'Event'} variant="info" />
         {segment.eventDate ? (
-          <Text style={{ fontSize: 12, color: '#6B6866' }}>
+          <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.65)' }}>
             {formatDate(segment.eventDate)}
           </Text>
         ) : null}
@@ -42,7 +42,7 @@ const NoteSegmentView = ({ segment }: { segment: NoteSegment }) => {
   if (segment.type === 'section') {
     return (
       <Text style={{
-        fontSize: 11, fontWeight: '700', color: '#6B6866',
+        fontSize: 11, fontWeight: '700', color: 'rgba(23,33,28,0.65)',
         textTransform: 'uppercase', letterSpacing: 0.8,
         marginTop: 8, marginBottom: 2,
       }}>
@@ -91,7 +91,7 @@ export const NoteCard = ({ note, onEdit, onDelete, dimmed, onToggleHidden }: Not
       accessibilityLabel="Note — tap to edit, long press for options"
       style={(pressed) => ({
         backgroundColor: '#FFFFFF',
-        borderColor: '#E8E4DC',
+        borderColor: '#E3E2DB',
         borderWidth: 1,
         borderRadius: 14,
         padding: 14,
@@ -103,15 +103,15 @@ export const NoteCard = ({ note, onEdit, onDelete, dimmed, onToggleHidden }: Not
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
             <Text style={{ fontSize: 12 }}>🙈</Text>
-            <Text style={{ fontSize: 11, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.6 }}>Hidden</Text>
+            <Text style={{ fontSize: 11, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.6 }}>Hidden</Text>
           </View>
           <PressableBase
             onPress={() => onToggleHidden(note, false)}
             accessibilityRole="button"
             accessibilityLabel="Unhide note"
-            style={(pressed) => ({ backgroundColor: pressed ? '#F0EDE8' : 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 5 })}
+            style={(pressed) => ({ backgroundColor: pressed ? '#F0EFEA' : 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 5 })}
           >
-            <Text style={{ fontSize: 12, fontWeight: '600', color: '#2A6049' }}>Unhide</Text>
+            <Text style={{ fontSize: 12, fontWeight: '600', color: '#1F5C41' }}>Unhide</Text>
           </PressableBase>
         </View>
       ) : null}
@@ -125,7 +125,7 @@ export const NoteCard = ({ note, onEdit, onDelete, dimmed, onToggleHidden }: Not
       ) : null}
 
       {note.noteDate ? (
-        <Text style={{ fontSize: 12, color: '#6B6866', fontWeight: '600', marginBottom: 6 }}>
+        <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.65)', fontWeight: '600', marginBottom: 6 }}>
           {formatDate(note.noteDate)}
         </Text>
       ) : null}

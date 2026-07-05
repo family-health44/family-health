@@ -4,12 +4,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, FlatList, RefreshControl } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { ScreenWrapper } from '@/design-system/components/ScreenWrapper';
+import { ScreenHeader } from '@/design-system/components/ScreenHeader';
 import { EmptyState, ErrorState, LoadingState } from '@/design-system/components/EmptyState';
 import { FAB } from '@/design-system/components/FAB';
-import { HamburgerButton } from '@/design-system/components/HamburgerButton';
-import { Fonts } from '@/design-system/tokens/fonts';
-import { useDrawer } from '@/design-system/components/DrawerContext';
 import { useVisits } from '../hooks/useVisits';
 import { useFamilyHome } from '@/features/family/hooks/useFamilyHome';
 import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
@@ -45,7 +42,6 @@ export const VisitsScreen = () => {
   const { data: familyData } = useFamilyHome();
   const { data: doctorGroups } = useDoctorsQuery();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { openDrawer } = useDrawer();
 
   const people = familyData?.people ?? [];
   const doctors = (doctorGroups ?? []).flatMap((g) => g.doctors);
@@ -63,36 +59,26 @@ export const VisitsScreen = () => {
   const upcomingCount = listGroups?.find(g => g.label === 'Upcoming')?.visits.length ?? 0;
 
   if (isLoading) {
-    return <ScreenWrapper><LoadingState message="Loading visits..." /></ScreenWrapper>;
+    return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><LoadingState message="Loading visits..." /></View>;
   }
   if (error) {
-    return <ScreenWrapper><ErrorState message={error.message} onRetry={refetch} /></ScreenWrapper>;
+    return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><ErrorState message={error.message} onRetry={refetch} /></View>;
   }
 
   return (
-    <ScreenWrapper padded={false}>
-      {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8 }}>
-        <HamburgerButton onPress={openDrawer} />
-        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, flex: 1 }}>
-          <Text style={{ fontSize: 36, fontWeight: '300', color: '#1C1917', fontFamily: Fonts.serif, lineHeight: 38 }}>
-            Visits
-          </Text>
-          <Text style={{ fontSize: 12, color: '#A8A09A' }}>{upcomingCount} upcoming</Text>
-        </View>
-      </View>
-
-      {/* View toggle */}
-      <VisitsViewToggle activeMode={viewMode} onModeChange={setViewMode} />
+    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+      <ScreenHeader title="Visits" subtitle={`${upcomingCount} upcoming`}>
+        <VisitsViewToggle activeMode={viewMode} onModeChange={setViewMode} variant="onColour" />
+      </ScreenHeader>
 
       {/* Content */}
       {viewMode === 'list' && (
         <FlatList
           data={listGroups ?? []}
           keyExtractor={(item) => item.label}
-          contentContainerStyle={{ padding: 16, flexGrow: 1 }}
+          contentContainerStyle={{ padding: 16, paddingTop: 16, flexGrow: 1 }}
           refreshControl={
-            <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor="#2A6049" />
+            <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor="#1F5C41" />
           }
           ListEmptyComponent={
             <EmptyState
@@ -107,7 +93,7 @@ export const VisitsScreen = () => {
               <Text style={{
                 fontSize: 10,
                 fontWeight: '700',
-                color: '#A8A09A',
+                color: 'rgba(23,33,28,0.55)',
                 textTransform: 'uppercase',
                 letterSpacing: 0.8,
                 marginBottom: 8,
@@ -147,6 +133,6 @@ export const VisitsScreen = () => {
         onAdd={addVisit}
         onDismiss={() => setShowAddModal(false)}
       />
-    </ScreenWrapper>
+    </View>
   );
 };

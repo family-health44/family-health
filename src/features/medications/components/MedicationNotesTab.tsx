@@ -9,7 +9,7 @@ export const MedicationNotesTab = ({ personId, medicationId }: { personId: strin
   const { data: allNotes = [], isLoading } = usePersonNotesQuery(personId);
   const notes = allNotes.filter((n) => n.medicationId === medicationId);
 
-  if (isLoading) return <Text style={{ fontSize: 13, color: '#A8A09A', textAlign: 'center', paddingVertical: 20 }}>Loading notes...</Text>;
+  if (isLoading) return <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', textAlign: 'center', paddingVertical: 20 }}>Loading notes...</Text>;
   if (notes.length === 0) return <EmptyState title="No notes" message="Notes linked to this medication will appear here." />;
 
   return (
@@ -17,9 +17,9 @@ export const MedicationNotesTab = ({ personId, medicationId }: { personId: strin
       {notes.map((note) => {
         const segments = parseNoteContent(note.content);
         return (
-          <View key={note.id} style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E8E4DC', borderRadius: 12, padding: 12 }}>
+          <View key={note.id} style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, padding: 12 }}>
             {note.noteDate ? (
-              <Text style={{ fontSize: 12, color: '#6B6866', fontWeight: '600', marginBottom: 6 }}>{formatDate(note.noteDate)}</Text>
+              <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.65)', fontWeight: '600', marginBottom: 6 }}>{formatDate(note.noteDate)}</Text>
             ) : null}
             {segments.map((seg, i) => (
               <Text key={i} style={{ fontSize: 14, color: '#1A1A1A', lineHeight: 20 }}>{seg.content}</Text>

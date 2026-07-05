@@ -87,7 +87,7 @@ function FieldShell({
           backgroundColor: '#fff',
         })}
       >
-        <Text style={{ fontSize: 16, color: displayText ? '#1C1917' : '#A8A09A' }}>
+        <Text style={{ fontSize: 16, color: displayText ? '#17211C' : 'rgba(23,33,28,0.55)' }}>
           {displayText || placeholder}
         </Text>
       </PressableBase>

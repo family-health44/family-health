@@ -130,7 +130,7 @@ export const GetStartedSection = ({ onRequestAddPerson }: GetStartedSectionProps
           style={{
             fontSize: 12,
             fontWeight: '600',
-            color: '#6B7570',
+            color: 'rgba(23,33,28,0.55)',
             letterSpacing: 0.5,
             textTransform: 'uppercase',
           }}
@@ -143,7 +143,7 @@ export const GetStartedSection = ({ onRequestAddPerson }: GetStartedSectionProps
           accessibilityLabel="Dismiss all get started suggestions"
           hitSlop={8}
         >
-          <Text style={{ fontSize: 12, fontWeight: '500', color: '#6B7570' }}>Dismiss all</Text>
+          <Text style={{ fontSize: 12, fontWeight: '500', color: 'rgba(23,33,28,0.55)' }}>Dismiss all</Text>
         </PressableBase>
       </View>
 
@@ -157,12 +157,15 @@ export const GetStartedSection = ({ onRequestAddPerson }: GetStartedSectionProps
               alignItems: 'center',
               gap: 12,
               backgroundColor: '#FFFFFF',
-              borderWidth: 1,
-              borderColor: '#E4E0D6',
-              borderRadius: 13,
+              borderRadius: 16,
               paddingVertical: 11,
               paddingHorizontal: 12,
               marginBottom: 9,
+              shadowColor: '#17211C',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.06,
+              shadowRadius: 8,
+              elevation: 2,
             }}
           >
             <View
@@ -179,10 +182,10 @@ export const GetStartedSection = ({ onRequestAddPerson }: GetStartedSectionProps
             </View>
 
             <View style={{ flex: 1, minWidth: 0 }}>
-              <Text style={{ fontSize: 13.5, fontWeight: '600', color: '#1A2420' }}>
+              <Text style={{ fontSize: 13.5, fontWeight: '600', color: '#17211C' }}>
                 {cfg.title}
               </Text>
-              <Text style={{ fontSize: 11, color: '#6B7570', marginTop: 1 }}>{cfg.subtitle}</Text>
+              <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginTop: 1 }}>{cfg.subtitle}</Text>
             </View>
 
             <PressableBase
@@ -191,7 +194,7 @@ export const GetStartedSection = ({ onRequestAddPerson }: GetStartedSectionProps
               accessibilityLabel={`${cfg.title} — add`}
               hitSlop={6}
             >
-              <Text style={{ fontSize: 12.5, fontWeight: '600', color: '#2A6049' }}>Add</Text>
+              <Text style={{ fontSize: 12.5, fontWeight: '600', color: '#1F5C41' }}>Add</Text>
             </PressableBase>
 
             <PressableBase
@@ -239,13 +242,13 @@ const PersonPickerModal = ({ visible, people, onPick, onDismiss }: PersonPickerM
       accessibilityLabel="Close"
       style={() => ({
         flex: 1,
-        backgroundColor: 'rgba(26,36,32,0.35)',
+        backgroundColor: 'rgba(0,0,0,0.4)',
         justifyContent: 'flex-end',
       })}
     >
       <View
         style={{
-          backgroundColor: '#F7F5F0',
+          backgroundColor: '#F7F7F4',
           borderTopLeftRadius: 22,
           borderTopRightRadius: 22,
           paddingHorizontal: 20,
@@ -253,10 +256,10 @@ const PersonPickerModal = ({ visible, people, onPick, onDismiss }: PersonPickerM
           paddingBottom: 34,
         }}
       >
-        <Text style={{ fontSize: 17, fontWeight: '700', color: '#1A2420', marginBottom: 4 }}>
+        <Text style={{ fontSize: 17, fontWeight: '700', color: '#17211C', marginBottom: 4 }}>
           Who is this for?
         </Text>
-        <Text style={{ fontSize: 13, color: '#6B7570', marginBottom: 14 }}>
+        <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', marginBottom: 14 }}>
           Choose a family member to add to.
         </Text>
 
@@ -270,12 +273,15 @@ const PersonPickerModal = ({ visible, people, onPick, onDismiss }: PersonPickerM
               flexDirection: 'row',
               alignItems: 'center',
               gap: 12,
-              backgroundColor: pressed ? '#EEEAE1' : '#FFFFFF',
-              borderWidth: 1,
-              borderColor: '#E4E0D6',
-              borderRadius: 13,
+              backgroundColor: pressed ? '#F0EFEA' : '#FFFFFF',
+              borderRadius: 16,
               padding: 12,
               marginBottom: 9,
+              shadowColor: '#17211C',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.06,
+              shadowRadius: 8,
+              elevation: 2,
             })}
           >
             <View
@@ -283,18 +289,16 @@ const PersonPickerModal = ({ visible, people, onPick, onDismiss }: PersonPickerM
                 width: 36,
                 height: 36,
                 borderRadius: 18,
-                backgroundColor: p.colourSet.bg,
-                borderWidth: 1,
-                borderColor: p.colourSet.border,
+                backgroundColor: p.colourSet.dot,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <Text style={{ fontSize: 13, fontWeight: '700', color: p.colourSet.text }}>
+              <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFFFFF' }}>
                 {p.initials}
               </Text>
             </View>
-            <Text style={{ fontSize: 15, fontWeight: '600', color: '#1A2420' }}>{p.name}</Text>
+            <Text style={{ fontSize: 15, fontWeight: '600', color: '#17211C' }}>{p.name}</Text>
           </PressableBase>
         ))}
       </View>

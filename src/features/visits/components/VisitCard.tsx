@@ -45,13 +45,16 @@ export const VisitCard = ({ visit, onPress, compact = false, isPast = false }: V
       accessibilityRole="button"
       accessibilityLabel={`${visit.title} on ${formatDate(visit.visitDate)}`}
       style={(pressed) => ({
-        backgroundColor: colourSet.bg,
-        borderColor: colourSet.border,
-        borderWidth: 1.5,
-        borderRadius: 14,
-        padding: 14,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        padding: 13,
         marginBottom: 10,
-        opacity: isPast ? 0.6 : pressed ? 0.85 : 1,
+        shadowColor: '#17211C',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        elevation: 2,
+        opacity: isPast ? 0.55 : pressed ? 0.85 : 1,
       })}
     >
       <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
@@ -61,14 +64,14 @@ export const VisitCard = ({ visit, onPress, compact = false, isPast = false }: V
           </Text>
         </View>
         <View style={{ flex: 1, gap: 2 }}>
-          <Text style={{ fontSize: 14, fontWeight: '700', color: colourSet.text }}>{visit.title}</Text>
+          <Text style={{ fontSize: 14, fontWeight: '700', color: '#17211C' }}>{visit.title}</Text>
           {visit.doctorName ? (
-            <Text style={{ fontSize: 12, fontWeight: '600', color: colourSet.text }}>{visit.doctorName}</Text>
+            <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)' }}>{visit.doctorName}</Text>
           ) : null}
-          <Text style={{ fontSize: 11, color: colourSet.dot, fontWeight: '500' }}>{dateTime}</Text>
-          <Text style={{ fontSize: 11, fontWeight: '600', color: colourSet.text }}>{visit.personName}</Text>
+          <Text style={{ fontSize: 11.5, color: '#1F5C41', fontWeight: '600' }}>{dateTime}</Text>
+          <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)' }}>{visit.personName}</Text>
         </View>
-        <Text style={{ color: colourSet.border, fontSize: 13 }}>›</Text>
+        <Text style={{ color: 'rgba(23,33,28,0.4)', fontSize: 13 }}>›</Text>
       </View>
     </PressableBase>
   );

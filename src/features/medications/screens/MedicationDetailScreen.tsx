@@ -76,21 +76,21 @@ export const MedicationDetailScreen = ({
   const mostCommon = stats.mostCommonFeeling ? FEELING_CONFIG[stats.mostCommonFeeling] : null;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(p) => ({ opacity: p ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
-          <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
+          <Text style={{ fontSize: 15, color: '#1F5C41' }}>‹</Text>
+          <Text style={{ fontSize: 14, color: '#1F5C41', fontWeight: '500' }}>Back</Text>
         </PressableBase>
         <PressableBase onPress={() => setEditing(true)} accessibilityRole="button" accessibilityLabel="Edit medication" style={(p) => ({ opacity: p ? 0.6 : 1, padding: 4 })}>
-          <Text style={{ fontSize: 18, color: '#2A6049' }}>✎</Text>
+          <Text style={{ fontSize: 18, color: '#1F5C41' }}>✎</Text>
         </PressableBase>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4, paddingBottom: 100 }}>
-        <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E8E4DC', borderRadius: 16, padding: 16, marginBottom: 14 }}>
-          <Text style={{ fontSize: 26, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917' }}>{medication.name}</Text>
-          <Text style={{ fontSize: 13, color: '#6B6866', marginTop: 2 }}>
+        <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 16, padding: 16, marginBottom: 14 }}>
+          <Text style={{ fontSize: 26, fontWeight: '300', fontFamily: Fonts.serif, color: '#17211C' }}>{medication.name}</Text>
+          <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.65)', marginTop: 2 }}>
             {[medication.reason, personName].filter(Boolean).join(' · ')}
           </Text>
         </View>
@@ -101,12 +101,12 @@ export const MedicationDetailScreen = ({
           <StatCard value={stats.weeksOnMed != null ? `${stats.weeksOnMed}w` : '—'} label="On this med" />
         </View>
 
-        <View style={{ flexDirection: 'row', backgroundColor: '#EEEAE3', borderRadius: 10, padding: 3, marginBottom: 16 }}>
+        <View style={{ flexDirection: 'row', backgroundColor: '#ECEBE5', borderRadius: 10, padding: 3, marginBottom: 16 }}>
           {([['log', 'Log History'], ['details', 'Details'], ['notes', 'Notes']] as [Tab, string][]).map(([key, label]) => {
             const active = tab === key;
             return (
               <PressableBase key={key} onPress={() => setTab(key)} accessibilityRole="button" style={{ flex: 1, paddingVertical: 8, borderRadius: 8, backgroundColor: active ? '#FFFFFF' : 'transparent', alignItems: 'center' }}>
-                <Text style={{ fontSize: 13, fontWeight: active ? '700' : '500', color: active ? '#1C1917' : '#6B6866' }}>{label}</Text>
+                <Text style={{ fontSize: 13, fontWeight: active ? '700' : '500', color: active ? '#17211C' : 'rgba(23,33,28,0.65)' }}>{label}</Text>
               </PressableBase>
             );
           })}

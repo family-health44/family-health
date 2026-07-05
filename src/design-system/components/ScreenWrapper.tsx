@@ -46,7 +46,7 @@ export const ScreenWrapper = ({
 
   if (avoidKeyboard) {
     return (
-      <SafeAreaView className="flex-1 bg-[#F7F5F0]">
+      <SafeAreaView className="flex-1 bg-[#F7F7F4]">
         <KeyboardAvoidingView
           className="flex-1"
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -59,7 +59,7 @@ export const ScreenWrapper = ({
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F7F5F0]">
+    <SafeAreaView className="flex-1 bg-[#F7F7F4]">
       {inner}
     </SafeAreaView>
   );

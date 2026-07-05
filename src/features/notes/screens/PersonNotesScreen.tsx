@@ -3,13 +3,12 @@
 // tap-to-edit cards, and an add FAB that returns here on save.
 
 import { PressableBase } from '@/design-system/components/PressableBase';
+import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { useMemo, useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ErrorState, LoadingState, EmptyState } from '@/design-system/components/EmptyState';
 import { FAB } from '@/design-system/components/FAB';
-import { Fonts } from '@/design-system/tokens/fonts';
 import { NoteModal } from '../components/NoteModal';
 import { NoteCard } from '../components/NoteCard';
 import { usePersonNotes } from '../hooks/usePersonNotes';
@@ -46,7 +45,6 @@ function sortByDate(notes: Note[], order: SortOrder): Note[] {
 }
 
 export const PersonNotesScreen = ({ personId, personName }: PersonNotesScreenProps) => {
-  const insets = useSafeAreaInsets();
   const [showAddModal, setShowAddModal] = useState(false);
   const [editing, setEditing] = useState<Note | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
@@ -74,43 +72,35 @@ export const PersonNotesScreen = ({ personId, personName }: PersonNotesScreenPro
   if (error) return <ErrorState message={error.message} />;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
-      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
-        <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}>
-          <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
-        </PressableBase>
-
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <View>
-            <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32 }}>Notes</Text>
-            {personName ? <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 2 }}>{personName}</Text> : null}
-          </View>
+    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+      <SubScreenHeader title="Notes" subtitle={personName || undefined} />
+      <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <PressableBase
               onPress={() => setShowHidden((s) => !s)}
               accessibilityRole="button"
               accessibilityLabel={showHidden ? 'Hide hidden notes' : 'Show hidden notes'}
-              style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: showHidden ? '#2A6049' : (pressed ? '#F0EDE8' : 'white'), borderWidth: 1, borderColor: showHidden ? '#2A6049' : '#E3DDD5', borderRadius: 8, paddingHorizontal: 11, paddingVertical: 6 })}
+              style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: showHidden ? '#1F5C41' : (pressed ? '#F0EFEA' : 'white'), borderWidth: 1, borderColor: showHidden ? '#1F5C41' : '#E3E2DB', borderRadius: 8, paddingHorizontal: 11, paddingVertical: 6 })}
             >
               <Text style={{ fontSize: 13 }}>{showHidden ? '🙉' : '🙈'}</Text>
-              <Text style={{ fontSize: 12, fontWeight: '600', color: showHidden ? 'white' : '#6B6866' }}>Hidden</Text>
+              <Text style={{ fontSize: 12, fontWeight: '600', color: showHidden ? 'white' : 'rgba(23,33,28,0.65)' }}>Hidden</Text>
             </PressableBase>
             <PressableBase
               onPress={() => setSortOrder((o) => (o === 'newest' ? 'oldest' : 'newest'))}
               accessibilityRole="button"
               accessibilityLabel={`Sort ${sortOrder === 'newest' ? 'newest' : 'oldest'} first`}
-              style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: pressed ? '#F0EDE8' : 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 8, paddingHorizontal: 11, paddingVertical: 6 })}
+              style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: pressed ? '#F0EFEA' : 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 8, paddingHorizontal: 11, paddingVertical: 6 })}
             >
-              <Text style={{ fontSize: 13, color: '#6B6866' }}>{sortOrder === 'newest' ? '↓' : '↑'}</Text>
-              <Text style={{ fontSize: 12, fontWeight: '600', color: '#6B6866' }}>{sortOrder === 'newest' ? 'Newest' : 'Oldest'}</Text>
+              <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.65)' }}>{sortOrder === 'newest' ? '↓' : '↑'}</Text>
+              <Text style={{ fontSize: 12, fontWeight: '600', color: 'rgba(23,33,28,0.65)' }}>{sortOrder === 'newest' ? 'Newest' : 'Oldest'}</Text>
             </PressableBase>
           </View>
         </View>
       </View>
 
       <View style={{ paddingHorizontal: 16, paddingBottom: 6 }}>
-        <Text style={{ fontSize: 11, color: '#A8A09A', marginBottom: 6 }}>Filter</Text>
+        <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginBottom: 6 }}>Filter</Text>
         <View style={{ flexDirection: 'row', gap: 8 }}>
           {FILTER_CHIPS.map((chip) => {
             const active = filter === chip.key;
@@ -120,10 +110,10 @@ export const PersonNotesScreen = ({ personId, personName }: PersonNotesScreenPro
                 onPress={() => setFilter((f) => (f === chip.key ? null : chip.key))}
                 accessibilityRole="button"
                 accessibilityLabel={`Filter by ${chip.label}`}
-                style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: active ? '#2A6049' : 'white', borderWidth: 1, borderColor: active ? '#2A6049' : '#E3DDD5', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6, opacity: pressed ? 0.7 : 1 })}
+                style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: active ? '#1F5C41' : 'white', borderWidth: 1, borderColor: active ? '#1F5C41' : '#E3E2DB', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6, opacity: pressed ? 0.7 : 1 })}
               >
                 <Text style={{ fontSize: 12 }}>{chip.emoji}</Text>
-                <Text style={{ fontSize: 12, fontWeight: '600', color: active ? 'white' : '#6B6866' }}>{chip.label}</Text>
+                <Text style={{ fontSize: 12, fontWeight: '600', color: active ? 'white' : 'rgba(23,33,28,0.65)' }}>{chip.label}</Text>
               </PressableBase>
             );
           })}

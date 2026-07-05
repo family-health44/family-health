@@ -114,7 +114,7 @@ export const AddMedicationModal = ({
         >
           <Pressable>
             <View style={{
-              backgroundColor: '#F7F5F0',
+              backgroundColor: '#F7F7F4',
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
               paddingBottom: Platform.OS === 'ios' ? 40 : 24,
@@ -201,7 +201,7 @@ export const AddMedicationModal = ({
                       alignItems: 'center',
                       backgroundColor: 'white',
                       borderWidth: 1,
-                      borderColor: statusOpen ? '#2A6049' : '#E3DDD5',
+                      borderColor: statusOpen ? '#1F5C41' : '#E3E2DB',
                       borderRadius: 10,
                       paddingHorizontal: 14,
                       paddingVertical: 12,
@@ -209,8 +209,8 @@ export const AddMedicationModal = ({
                     accessibilityRole="button"
                     accessibilityLabel="Select medication status"
                   >
-                    <Text style={{ flex: 1, fontSize: 14, color: '#1C1917' }}>{selectedLabel}</Text>
-                    <Text style={{ color: '#A8A09A', fontSize: 12 }}>{statusOpen ? '▲' : '▼'}</Text>
+                    <Text style={{ flex: 1, fontSize: 14, color: '#17211C' }}>{selectedLabel}</Text>
+                    <Text style={{ color: 'rgba(23,33,28,0.55)', fontSize: 12 }}>{statusOpen ? '▲' : '▼'}</Text>
                   </Pressable>
 
                   {/* Options list */}
@@ -218,7 +218,7 @@ export const AddMedicationModal = ({
                     <View style={{
                       backgroundColor: 'white',
                       borderWidth: 1,
-                      borderColor: '#2A6049',
+                      borderColor: '#1F5C41',
                       borderRadius: 10,
                       overflow: 'hidden',
                     }}>
@@ -235,8 +235,8 @@ export const AddMedicationModal = ({
                             paddingVertical: 11,
                             paddingHorizontal: 14,
                             borderBottomWidth: i < PICKER_OPTIONS.length - 1 ? 1 : 0,
-                            borderBottomColor: '#F0EDE8',
-                            backgroundColor: selectedStatus === opt.value ? '#E6F0EC' : 'white',
+                            borderBottomColor: '#F0EFEA',
+                            backgroundColor: selectedStatus === opt.value ? '#E4EFE9' : 'white',
                           }}
                           accessibilityRole="menuitem"
                           accessibilityLabel={opt.label}
@@ -245,13 +245,13 @@ export const AddMedicationModal = ({
                           <Text style={{
                             flex: 1,
                             fontSize: 14,
-                            color: selectedStatus === opt.value ? '#1A4D35' : '#1C1917',
+                            color: selectedStatus === opt.value ? '#17452F' : '#17211C',
                             fontWeight: selectedStatus === opt.value ? '600' : '400',
                           }}>
                             {opt.label}
                           </Text>
                           {selectedStatus === opt.value && (
-                            <Text style={{ color: '#2A6049', fontSize: 14 }}>✓</Text>
+                            <Text style={{ color: '#1F5C41', fontSize: 14 }}>✓</Text>
                           )}
                         </Pressable>
                       ))}

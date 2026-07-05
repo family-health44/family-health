@@ -27,7 +27,7 @@ export const OfflineBanner = ({ isOnline, isSyncing, pendingCount }: OfflineBann
       : 'You are offline';
   };
 
-  const bgColour = isSyncing ? '#2A6049' : '#7A3A10';
+  const bgColour = isSyncing ? '#1F5C41' : '#7A3A10';
 
   return (
     <View

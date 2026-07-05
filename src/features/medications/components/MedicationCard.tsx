@@ -26,7 +26,7 @@ export const MedicationCard = ({
 }: MedicationCardProps) => {
   const cardStyle = colourSet
     ? { backgroundColor: colourSet.bg, borderColor: colourSet.border }
-    : { backgroundColor: '#FFFFFF', borderColor: '#E8E4DC' };
+    : { backgroundColor: '#FFFFFF', borderColor: '#E3E2DB' };
 
   return (
     <PressableBase
@@ -66,19 +66,19 @@ export const MedicationCard = ({
       {/* Detail rows */}
       <View style={{ marginTop: 8, gap: 4 }}>
         {medication.reason ? (
-          <Text style={{ fontSize: 13, color: '#6B6866' }}>
+          <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.65)' }}>
             Reason: {medication.reason}
           </Text>
         ) : null}
 
         {medication.prescribedByName ? (
-          <Text style={{ fontSize: 13, color: '#6B6866' }}>
+          <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.65)' }}>
             Prescribed by: {medication.prescribedByName}
           </Text>
         ) : null}
 
         {medication.startDate ? (
-          <Text style={{ fontSize: 13, color: '#6B6866' }}>
+          <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.65)' }}>
             Started: {formatDate(medication.startDate)}
             {medication.endDate ? ` · Ended: ${formatDate(medication.endDate)}` : ''}
           </Text>

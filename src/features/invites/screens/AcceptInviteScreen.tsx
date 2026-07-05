@@ -18,7 +18,7 @@ export const AcceptInviteScreen = () => {
     return (
       <ScreenWrapper padded>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator size="large" color="#2A6049" />
+          <ActivityIndicator size="large" color="#1F5C41" />
         </View>
       </ScreenWrapper>
     );
@@ -29,10 +29,10 @@ export const AcceptInviteScreen = () => {
       <ScreenWrapper padded>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 }}>
           <Text style={{ fontSize: 44 }}>📭</Text>
-          <Text style={{ fontFamily: Fonts.serif, fontSize: 24, fontWeight: '300', color: '#1C1917', textAlign: 'center' }}>
+          <Text style={{ fontFamily: Fonts.serif, fontSize: 24, fontWeight: '300', color: '#17211C', textAlign: 'center' }}>
             No pending invite
           </Text>
-          <Text style={{ fontSize: 13, color: '#A8A09A', textAlign: 'center', lineHeight: 20 }}>
+          <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', textAlign: 'center', lineHeight: 20 }}>
             This invite may have been withdrawn. You can create your own family group instead.
           </Text>
           <Button label="Create a family group" variant="primary" size="lg" isFullWidth
@@ -46,12 +46,12 @@ export const AcceptInviteScreen = () => {
     <ScreenWrapper padded>
       <View style={{ alignItems: 'center', marginBottom: 32, marginTop: 48 }}>
         <Text style={{ fontSize: 44, marginBottom: 12 }}>🏡</Text>
-        <Text style={{ fontFamily: Fonts.serif, fontSize: 28, fontWeight: '300', color: '#1C1917', textAlign: 'center' }}>
+        <Text style={{ fontFamily: Fonts.serif, fontSize: 28, fontWeight: '300', color: '#17211C', textAlign: 'center' }}>
           You've been invited!
         </Text>
-        <Text style={{ fontSize: 15, color: '#6B6866', marginTop: 12, lineHeight: 22, textAlign: 'center' }}>
+        <Text style={{ fontSize: 15, color: 'rgba(23,33,28,0.65)', marginTop: 12, lineHeight: 22, textAlign: 'center' }}>
           Join the{' '}
-          <Text style={{ fontWeight: '700', color: '#2A6049' }}>{familyGroupName}</Text>
+          <Text style={{ fontWeight: '700', color: '#1F5C41' }}>{familyGroupName}</Text>
           {' '}family to view and manage their health records together.
         </Text>
       </View>
@@ -59,7 +59,7 @@ export const AcceptInviteScreen = () => {
       <View className="gap-4">
         {error ? (
           <View className="rounded-xl border border-[#E0BDC4] bg-[#F5E8EB] px-4 py-3" accessibilityRole="alert">
-            <Text className="text-sm text-[#7A2030]">{error.message}</Text>
+            <Text className="text-sm text-[#8F2E3B]">{error.message}</Text>
           </View>
         ) : null}
 
@@ -71,7 +71,7 @@ export const AcceptInviteScreen = () => {
           accessibilityRole="button"
           style={(pressed) => ({ alignItems: 'center', paddingVertical: 10, opacity: pressed ? 0.6 : 1 })}
         >
-          <Text style={{ fontSize: 14, color: '#6B6866' }}>No thanks — create my own group</Text>
+          <Text style={{ fontSize: 14, color: 'rgba(23,33,28,0.65)' }}>No thanks — create my own group</Text>
         </PressableBase>
 
         <PressableBase
@@ -79,7 +79,7 @@ export const AcceptInviteScreen = () => {
           accessibilityRole="button"
           style={(pressed) => ({ alignItems: 'center', paddingVertical: 6, opacity: pressed ? 0.6 : 1 })}
         >
-          <Text style={{ fontSize: 13, color: '#A8A09A' }}>Sign out</Text>
+          <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>Sign out</Text>
         </PressableBase>
       </View>
     </ScreenWrapper>

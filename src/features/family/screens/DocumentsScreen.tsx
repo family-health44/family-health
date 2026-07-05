@@ -7,7 +7,7 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { PressableBase } from '@/design-system/components/PressableBase';
-import { Fonts } from '@/design-system/tokens/fonts';
+import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { EmptyState, ErrorState } from '@/design-system/components/EmptyState';
 
 import { usePersonDocumentsQuery } from '@/features/documents/queries/documents.queries';
@@ -115,31 +115,20 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
   const isBusy = addDoc.isPending;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
-      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
-        <PressableBase
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}
-        >
-          <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
-        </PressableBase>
-        <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32 }}>Documents</Text>
-        <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 2 }}>{personName}</Text>
-
+    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+      <SubScreenHeader title="Documents" subtitle={personName}>
         <View style={{ marginTop: 10 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ fontSize: 11, color: '#A8A09A' }}>
+            <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>
               {(documents?.length ?? 0)} file{(documents?.length ?? 0) === 1 ? '' : 's'} · {formatFileSize(used)} used
             </Text>
-            <Text style={{ fontSize: 11, color: '#A8A09A' }}>50 MB limit</Text>
+            <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>50 MB limit</Text>
           </View>
-          <View style={{ height: 5, backgroundColor: '#E6E2DA', borderRadius: 3, marginTop: 5, overflow: 'hidden' }}>
-            <View style={{ width: `${pct}%`, height: '100%', backgroundColor: pct >= 90 ? '#A32D2D' : '#3E7D62' }} />
+          <View style={{ height: 5, backgroundColor: 'rgba(255,255,255,0.25)', borderRadius: 3, marginTop: 5, overflow: 'hidden' }}>
+            <View style={{ width: `${pct}%`, height: '100%', backgroundColor: pct >= 90 ? '#E58080' : '#FFFFFF' }} />
           </View>
         </View>
-      </View>
+      </SubScreenHeader>
 
       {isError ? (
         <ErrorState message="Couldn't load documents." onRetry={() => void refetch()} />
@@ -175,13 +164,13 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
             >
               <Text style={{ fontSize: 22 }}>{KIND_ICON[doc.kind]}</Text>
               <View style={{ flex: 1, minWidth: 0 }}>
-                <Text numberOfLines={1} style={{ fontSize: 14, color: '#1C1917' }}>{doc.name}</Text>
-                <Text style={{ fontSize: 11, color: '#A8A09A', marginTop: 2 }}>
+                <Text numberOfLines={1} style={{ fontSize: 14, color: '#17211C' }}>{doc.name}</Text>
+                <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginTop: 2 }}>
                   {kindLabel(doc.kind)} · {formatFileSize(doc.fileSize)}
                   {doc.uploadedAt ? ` · ${isoToDisplayDate(doc.uploadedAt.slice(0, 10))}` : ''}
                 </Text>
               </View>
-              <Text style={{ fontSize: 18, color: '#A8A09A' }}>⋯</Text>
+              <Text style={{ fontSize: 18, color: 'rgba(23,33,28,0.55)' }}>⋯</Text>
             </PressableBase>
           ))}
         </ScrollView>

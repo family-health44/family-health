@@ -28,7 +28,7 @@ export const Input = forwardRef<TextInput, InputProps>(
         <View className="flex-row">
           <Text className="text-sm font-medium text-[#3D3D3D]">{label}</Text>
           {isRequired && (
-            <Text className="ml-0.5 text-sm text-[#9B3A4A]">{' *'}</Text>
+            <Text className="ml-0.5 text-sm text-[#B33A4A]">{' *'}</Text>
           )}
         </View>
 
@@ -41,11 +41,11 @@ export const Input = forwardRef<TextInput, InputProps>(
             'rounded-xl border px-4 text-base text-[#1A1A1A]',
             'bg-white',
             hasError
-              ? 'border-[#9B3A4A]'
-              : 'border-[#C8C4BC] focus:border-[#2A6049]',
+              ? 'border-[#B33A4A]'
+              : 'border-[#C8C4BC] focus:border-[#1F5C41]',
           ].join(' ')}
           style={{ minHeight: 48, paddingTop: 12, paddingBottom: 12, fontSize: 16, lineHeight: 22 }}
-          placeholderTextColor="#A8A09A"
+          placeholderTextColor="#8B928E"
           autoCapitalize="none"
           autoCorrect={false}
           {...textInputProps}
@@ -54,7 +54,7 @@ export const Input = forwardRef<TextInput, InputProps>(
         {/* Error message */}
         {hasError && (
           <Text
-            className="text-sm text-[#9B3A4A]"
+            className="text-sm text-[#B33A4A]"
             accessibilityRole="alert"
             accessibilityLiveRegion="polite"
           >
@@ -64,7 +64,7 @@ export const Input = forwardRef<TextInput, InputProps>(
 
         {/* Helper text — only shown when no error */}
         {!hasError && helperText ? (
-          <Text className="text-sm text-[#6B6866]">{helperText}</Text>
+          <Text className="text-sm text-[#57605B]">{helperText}</Text>
         ) : null}
       </View>
     );

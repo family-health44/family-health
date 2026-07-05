@@ -67,7 +67,7 @@ export const DoctorCard = ({ doctor, colourSet: colourSetProp, colourIndex = 0, 
       </View>
       {onUnlink ? (
         <PressableBase onPress={handleUnlink} accessibilityRole="button" accessibilityLabel={`Remove ${doctor.name}`} style={(pressed) => ({ padding: 6, opacity: pressed ? 0.5 : 1 })}>
-          <Text style={{ fontSize: 18, color: '#9B3A4A' }}>×</Text>
+          <Text style={{ fontSize: 18, color: '#B33A4A' }}>×</Text>
         </PressableBase>
       ) : (
         <Text style={{ color: colourSet?.border, fontSize: 16 }}>›</Text>

@@ -68,7 +68,7 @@ export const PersonNotesSection = ({ personId, colourSet }: PersonNotesSectionPr
         justifyContent: 'space-between', marginBottom: 14,
       }}>
         <Text style={{
-          fontSize: 13, fontWeight: '600', color: '#6B6866',
+          fontSize: 13, fontWeight: '600', color: 'rgba(23,33,28,0.65)',
           textTransform: 'uppercase', letterSpacing: 0.8,
         }}>
           Notes

@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { View, Text, FlatList, RefreshControl } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { EmptyState, ErrorState, LoadingState } from '@/design-system/components/EmptyState';
 import { FAB } from '@/design-system/components/FAB';
-import { HamburgerButton } from '@/design-system/components/HamburgerButton';
-import { Fonts } from '@/design-system/tokens/fonts';
-import { useDrawer } from '@/design-system/components/DrawerContext';
+import { ScreenHeader } from '@/design-system/components/ScreenHeader';
 import { useTodos } from '../hooks/useTodos';
 import { TodoPersonSection } from '../components/TodoPersonSection';
 import { AddTodoModal } from '../components/AddTodoModal';
@@ -14,15 +11,12 @@ import { EditTodoModal } from '../components/EditTodoModal';
 import { useFamilyHome } from '@/features/family/hooks/useFamilyHome';
 import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
 import { useVisits } from '../../visits/hooks/useVisits';
-import { countIncompleteTodos, countOverdueTodos } from '../domain/todos.domain';
 import type { Todo, TodoPersonGroup } from '../types/todos.types';
 
 export const TodosScreen = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [showCompleted, setShowCompleted] = useState(false);
-  const { openDrawer } = useDrawer();
-  const insets = useSafeAreaInsets();
   const { groups, isLoading, isRefreshing, error, addTodo, updateTodo, toggleTodo, deleteTodo, isAdding, isUpdating, refetch, refresh } = useTodos();
   const { data: familyData } = useFamilyHome();
   const { data: doctorGroups } = useDoctorsQuery();
@@ -31,19 +25,15 @@ export const TodosScreen = () => {
   const doctors = (doctorGroups ?? []).flatMap((g) => g.doctors);
   const visits = calendarVisits ?? [];
 
-  const incompleteCount = countIncompleteTodos(groups);
-  const overdueCount = countOverdueTodos(groups);
 
-  if (isLoading) return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><LoadingState message="Loading to-dos..." /></View>;
-  if (error) return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><ErrorState message={error.message} onRetry={refetch} /></View>;
+  if (isLoading) return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><LoadingState message="Loading to-dos..." /></View>;
+  if (error) return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><ErrorState message={error.message} onRetry={refetch} /></View>;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
-      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <HamburgerButton onPress={openDrawer} />
-          <Text style={{ fontSize: 36, fontWeight: '300', color: '#1C1917', fontFamily: Fonts.serif, lineHeight: 38 }}>To Do</Text>
-          <View style={{ flex: 1 }} />
+    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+      <ScreenHeader
+        title="To Do"
+        right={
           <PressableBase
             onPress={() => setShowCompleted(!showCompleted)}
             accessibilityRole="checkbox"
@@ -51,19 +41,19 @@ export const TodosScreen = () => {
             accessibilityLabel="Show completed"
             style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 6, opacity: pressed ? 0.7 : 1 })}
           >
-            <Text style={{ fontSize: 11, fontWeight: '500', color: '#6B6866' }}>Show completed</Text>
-            <View style={{ width: 14, height: 14, borderWidth: 1.5, borderColor: showCompleted ? '#2A6049' : '#C8C4BC', borderRadius: 3, backgroundColor: showCompleted ? '#2A6049' : 'white', alignItems: 'center', justifyContent: 'center' }}>
-              {showCompleted && <Text style={{ color: 'white', fontSize: 9, lineHeight: 12 }}>✓</Text>}
+            <Text style={{ fontSize: 11, fontWeight: '500', color: 'rgba(255,255,255,0.85)' }}>Show completed</Text>
+            <View style={{ width: 14, height: 14, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.8)', borderRadius: 3, backgroundColor: showCompleted ? '#FFFFFF' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+              {showCompleted && <Text style={{ color: '#1F5C41', fontSize: 9, lineHeight: 12, fontWeight: '700' }}>✓</Text>}
             </View>
           </PressableBase>
-        </View>
-      </View>
+        }
+      />
 
       <FlatList<TodoPersonGroup>
         data={groups}
         keyExtractor={(item) => item.personId ?? 'general'}
-        contentContainerStyle={{ padding: 16, paddingTop: 8, flexGrow: 1 }}
-        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor="#2A6049" />}
+        contentContainerStyle={{ padding: 16, paddingTop: 16, flexGrow: 1 }}
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor="#1F5C41" />}
         ListEmptyComponent={<EmptyState title="All done!" message="No active to-do items." />}
         renderItem={({ item }) => (
           <TodoPersonSection group={item} showCompleted={showCompleted} onToggle={toggleTodo} onEdit={setEditingTodo} onDelete={deleteTodo} />

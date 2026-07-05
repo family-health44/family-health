@@ -35,7 +35,7 @@ export const AppointmentCaptureSection = ({
   return (
     <View style={{ marginBottom: 20 }}>
       <Text style={{
-        fontSize: 13, fontWeight: '600', color: '#6B6866',
+        fontSize: 13, fontWeight: '600', color: 'rgba(23,33,28,0.65)',
         textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 10,
       }}>
         {title}
@@ -51,7 +51,7 @@ export const AppointmentCaptureSection = ({
           value={inputValue}
           onChangeText={setInputValue}
           placeholder={placeholder}
-          placeholderTextColor="#A8A09A"
+          placeholderTextColor="#8B928E"
           autoCapitalize="sentences"
           returnKeyType={multiline ? 'default' : 'done'}
           onSubmitEditing={multiline ? undefined : handleAdd}
@@ -77,7 +77,7 @@ export const AppointmentCaptureSection = ({
           accessibilityRole="button"
           accessibilityLabel={`Add ${title}`}
           style={(pressed) => ({
-            backgroundColor: '#2A6049',
+            backgroundColor: '#1F5C41',
             borderRadius: 12,
             paddingHorizontal: 16,
             paddingVertical: 10,
@@ -99,7 +99,7 @@ export const AppointmentCaptureSection = ({
           backgroundColor: '#FFFFFF',
           borderRadius: 10,
           borderWidth: 1,
-          borderColor: '#E8E4DC',
+          borderColor: '#E3E2DB',
           padding: 12,
           marginBottom: 6,
           gap: 10,
@@ -114,7 +114,7 @@ export const AppointmentCaptureSection = ({
             hitSlop={8}
             style={(pressed) => ({ opacity: pressed ? 0.5 : 1 })}
           >
-            <Text style={{ fontSize: 18, color: '#9B3A4A' }}>×</Text>
+            <Text style={{ fontSize: 18, color: '#B33A4A' }}>×</Text>
           </PressableBase>
         </View>
       ))}

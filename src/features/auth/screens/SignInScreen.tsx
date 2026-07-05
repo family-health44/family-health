@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { Fonts } from '@/design-system/tokens/fonts';
-import { ScreenWrapper } from '@/design-system/components/ScreenWrapper';
+import { AuthScreenShell } from '../components/AuthScreenShell';
 import { Input } from '@/design-system/components/Input';
 import { Button } from '@/design-system/components/Button';
 import { useSignIn } from '../hooks/useSignIn';
@@ -24,21 +24,31 @@ export const SignInScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <ScreenWrapper avoidKeyboard padded>
-      <View style={{ alignItems: 'center', marginBottom: 40, marginTop: 32 }}>
-        <Text style={{ fontSize: 56, marginBottom: 8 }}>🏥</Text>
-        <Text style={{ fontFamily: Fonts.serif, fontSize: 44, fontWeight: '300', color: '#1C1917', lineHeight: 46 }}>
-          Family
-        </Text>
-        <Text style={{ fontFamily: Fonts.serif, fontSize: 44, fontWeight: '300', color: '#2A6049', lineHeight: 46, marginTop: -4 }}>
-          Health
-        </Text>
-        <Text style={{ fontSize: 13, color: '#A8A09A', marginTop: 10 }}>
-          Your family's health, all in one place
-        </Text>
-      </View>
+  const title = (
+    <>
+      <Text style={{ fontFamily: Fonts.serif, fontSize: 40, fontWeight: '700', color: '#FFFFFF', lineHeight: 42, textAlign: 'center' }}>
+        Family
+      </Text>
+      <Text style={{ fontFamily: Fonts.serif, fontSize: 40, fontWeight: '700', color: 'rgba(255,255,255,0.82)', lineHeight: 42, marginTop: -2, textAlign: 'center' }}>
+        Health
+      </Text>
+    </>
+  );
 
+  return (
+    <AuthScreenShell
+      emoji="🏥"
+      title={title}
+      subtitle="Your family's health, all in one place"
+      footer={
+        <View className="flex-row items-center justify-center gap-1">
+          <Text className="text-sm text-[#57605B]">{"Don't have an account?"}</Text>
+          <Pressable onPress={() => router.push('/(auth)/sign-up' as never)} accessibilityRole="link">
+            <Text className="text-sm font-semibold text-[#1F5C41]">Sign up</Text>
+          </Pressable>
+        </View>
+      }
+    >
       <View className="gap-5">
         <Controller control={control} name="email" render={({ field: { onChange, onBlur, value } }) => (
           <Input label="Email" isRequired keyboardType="email-address" textContentType="emailAddress"
@@ -55,19 +65,12 @@ export const SignInScreen = () => {
         )} />
         {error ? (
           <View className="rounded-xl border border-[#E0BDC4] bg-[#F5E8EB] px-4 py-3" accessibilityRole="alert">
-            <Text className="text-sm text-[#7A2030]">{error.message}</Text>
+            <Text className="text-sm text-[#8F2E3B]">{error.message}</Text>
           </View>
         ) : null}
         <Button label="Sign in" variant="primary" size="lg" isFullWidth
           isLoading={isLoading} onPress={handleSubmit((v) => signIn(v))} />
       </View>
-
-      <View className="mt-8 flex-row items-center justify-center gap-1">
-        <Text className="text-sm text-[#6B6866]">{"Don't have an account?"}</Text>
-        <Pressable onPress={() => router.push('/(auth)/sign-up' as never)} accessibilityRole="link">
-          <Text className="text-sm font-semibold text-[#2A6049]">Sign up</Text>
-        </Pressable>
-      </View>
-    </ScreenWrapper>
+    </AuthScreenShell>
   );
 };

@@ -1,0 +1,57 @@
+// src/design-system/components/ScreenHeader.tsx
+// G2 curved colour-block header. Used by all top-level tab screens.
+// - Green block curves into the page (borderBottom radius from theme)
+// - Serif white title, optional subtitle, optional right slot
+// - children render inside the block (e.g. Visits segmented control)
+// - bgColour overrides the block colour (person-colour detail headers)
+import type { ReactNode } from 'react';
+import { View, Text } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { useIsFocused } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '@/design-system/theme/ThemeProvider';
+import { Fonts } from '@/design-system/tokens/fonts';
+import { HamburgerButton } from './HamburgerButton';
+import { useDrawer } from './DrawerContext';
+
+interface ScreenHeaderProps {
+  title: string;
+  subtitle?: string;
+  right?: ReactNode;
+  children?: ReactNode;
+  bgColour?: string;
+}
+
+export const ScreenHeader = ({ title, subtitle, right, children, bgColour }: ScreenHeaderProps) => {
+  const insets = useSafeAreaInsets();
+  const t = useTheme();
+  const { openDrawer } = useDrawer();
+  const isFocused = useIsFocused();
+  return (
+    <View
+      style={{
+        backgroundColor: bgColour ?? t.colours.headerBg,
+        paddingTop: insets.top + 6,
+        paddingHorizontal: 16,
+        paddingBottom: children ? 14 : 20,
+        borderBottomLeftRadius: t.radius.header,
+        borderBottomRightRadius: t.radius.header,
+      }}
+    >
+      {isFocused ? <StatusBar style="light" /> : null}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <HamburgerButton onPress={openDrawer} variant="onColour" />
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'baseline', gap: 8 }}>
+          <Text style={{ fontFamily: Fonts.serif, fontWeight: '700', fontSize: 30, lineHeight: 34, color: t.colours.headerText }}>
+            {title}
+          </Text>
+          {subtitle ? (
+            <Text style={{ fontSize: 12, color: t.colours.headerTextSub }}>{subtitle}</Text>
+          ) : null}
+        </View>
+        {right}
+      </View>
+      {children}
+    </View>
+  );
+};

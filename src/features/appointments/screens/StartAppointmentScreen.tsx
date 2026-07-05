@@ -125,7 +125,7 @@ export const StartAppointmentScreen = () => {
 
   if (!appointment) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
+      <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
         <ErrorState message="Could not start appointment." onRetry={() => router.back()} />
       </View>
     );
@@ -154,31 +154,31 @@ export const StartAppointmentScreen = () => {
   const total = stream.length;
 
   const ROW_STYLE: Record<CaptureKind, { border: string; icon: string; iconColour: string }> = {
-    note: { border: '#E3DDD5', icon: '⊙', iconColour: '#888780' },
-    todo: { border: '#2A6049', icon: '☐', iconColour: '#2A6049' },
+    note: { border: '#E3E2DB', icon: '⊙', iconColour: '#888780' },
+    todo: { border: '#1F5C41', icon: '☐', iconColour: '#1F5C41' },
     event: { border: '#185FA5', icon: '✚', iconColour: '#185FA5' },
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
       {/* Header */}
-      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E3DDD5' }}>
+      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E3E2DB' }}>
         <PressableBase onPress={handleCancel} style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}>
-          <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
+          <Text style={{ fontSize: 15, color: '#1F5C41' }}>‹</Text>
+          <Text style={{ fontSize: 14, color: '#1F5C41', fontWeight: '500' }}>Back</Text>
         </PressableBase>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 21, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 26 }}>
+            <Text style={{ fontSize: 21, fontWeight: '300', fontFamily: Fonts.serif, color: '#17211C', lineHeight: 26 }}>
               {appointment.doctorName ?? 'Appointment'}
             </Text>
-            <Text style={{ fontSize: 12, color: '#6B6866', marginTop: 2 }}>
+            <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.65)', marginTop: 2 }}>
               {appointment.personName} · {isoToDisplayDate(appointment.visitDate)}
             </Text>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingTop: 4 }}>
-            <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#2A6049' }} />
-            <Text style={{ fontSize: 11, fontWeight: '700', color: '#2A6049' }}>Live</Text>
+            <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#1F5C41' }} />
+            <Text style={{ fontSize: 11, fontWeight: '700', color: '#1F5C41' }}>Live</Text>
           </View>
         </View>
       </View>
@@ -205,7 +205,7 @@ export const StartAppointmentScreen = () => {
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         {error ? (
           <View style={{ backgroundColor: '#F5E8EB', borderColor: '#E0BDC4', borderWidth: 1, borderRadius: 12, padding: 12, marginBottom: 14 }}>
-            <Text style={{ color: '#7A2030', fontSize: 14 }}>{error.message}</Text>
+            <Text style={{ color: '#8F2E3B', fontSize: 14 }}>{error.message}</Text>
           </View>
         ) : null}
 
@@ -216,25 +216,25 @@ export const StartAppointmentScreen = () => {
         />
 
         {/* Capture input */}
-        <View style={{ backgroundColor: '#FFFFFF', borderWidth: pendingKind === 'event' ? 2 : 1, borderColor: pendingKind === 'event' ? '#B5D4F4' : '#E3DDD5', borderRadius: 12, padding: 10, marginBottom: 18 }}>
+        <View style={{ backgroundColor: '#FFFFFF', borderWidth: pendingKind === 'event' ? 2 : 1, borderColor: pendingKind === 'event' ? '#B5D4F4' : '#E3E2DB', borderRadius: 12, padding: 10, marginBottom: 18 }}>
           <TextInput
             value={draft}
             onChangeText={setDraft}
             placeholder="Type what the doctor said..."
-            placeholderTextColor="#A8A09A"
+            placeholderTextColor="#8B928E"
             multiline
-            style={{ fontSize: 14, color: '#1C1917', paddingVertical: 6, paddingHorizontal: 4, minHeight: 24, textAlignVertical: 'top' }}
+            style={{ fontSize: 14, color: '#17211C', paddingVertical: 6, paddingHorizontal: 4, minHeight: 24, textAlignVertical: 'top' }}
           />
 
           {pendingKind === 'event' ? (
             <View style={{ marginTop: 6 }}>
-              <Text style={{ fontSize: 10, fontWeight: '700', color: '#6B6866', letterSpacing: 0.8, marginBottom: 6 }}>EVENT TYPE</Text>
+              <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.65)', letterSpacing: 0.8, marginBottom: 6 }}>EVENT TYPE</Text>
               <View style={{ flexDirection: 'row', gap: 6, marginBottom: 10 }}>
                 {MEDICAL_EVENT_TYPES.map((type) => {
                   const selected = eventType === type;
                   return (
-                    <PressableBase key={type} onPress={() => setEventType(type)} style={{ flex: 1, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: selected ? '#185FA5' : '#E3DDD5', backgroundColor: selected ? '#E6F1FB' : 'transparent', alignItems: 'center' }}>
-                      <Text style={{ fontSize: 11, fontWeight: '700', color: selected ? '#0C447C' : '#A8A09A' }}>
+                    <PressableBase key={type} onPress={() => setEventType(type)} style={{ flex: 1, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: selected ? '#185FA5' : '#E3E2DB', backgroundColor: selected ? '#E6F1FB' : 'transparent', alignItems: 'center' }}>
+                      <Text style={{ fontSize: 11, fontWeight: '700', color: selected ? '#0C447C' : 'rgba(23,33,28,0.55)' }}>
                         {MEDICAL_EVENT_CONFIG[type].label}
                       </Text>
                     </PressableBase>
@@ -245,8 +245,8 @@ export const StartAppointmentScreen = () => {
                 <PressableBase onPress={commitEvent} style={(pressed) => ({ flex: 1, paddingVertical: 9, borderRadius: 8, backgroundColor: pressed ? '#0C447C' : '#185FA5', alignItems: 'center' })}>
                   <Text style={{ fontSize: 12, fontWeight: '600', color: '#FFFFFF' }}>Add event</Text>
                 </PressableBase>
-                <PressableBase onPress={() => setPendingKind(null)} style={(pressed) => ({ paddingVertical: 9, paddingHorizontal: 14, borderRadius: 8, borderWidth: 0.5, borderColor: '#E3DDD5', alignItems: 'center', opacity: pressed ? 0.6 : 1 })}>
-                  <Text style={{ fontSize: 12, color: '#6B6866' }}>Cancel</Text>
+                <PressableBase onPress={() => setPendingKind(null)} style={(pressed) => ({ paddingVertical: 9, paddingHorizontal: 14, borderRadius: 8, borderWidth: 0.5, borderColor: '#E3E2DB', alignItems: 'center', opacity: pressed ? 0.6 : 1 })}>
+                  <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.65)' }}>Cancel</Text>
                 </PressableBase>
               </View>
             </View>
@@ -266,12 +266,12 @@ export const StartAppointmentScreen = () => {
         </View>
 
         {/* Captured stream */}
-        <Text style={{ fontSize: 11, fontWeight: '700', color: '#6B6866', marginBottom: 8 }}>
+        <Text style={{ fontSize: 11, fontWeight: '700', color: 'rgba(23,33,28,0.65)', marginBottom: 8 }}>
           Captured this visit{total > 0 ? ` · ${total}` : ''}
         </Text>
 
         {total === 0 ? (
-          <Text style={{ fontSize: 13, color: '#A8A09A', paddingVertical: 12, textAlign: 'center' }}>
+          <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', paddingVertical: 12, textAlign: 'center' }}>
             Nothing captured yet. Type above and tag it.
           </Text>
         ) : (
@@ -282,11 +282,11 @@ export const StartAppointmentScreen = () => {
               <View key={row.id} style={{ backgroundColor: '#FFFFFF', borderWidth: 0.5, borderColor: s.border, borderLeftWidth: accent ? 3 : 0.5, borderLeftColor: s.border, borderRadius: accent ? 0 : 10, borderTopRightRadius: 10, borderBottomRightRadius: 10, padding: 10, paddingHorizontal: 12, marginBottom: 6, flexDirection: 'row', gap: 8, alignItems: 'flex-start' }}>
                 <Text style={{ fontSize: 14, color: s.iconColour, marginTop: 1 }}>{s.icon}</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 13, color: '#1C1917', lineHeight: 18 }}>{row.primary}</Text>
-                  <Text style={{ fontSize: 10, color: row.kind === 'note' ? '#A8A09A' : s.iconColour, marginTop: 3 }}>{row.meta}</Text>
+                  <Text style={{ fontSize: 13, color: '#17211C', lineHeight: 18 }}>{row.primary}</Text>
+                  <Text style={{ fontSize: 10, color: row.kind === 'note' ? 'rgba(23,33,28,0.55)' : s.iconColour, marginTop: 3 }}>{row.meta}</Text>
                 </View>
                 <PressableBase onPress={row.onRemove} hitSlop={8} style={(pressed) => ({ opacity: pressed ? 0.5 : 1 })}>
-                  <Text style={{ fontSize: 15, color: '#A8A09A' }}>×</Text>
+                  <Text style={{ fontSize: 15, color: 'rgba(23,33,28,0.55)' }}>×</Text>
                 </PressableBase>
               </View>
             );
@@ -295,11 +295,11 @@ export const StartAppointmentScreen = () => {
       </ScrollView>
 
       {/* Finish */}
-      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16, backgroundColor: '#FFFFFF', borderTopWidth: 1, borderTopColor: '#E3DDD5' }}>
+      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16, backgroundColor: '#FFFFFF', borderTopWidth: 1, borderTopColor: '#E3E2DB' }}>
         <PressableBase
           onPress={saveAppointment}
           disabled={isSaving}
-          style={(pressed) => ({ backgroundColor: total === 0 ? '#C8C4BC' : pressed ? '#1A4D35' : '#2A6049', borderRadius: 10, padding: 14, alignItems: 'center' })}
+          style={(pressed) => ({ backgroundColor: total === 0 ? '#C8C4BC' : pressed ? '#17452F' : '#1F5C41', borderRadius: 10, padding: 14, alignItems: 'center' })}
         >
           <Text style={{ color: '#FFFFFF', fontSize: 15, fontWeight: '600' }}>
             {isSaving ? 'Saving...' : total > 0 ? `Finish & save · ${total} item${total === 1 ? '' : 's'}` : 'Finish & save'}

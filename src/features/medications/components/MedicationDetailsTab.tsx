@@ -6,15 +6,15 @@ import type { Medication } from '../types/medications.types';
 
 export const MedicationDetailsTab = ({ medication, personName }: { medication: Medication; personName?: string }) => {
   const Row = ({ label, value }: { label: string; value: string | null }) => (
-    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E8E4DC', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, marginBottom: 8 }}>
-      <Text style={{ fontSize: 14, color: '#6B6866' }}>{label}</Text>
-      <Text style={{ fontSize: 14, color: value ? '#1C1917' : '#A8A09A', fontWeight: value ? '600' : '400', flexShrink: 1, textAlign: 'right' }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, marginBottom: 8 }}>
+      <Text style={{ fontSize: 14, color: 'rgba(23,33,28,0.65)' }}>{label}</Text>
+      <Text style={{ fontSize: 14, color: value ? '#17211C' : 'rgba(23,33,28,0.55)', fontWeight: value ? '600' : '400', flexShrink: 1, textAlign: 'right' }}>
         {value ?? 'Not set'}
       </Text>
     </View>
   );
   const SectionLabel = ({ text }: { text: string }) => (
-    <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 8 }}>{text}</Text>
+    <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 8 }}>{text}</Text>
   );
   return (
     <View>

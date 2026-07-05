@@ -23,7 +23,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
       label: 'To Do',
       icon: (active: boolean) => (
         <View style={{ width: 22, height: 22, opacity: active ? 1 : 0.35 }}>
-          <View style={{ width: 22, height: 22, backgroundColor: '#1C1917', borderRadius: 3, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: 22, height: 22, backgroundColor: '#17211C', borderRadius: 3, alignItems: 'center', justifyContent: 'center' }}>
             <View style={{ position: 'absolute', width: 5, height: 2, backgroundColor: 'white', borderRadius: 1, transform: [{ rotate: '40deg' }, { translateX: -3 }, { translateY: 2 }] }} />
             <View style={{ position: 'absolute', width: 10, height: 2, backgroundColor: 'white', borderRadius: 1, transform: [{ rotate: '-52deg' }, { translateX: 2 }, { translateY: -1 }] }} />
           </View>
@@ -51,7 +51,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   ];
 
   return (
-    <View style={{ flexDirection: 'row', backgroundColor: 'rgba(247,245,240,0.97)', borderTopWidth: 1, borderTopColor: '#E3DDD5', paddingTop: 6, paddingBottom: 16 }}>
+    <View style={{ flexDirection: 'row', backgroundColor: '#FFFFFF', paddingTop: 8, paddingBottom: 16, shadowColor: '#17211C', shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 8 }}>
       {tabConfig.map((tab) => {
         const route = state.routes.find((r) => r.name.startsWith(tab.name.split('/')[0] ?? ''));
         if (!route) return null;
@@ -62,9 +62,9 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
         };
         return (
           <Pressable key={tab.name} onPress={onPress} style={{ flex: 1, alignItems: 'center' }} accessibilityRole="button" accessibilityLabel={tab.label} accessibilityState={{ selected: isFocused }}>
-            <View style={{ alignItems: 'center', gap: 2, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10, borderWidth: 2, borderColor: isFocused ? '#2A6049' : 'transparent', backgroundColor: isFocused ? '#E6F0EC' : 'transparent' }}>
+            <View style={{ alignItems: 'center', gap: 2, paddingHorizontal: 10, paddingVertical: 4 }}>
               {tab.icon(isFocused)}
-              <Text style={{ fontSize: 10, fontWeight: isFocused ? '700' : '500', color: isFocused ? '#2A6049' : '#A8A09A' }}>{tab.label}</Text>
+              <Text style={{ fontSize: 10, fontWeight: isFocused ? '700' : '500', color: isFocused ? '#1F5C41' : 'rgba(23,33,28,0.45)' }}>{tab.label}</Text>
             </View>
           </Pressable>
         );

@@ -26,5 +26,5 @@ export default function Index() {
     }
   }, [status, destination]);
 
-  return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }} />;
+  return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }} />;
 }

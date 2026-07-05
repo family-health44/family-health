@@ -55,12 +55,12 @@ export const DrawerMenu = ({ visible, onClose }: DrawerMenuProps) => {
       {/* Drawer panel */}
       <Animated.View style={[styles.drawer, { transform: [{ translateX: slideAnim }], paddingTop: insets.top + 16 }]}>
         {/* App title + email */}
-        <View style={{ paddingHorizontal: 20, paddingBottom: 24, borderBottomWidth: 1, borderBottomColor: '#E3DDD5', marginBottom: 16 }}>
-          <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32, marginBottom: 6 }}>
+        <View style={{ paddingHorizontal: 20, paddingBottom: 24, borderBottomWidth: 1, borderBottomColor: '#E3E2DB', marginBottom: 16 }}>
+          <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#17211C', lineHeight: 32, marginBottom: 6 }}>
             Family Health
           </Text>
           {session?.user?.email ? (
-            <Text style={{ fontSize: 13, color: '#A8A09A' }}>{session.user.email}</Text>
+            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>{session.user.email}</Text>
           ) : null}
         </View>
 
@@ -79,11 +79,11 @@ export const DrawerMenu = ({ visible, onClose }: DrawerMenuProps) => {
                 paddingHorizontal: 12,
                 paddingVertical: 14,
                 borderRadius: 12,
-                backgroundColor: pressed ? '#F0EDE8' : 'transparent',
+                backgroundColor: pressed ? '#F0EFEA' : 'transparent',
               })}
             >
               <Text style={{ fontSize: 20 }}>{item.emoji}</Text>
-              <Text style={{ fontSize: 15, fontWeight: '500', color: item.danger ? '#9B3A4A' : '#1C1917' }}>
+              <Text style={{ fontSize: 15, fontWeight: '500', color: item.danger ? '#B33A4A' : '#17211C' }}>
                 {item.label}
               </Text>
             </PressableBase>
@@ -101,9 +101,9 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: DRAWER_WIDTH,
-    backgroundColor: '#F7F5F0',
+    backgroundColor: '#F7F7F4',
     borderRightWidth: 1,
-    borderRightColor: '#E3DDD5',
+    borderRightColor: '#E3E2DB',
     shadowColor: '#000',
     shadowOffset: { width: 4, height: 0 },
     shadowOpacity: 0.15,

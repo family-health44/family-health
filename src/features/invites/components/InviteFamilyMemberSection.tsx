@@ -47,13 +47,13 @@ export const InviteFamilyMemberSection = () => {
 
   return (
     <>
-      <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>
+      <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>
         Family Members
       </Text>
-      <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
+      <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
         {adding ? (
           <View style={{ padding: 14, gap: 10 }}>
-            <Text style={{ fontSize: 13, color: '#A8A09A' }}>Invite by email</Text>
+            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>Invite by email</Text>
             <TextInput
               value={email}
               onChangeText={setEmail}
@@ -62,38 +62,38 @@ export const InviteFamilyMemberSection = () => {
               keyboardType="email-address"
               placeholder="name@example.com"
               placeholderTextColor="#C4BDB5"
-              style={{ fontSize: 14, color: '#1C1917', borderWidth: 1, borderColor: '#2A6049', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8 }}
+              style={{ fontSize: 14, color: '#17211C', borderWidth: 1, borderColor: '#1F5C41', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8 }}
             />
             <View style={{ flexDirection: 'row', gap: 8 }}>
-              <PressableBase onPress={() => { setAdding(false); setEmail(''); }} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#E3DDD5', alignItems: 'center', opacity: pressed ? 0.6 : 1 })}>
-                <Text style={{ fontSize: 14, color: '#6B6866' }}>Cancel</Text>
+              <PressableBase onPress={() => { setAdding(false); setEmail(''); }} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#E3E2DB', alignItems: 'center', opacity: pressed ? 0.6 : 1 })}>
+                <Text style={{ fontSize: 14, color: 'rgba(23,33,28,0.65)' }}>Cancel</Text>
               </PressableBase>
-              <PressableBase onPress={handleSend} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, backgroundColor: '#2A6049', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
+              <PressableBase onPress={handleSend} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, backgroundColor: '#1F5C41', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
                 <Text style={{ fontSize: 14, color: 'white', fontWeight: '600' }}>{createInvite.isPending ? 'Sending…' : 'Send invite'}</Text>
               </PressableBase>
             </View>
           </View>
         ) : (
           <PressableBase onPress={() => setAdding(true)} style={(pressed) => ({ padding: 14, flexDirection: 'row', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
-            <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500', flex: 1 }}>+ Invite a family member</Text>
+            <Text style={{ fontSize: 14, color: '#1F5C41', fontWeight: '500', flex: 1 }}>+ Invite a family member</Text>
           </PressableBase>
         )}
       </View>
 
       {isLoading ? (
-        <View style={{ padding: 14 }}><ActivityIndicator color="#2A6049" /></View>
+        <View style={{ padding: 14 }}><ActivityIndicator color="#1F5C41" /></View>
       ) : null}
 
       {pending.length > 0 ? (
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
           {pending.map((inv, idx) => (
-            <View key={inv.id} style={{ padding: 14, flexDirection: 'row', alignItems: 'center', borderTopWidth: idx === 0 ? 0 : 1, borderTopColor: '#F0EDE8' }}>
+            <View key={inv.id} style={{ padding: 14, flexDirection: 'row', alignItems: 'center', borderTopWidth: idx === 0 ? 0 : 1, borderTopColor: '#F0EFEA' }}>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 13, color: '#1C1917' }}>{inv.invited_email}</Text>
+                <Text style={{ fontSize: 13, color: '#17211C' }}>{inv.invited_email}</Text>
                 <Text style={{ fontSize: 11, color: '#C9956A', marginTop: 2 }}>Pending</Text>
               </View>
               <PressableBase onPress={() => handleRevoke(inv.id, inv.invited_email)} style={(pressed) => ({ opacity: pressed ? 0.6 : 1, paddingHorizontal: 4 })}>
-                <Text style={{ fontSize: 13, color: '#9B3A4A' }}>Revoke</Text>
+                <Text style={{ fontSize: 13, color: '#B33A4A' }}>Revoke</Text>
               </PressableBase>
             </View>
           ))}
@@ -101,12 +101,12 @@ export const InviteFamilyMemberSection = () => {
       ) : null}
 
       {accepted.length > 0 ? (
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
           {accepted.map((inv, idx) => (
-            <View key={inv.id} style={{ padding: 14, flexDirection: 'row', alignItems: 'center', borderTopWidth: idx === 0 ? 0 : 1, borderTopColor: '#F0EDE8' }}>
+            <View key={inv.id} style={{ padding: 14, flexDirection: 'row', alignItems: 'center', borderTopWidth: idx === 0 ? 0 : 1, borderTopColor: '#F0EFEA' }}>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 13, color: '#1C1917' }}>{inv.invited_email}</Text>
-                <Text style={{ fontSize: 11, color: '#2A6049', marginTop: 2 }}>Joined</Text>
+                <Text style={{ fontSize: 13, color: '#17211C' }}>{inv.invited_email}</Text>
+                <Text style={{ fontSize: 11, color: '#1F5C41', marginTop: 2 }}>Joined</Text>
               </View>
             </View>
           ))}

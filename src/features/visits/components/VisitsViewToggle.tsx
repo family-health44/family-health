@@ -6,6 +6,8 @@ import type { VisitsViewMode } from '../types/visits.types';
 interface VisitsViewToggleProps {
   activeMode: VisitsViewMode;
   onModeChange: (mode: VisitsViewMode) => void;
+  /** 'onColour' = translucent treatment for use inside the green header block */
+  variant?: 'default' | 'onColour';
 }
 
 const MODES: { key: VisitsViewMode; label: string }[] = [
@@ -14,14 +16,17 @@ const MODES: { key: VisitsViewMode; label: string }[] = [
   { key: 'month', label: 'Month' },
 ];
 
-export const VisitsViewToggle = ({ activeMode, onModeChange }: VisitsViewToggleProps) => (
+export const VisitsViewToggle = ({ activeMode, onModeChange, variant = 'default' }: VisitsViewToggleProps) => {
+  const onColour = variant === 'onColour';
+  return (
   <View style={{
     flexDirection: 'row',
-    backgroundColor: '#EEEAE3',
+    backgroundColor: onColour ? 'rgba(255,255,255,0.16)' : '#ECEBE5',
     borderRadius: 10,
     padding: 3,
-    marginHorizontal: 16,
-    marginBottom: 8,
+    marginHorizontal: onColour ? 0 : 16,
+    marginTop: onColour ? 12 : 0,
+    marginBottom: onColour ? 0 : 8,
   }}>
     {MODES.map((mode) => {
       const isActive = mode.key === activeMode;
@@ -47,7 +52,7 @@ export const VisitsViewToggle = ({ activeMode, onModeChange }: VisitsViewToggleP
           <Text style={{
             fontSize: 12,
             fontWeight: isActive ? '700' : '600',
-            color: isActive ? '#2A6049' : '#A8A09A',
+            color: isActive ? '#1F5C41' : onColour ? 'rgba(255,255,255,0.75)' : 'rgba(23,33,28,0.55)',
           }}>
             {mode.label}
           </Text>
@@ -55,4 +60,5 @@ export const VisitsViewToggle = ({ activeMode, onModeChange }: VisitsViewToggleP
       );
     })}
   </View>
-);
+  );
+};

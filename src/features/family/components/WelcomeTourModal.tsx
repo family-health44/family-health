@@ -67,7 +67,7 @@ export const WelcomeTourModal = ({ visible, onClose, onAddPerson }: WelcomeTourM
       <View
         style={{
           flex: 1,
-          backgroundColor: '#F7F5F0',
+          backgroundColor: '#F7F7F4',
           paddingTop: insets.top + 12,
           paddingBottom: insets.bottom + 16,
           paddingHorizontal: 28,
@@ -81,7 +81,7 @@ export const WelcomeTourModal = ({ visible, onClose, onAddPerson }: WelcomeTourM
             accessibilityLabel="Skip welcome tour"
             hitSlop={10}
           >
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#6B7570' }}>Skip</Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: 'rgba(23,33,28,0.55)' }}>Skip</Text>
           </PressableBase>
         </View>
 
@@ -94,7 +94,7 @@ export const WelcomeTourModal = ({ visible, onClose, onAddPerson }: WelcomeTourM
                 flex: 1,
                 height: 4,
                 borderRadius: 2,
-                backgroundColor: i <= page ? '#2A6049' : '#D9D4C8',
+                backgroundColor: i <= page ? '#1F5C41' : '#D9D4C8',
               }}
             />
           ))}
@@ -108,13 +108,13 @@ export const WelcomeTourModal = ({ visible, onClose, onAddPerson }: WelcomeTourM
               fontFamily: Fonts.serif,
               fontSize: 32,
               fontWeight: '600',
-              color: '#1A2420',
+              color: '#17211C',
               lineHeight: 38,
             }}
           >
             {current.title}
           </Text>
-          <Text style={{ fontSize: 14.5, color: '#6B7570', lineHeight: 22, marginTop: 12 }}>
+          <Text style={{ fontSize: 14.5, color: 'rgba(23,33,28,0.55)', lineHeight: 22, marginTop: 12 }}>
             {current.body}
           </Text>
         </View>
@@ -127,7 +127,7 @@ export const WelcomeTourModal = ({ visible, onClose, onAddPerson }: WelcomeTourM
               accessibilityRole="button"
               accessibilityLabel="Add family member"
               style={(pressed) => ({
-                backgroundColor: pressed ? '#1F4A38' : '#2A6049',
+                backgroundColor: pressed ? '#17452F' : '#1F5C41',
                 borderRadius: 14,
                 paddingVertical: 15,
                 alignItems: 'center',
@@ -143,7 +143,7 @@ export const WelcomeTourModal = ({ visible, onClose, onAddPerson }: WelcomeTourM
               accessibilityLabel="Skip for now"
               style={() => ({ paddingVertical: 14, alignItems: 'center' })}
             >
-              <Text style={{ color: '#2A6049', fontSize: 14, fontWeight: '600' }}>
+              <Text style={{ color: '#1F5C41', fontSize: 14, fontWeight: '600' }}>
                 Skip for now
               </Text>
             </PressableBase>
@@ -154,7 +154,7 @@ export const WelcomeTourModal = ({ visible, onClose, onAddPerson }: WelcomeTourM
             accessibilityRole="button"
             accessibilityLabel="Continue"
             style={(pressed) => ({
-              backgroundColor: pressed ? '#1F4A38' : '#2A6049',
+              backgroundColor: pressed ? '#17452F' : '#1F5C41',
               borderRadius: 14,
               paddingVertical: 15,
               alignItems: 'center',

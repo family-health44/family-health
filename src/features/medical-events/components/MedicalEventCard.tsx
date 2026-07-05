@@ -40,14 +40,14 @@ export const MedicalEventCard = ({ event, onDelete, onEdit, isLast = false }: Me
       style={(pressed) => ({
         backgroundColor: '#FFFFFF',
         borderBottomWidth: isLast ? 0 : 1,
-        borderBottomColor: '#F0EDE8',
+        borderBottomColor: '#F0EFEA',
         padding: 14,
         opacity: pressed ? 0.75 : 1,
       })}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
         <Badge label={config.label} variant={config.badgeVariant} />
-        <Text style={{ fontSize: 13, color: '#6B6866', marginLeft: 'auto' }}>
+        <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.65)', marginLeft: 'auto' }}>
           {formatDate(event.eventDate)}
         </Text>
       </View>
@@ -57,7 +57,7 @@ export const MedicalEventCard = ({ event, onDelete, onEdit, isLast = false }: Me
         </Text>
       ) : null}
       {event.doctorName ? (
-        <Text style={{ fontSize: 13, color: '#6B6866', marginTop: 6 }}>
+        <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.65)', marginTop: 6 }}>
           {event.doctorName}
         </Text>
       ) : null}

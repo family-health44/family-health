@@ -96,7 +96,7 @@ export const AddPersonModal = ({
           <Pressable>
             <View
               style={{
-                backgroundColor: '#F7F5F0',
+                backgroundColor: '#F7F7F4',
                 borderTopLeftRadius: 24,
                 borderTopRightRadius: 24,
                 padding: 24,

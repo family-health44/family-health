@@ -61,7 +61,7 @@ export const EditMedicalEventModal = ({
       <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }} onPress={onDismiss}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, justifyContent: 'flex-end' }}>
           <Pressable>
-            <View style={{ backgroundColor: '#F7F5F0', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '92%' }}>
+            <View style={{ backgroundColor: '#F7F7F4', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '92%' }}>
               <View style={{ width: 40, height: 4, backgroundColor: '#D0CCC4', borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 20 }} />
               <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
                 <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>Edit medical event</Text>
@@ -72,7 +72,7 @@ export const EditMedicalEventModal = ({
                 />
                 <View style={{ gap: 8 }}>
                   <Text style={{ fontSize: 14, fontWeight: '600', color: '#3D3D3D' }}>
-                    Event type <Text style={{ color: '#9B3A4A' }}>*</Text>
+                    Event type <Text style={{ color: '#B33A4A' }}>*</Text>
                   </Text>
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                     {MEDICAL_EVENT_TYPES.map((type) => {
@@ -81,8 +81,8 @@ export const EditMedicalEventModal = ({
                         <Pressable key={type} onPress={() => setValue('eventType', type)}
                           accessibilityRole="radio" accessibilityState={{ selected: isSelected }}
                           style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1,
-                            borderColor: isSelected ? '#2A6049' : '#C8C4BC', backgroundColor: isSelected ? '#E6F0EC' : 'transparent' }}>
-                          <Text style={{ fontSize: 13, color: isSelected ? '#1A4D35' : '#4A4744', fontWeight: isSelected ? '600' : '400' }}>
+                            borderColor: isSelected ? '#1F5C41' : '#C8C4BC', backgroundColor: isSelected ? '#E4EFE9' : 'transparent' }}>
+                          <Text style={{ fontSize: 13, color: isSelected ? '#17452F' : '#4A4744', fontWeight: isSelected ? '600' : '400' }}>
                             {MEDICAL_EVENT_CONFIG[type].label}
                           </Text>
                         </Pressable>

@@ -36,13 +36,13 @@ function buildHtml(title: string, rows: InfoCardPdfRow[]): string {
   return `<!DOCTYPE html><html><head><meta charset="utf-8" />
   <style>
     * { font-family: -apple-system, Helvetica, Arial, sans-serif; }
-    body { padding: 32px; color: #1C1917; }
+    body { padding: 32px; color: #17211C; }
     h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
     .sub { font-size: 12px; color: #8A857E; margin: 0 0 20px; }
     table { width: 100%; border-collapse: collapse; }
     td { padding: 10px 8px; border-bottom: 1px solid #ECE8E1; font-size: 13px; vertical-align: top; }
     .l { color: #8A857E; width: 40%; }
-    .v { color: #1C1917; font-weight: 500; }
+    .v { color: #17211C; font-weight: 500; }
   </style></head>
   <body>
     <h1>${escapeHtml(title)}</h1>

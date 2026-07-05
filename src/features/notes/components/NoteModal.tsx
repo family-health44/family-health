@@ -83,7 +83,7 @@ export const NoteModal = ({ visible, isLoading, editingNote, doctors, medication
       <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }} onPress={onDismiss}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, justifyContent: 'flex-end' }}>
           <Pressable>
-            <View style={{ backgroundColor: '#F7F5F0', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '92%' }}>
+            <View style={{ backgroundColor: '#F7F7F4', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '92%' }}>
               <View style={{ width: 40, height: 4, backgroundColor: '#D0CCC4', borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 20 }} />
               <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
                 <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>{editingNote ? 'Edit note' : 'Add note'}</Text>
@@ -106,9 +106,9 @@ export const NoteModal = ({ visible, isLoading, editingNote, doctors, medication
                   <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                     <View style={{ flex: 1 }}>
                       <Text style={{ fontSize: 14, fontWeight: '600', color: '#3D3D3D' }}>Hide note</Text>
-                      <Text style={{ fontSize: 12, color: '#6B6866', marginTop: 2 }}>Hidden notes are not shown by default</Text>
+                      <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.65)', marginTop: 2 }}>Hidden notes are not shown by default</Text>
                     </View>
-                    <Switch value={value} onValueChange={onChange} trackColor={{ false: '#D0CCC4', true: '#2A6049' }} thumbColor="#FFFFFF" />
+                    <Switch value={value} onValueChange={onChange} trackColor={{ false: '#D0CCC4', true: '#1F5C41' }} thumbColor="#FFFFFF" />
                   </View>
                 )} />
                 <View style={{ gap: 12, marginTop: 8 }}>

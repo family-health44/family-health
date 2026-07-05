@@ -81,14 +81,14 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
       <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }} onPress={onDismiss}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, justifyContent: 'flex-end' }}>
           <Pressable>
-            <View style={{ backgroundColor: '#F7F5F0', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '92%' }}>
+            <View style={{ backgroundColor: '#F7F7F4', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '92%' }}>
               <View style={{ width: 40, height: 4, backgroundColor: '#D0CCC4', borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 20 }} />
               <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
                 <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>Edit visit</Text>
                 <View style={{ gap: 4 }}>
-                  <Text style={{ fontSize: 13, fontWeight: '600', color: '#6B6866' }}>Person</Text>
-                  <View style={{ backgroundColor: '#EEEAE3', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11 }}>
-                    <Text style={{ fontSize: 14, color: '#1C1917', fontWeight: '500' }}>{visit.personName}</Text>
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: 'rgba(23,33,28,0.65)' }}>Person</Text>
+                  <View style={{ backgroundColor: '#ECEBE5', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11 }}>
+                    <Text style={{ fontSize: 14, color: '#17211C', fontWeight: '500' }}>{visit.personName}</Text>
                   </View>
                 </View>
                 <Controller control={control} name="title" render={({ field: { onChange, onBlur, value } }) => (

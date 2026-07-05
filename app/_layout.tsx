@@ -12,6 +12,7 @@ import { useAuth } from '@/core/auth/useAuth';
 import { useSyncManager } from '@/core/sync/useSyncManager';
 import { OfflineBanner } from '@/design-system/components/OfflineBanner';
 import { DrawerProvider } from '@/design-system/components/DrawerContext';
+import { ThemeProvider } from '@/design-system/theme/ThemeProvider';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,7 +30,7 @@ function RootLayoutNav() {
   }, [status, fontsLoaded]);
 
   if (status === 'loading' || !fontsLoaded) {
-    return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }} />;
+    return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }} />;
   }
 
   return (
@@ -55,7 +56,9 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
-        <RootLayoutNav />
+        <ThemeProvider>
+          <RootLayoutNav />
+        </ThemeProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

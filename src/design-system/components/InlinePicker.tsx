@@ -28,16 +28,16 @@ export const InlinePicker = ({ label, options, value, onChange, isRequired, erro
       <Text style={{ fontSize: 14, fontWeight: '600', color: '#3D3D3D' }}>
         {label}{isRequired ? <Text style={{ color: '#B91C1C' }}> *</Text> : null}
       </Text>
-      <Pressable onPress={() => setOpen(!open)} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderWidth: 1, borderColor: error ? '#B91C1C' : open ? '#2A6049' : '#E3DDD5', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12 }}>
-        <Text style={{ flex: 1, fontSize: 14, color: selected?.id ? '#1C1917' : '#A8A09A' }}>{selected?.label ?? 'Select...'}</Text>
-        <Text style={{ color: '#A8A09A', fontSize: 12 }}>{open ? '▲' : '▼'}</Text>
+      <Pressable onPress={() => setOpen(!open)} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderWidth: 1, borderColor: error ? '#B91C1C' : open ? '#1F5C41' : '#E3E2DB', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12 }}>
+        <Text style={{ flex: 1, fontSize: 14, color: selected?.id ? '#17211C' : 'rgba(23,33,28,0.55)' }}>{selected?.label ?? 'Select...'}</Text>
+        <Text style={{ color: 'rgba(23,33,28,0.55)', fontSize: 12 }}>{open ? '▲' : '▼'}</Text>
       </Pressable>
       {open && (
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#2A6049', borderRadius: 10, overflow: 'hidden' }}>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#1F5C41', borderRadius: 10, overflow: 'hidden' }}>
           {options.map((opt, i) => (
-            <Pressable key={opt.id ?? 'none'} onPress={() => { onChange(opt.id); setOpen(false); }} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 11, paddingHorizontal: 14, borderBottomWidth: i < options.length - 1 ? 1 : 0, borderBottomColor: '#F0EDE8', backgroundColor: (value ?? null) === opt.id ? '#E6F0EC' : 'white' }}>
-              <Text style={{ flex: 1, fontSize: 14, color: (value ?? null) === opt.id ? '#1A4D35' : '#1C1917', fontWeight: (value ?? null) === opt.id ? '600' : '400' }}>{opt.label}</Text>
-              {(value ?? null) === opt.id && <Text style={{ color: '#2A6049', fontSize: 14 }}>✓</Text>}
+            <Pressable key={opt.id ?? 'none'} onPress={() => { onChange(opt.id); setOpen(false); }} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 11, paddingHorizontal: 14, borderBottomWidth: i < options.length - 1 ? 1 : 0, borderBottomColor: '#F0EFEA', backgroundColor: (value ?? null) === opt.id ? '#E4EFE9' : 'white' }}>
+              <Text style={{ flex: 1, fontSize: 14, color: (value ?? null) === opt.id ? '#17452F' : '#17211C', fontWeight: (value ?? null) === opt.id ? '600' : '400' }}>{opt.label}</Text>
+              {(value ?? null) === opt.id && <Text style={{ color: '#1F5C41', fontSize: 14 }}>✓</Text>}
             </Pressable>
           ))}
         </View>

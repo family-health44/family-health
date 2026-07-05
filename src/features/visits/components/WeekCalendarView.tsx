@@ -63,15 +63,15 @@ export const WeekCalendarView = ({ visits, onVisitPress }: WeekCalendarViewProps
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 8, gap: 6 }}>
-        <PressableBase onPress={goToPrevWeek} accessibilityLabel="Previous week" style={(pressed) => ({ backgroundColor: '#EEEAE3', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, opacity: pressed ? 0.6 : 1 })}>
-          <Text style={{ fontSize: 14, color: '#1C1917' }}>‹</Text>
+        <PressableBase onPress={goToPrevWeek} accessibilityLabel="Previous week" style={(pressed) => ({ backgroundColor: '#ECEBE5', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, opacity: pressed ? 0.6 : 1 })}>
+          <Text style={{ fontSize: 14, color: '#17211C' }}>‹</Text>
         </PressableBase>
-        <PressableBase onPress={goToNextWeek} accessibilityLabel="Next week" style={(pressed) => ({ backgroundColor: '#EEEAE3', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, opacity: pressed ? 0.6 : 1 })}>
-          <Text style={{ fontSize: 14, color: '#1C1917' }}>›</Text>
+        <PressableBase onPress={goToNextWeek} accessibilityLabel="Next week" style={(pressed) => ({ backgroundColor: '#ECEBE5', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, opacity: pressed ? 0.6 : 1 })}>
+          <Text style={{ fontSize: 14, color: '#17211C' }}>›</Text>
         </PressableBase>
-        <Text style={{ flex: 1, fontSize: 13, fontWeight: '700', color: '#1C1917', textAlign: 'center' }}>{weekLabel}</Text>
-        <PressableBase onPress={goToToday} style={(pressed) => ({ backgroundColor: pressed ? '#C0D8CA' : '#E6F0EC', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4 })}>
-          <Text style={{ fontSize: 11, fontWeight: '600', color: '#2A6049' }}>Today</Text>
+        <Text style={{ flex: 1, fontSize: 13, fontWeight: '700', color: '#17211C', textAlign: 'center' }}>{weekLabel}</Text>
+        <PressableBase onPress={goToToday} style={(pressed) => ({ backgroundColor: pressed ? '#BFD4C8' : '#E4EFE9', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4 })}>
+          <Text style={{ fontSize: 11, fontWeight: '600', color: '#1F5C41' }}>Today</Text>
         </PressableBase>
       </View>
 
@@ -79,17 +79,17 @@ export const WeekCalendarView = ({ visits, onVisitPress }: WeekCalendarViewProps
         {week.days.map((day, i) => {
           const scrolls = day.visits.length > 3;
           return (
-            <View key={day.date} style={{ flex: 1, flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#E3DDD5' }}>
-              <View style={{ width: 48, borderRightWidth: 1, borderRightColor: '#E3DDD5', alignItems: 'center', justifyContent: 'center', paddingVertical: 6, flexShrink: 0 }}>
-                <Text style={{ fontSize: 9, fontWeight: '700', color: day.isToday ? '#2A6049' : '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            <View key={day.date} style={{ flex: 1, flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#E3E2DB' }}>
+              <View style={{ width: 48, borderRightWidth: 1, borderRightColor: '#E3E2DB', alignItems: 'center', justifyContent: 'center', paddingVertical: 6, flexShrink: 0 }}>
+                <Text style={{ fontSize: 9, fontWeight: '700', color: day.isToday ? '#1F5C41' : 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                   {WEEK_DAY_LABELS[i]}
                 </Text>
                 {day.isToday ? (
-                  <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: '#2A6049', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}>
+                  <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: '#1F5C41', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}>
                     <Text style={{ fontSize: 12, fontWeight: '700', color: 'white' }}>{day.dayNumber}</Text>
                   </View>
                 ) : (
-                  <Text style={{ fontSize: 14, color: '#1C1917', marginTop: 2 }}>{day.dayNumber}</Text>
+                  <Text style={{ fontSize: 14, color: '#17211C', marginTop: 2 }}>{day.dayNumber}</Text>
                 )}
               </View>
               {scrolls ? (

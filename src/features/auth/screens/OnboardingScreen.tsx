@@ -6,9 +6,8 @@ import { View, Text } from 'react-native';
 import { router } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Fonts } from '@/design-system/tokens/fonts';
 
-import { ScreenWrapper } from '@/design-system/components/ScreenWrapper';
+import { AuthScreenShell } from '../components/AuthScreenShell';
 import { Input } from '@/design-system/components/Input';
 import { Button } from '@/design-system/components/Button';
 import { PressableBase } from '@/design-system/components/PressableBase';
@@ -36,18 +35,20 @@ export const OnboardingScreen = () => {
   };
 
   return (
-    <ScreenWrapper avoidKeyboard padded>
-      {/* Header */}
-      <View style={{ alignItems: 'center', marginBottom: 32, marginTop: 32 }}>
-        <Text style={{ fontSize: 44, marginBottom: 12 }}>🏡</Text>
-        <Text style={{ fontFamily: Fonts.serif, fontSize: 28, fontWeight: '300', color: '#1C1917' }}>
-          Welcome!
-        </Text>
-        <Text style={{ fontSize: 13, color: '#A8A09A', marginTop: 8, lineHeight: 20, textAlign: 'center' }}>
-          {"Let's set up your family group."}
-        </Text>
-      </View>
-
+    <AuthScreenShell
+      emoji="🏡"
+      title="Welcome!"
+      subtitle="Let's set up your family group."
+      footer={
+        <PressableBase
+          onPress={async () => { await signOut(); router.replace('/(auth)/sign-in'); }}
+          accessibilityRole="button"
+          style={(pressed) => ({ alignItems: 'center', paddingVertical: 4, opacity: pressed ? 0.6 : 1 })}
+        >
+          <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>Sign out</Text>
+        </PressableBase>
+      }
+    >
       {/* Form */}
       <View className="gap-5">
         <Controller
@@ -79,7 +80,7 @@ export const OnboardingScreen = () => {
             accessibilityRole="alert"
             accessibilityLiveRegion="polite"
           >
-            <Text className="text-sm text-[#7A2030]">{error.message}</Text>
+            <Text className="text-sm text-[#8F2E3B]">{error.message}</Text>
           </View>
         ) : null}
 
@@ -91,16 +92,7 @@ export const OnboardingScreen = () => {
           isLoading={isLoading}
           onPress={handleSubmit(onSubmit)}
         />
-
-        {/* Sign out link */}
-        <PressableBase
-          onPress={async () => { await signOut(); router.replace('/(auth)/sign-in'); }}
-          accessibilityRole="button"
-          style={(pressed) => ({ alignItems: 'center', paddingVertical: 4, opacity: pressed ? 0.6 : 1 })}
-        >
-          <Text style={{ fontSize: 13, color: '#A8A09A' }}>Sign out</Text>
-        </PressableBase>
       </View>
-    </ScreenWrapper>
+    </AuthScreenShell>
   );
 };

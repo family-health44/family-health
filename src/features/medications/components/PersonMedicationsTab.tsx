@@ -2,13 +2,12 @@
 // Medications screen for a person — matches PWA design.
 
 import { PressableBase } from '@/design-system/components/PressableBase';
+import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, FlatList } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EmptyState, ErrorState, LoadingState } from '@/design-system/components/EmptyState';
 import { FAB } from '@/design-system/components/FAB';
-import { Fonts } from '@/design-system/tokens/fonts';
 import { usePersonMedications } from '../hooks/usePersonMedications';
 import { MedicationCard } from './MedicationCard';
 import { AddMedicationModal } from './AddMedicationModal';
@@ -21,7 +20,6 @@ interface PersonMedicationsTabProps {
 }
 
 export const PersonMedicationsTab = ({ personId, colourSet, personName }: PersonMedicationsTabProps) => {
-  const insets = useSafeAreaInsets();
   const [showAddModal, setShowAddModal]       = useState(false);
   const [search, setSearch]                   = useState('');
 
@@ -62,45 +60,24 @@ export const PersonMedicationsTab = ({ personId, colourSet, personName }: Person
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
-        <PressableBase
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          style={(pressed: boolean) => ({
-            opacity: pressed ? 0.6 : 1,
-            flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4,
-          })}
-        >
-          <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
-        </PressableBase>
-        <Text style={{
-          fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif,
-          color: '#1C1917', lineHeight: 32,
-        }}>
-          Medications
-        </Text>
-        {personName ? (
-          <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 2 }}>{personName}</Text>
-        ) : null}
-      </View>
+      <SubScreenHeader title="Medications" subtitle={personName || undefined} />
 
       {/* ── Search ─────────────────────────────────────────────────────── */}
       <View style={{ paddingHorizontal: 16, paddingBottom: 10 }}>
         <View style={{
-          backgroundColor: '#EEEAE3', borderRadius: 10,
+          backgroundColor: '#ECEBE5', borderRadius: 10,
           paddingHorizontal: 12, paddingVertical: 8,
           flexDirection: 'row', alignItems: 'center', gap: 8,
         }}>
-          <Text style={{ fontSize: 14, color: '#A8A09A' }}>🔍</Text>
+          <Text style={{ fontSize: 14, color: 'rgba(23,33,28,0.55)' }}>🔍</Text>
           <TextInput
             value={search}
             onChangeText={setSearch}
             placeholder="Search medications..."
-            placeholderTextColor="#A8A09A"
-            style={{ flex: 1, fontSize: 14, color: '#1C1917' }}
+            placeholderTextColor="#8B928E"
+            style={{ flex: 1, fontSize: 14, color: '#17211C' }}
           />
         </View>
       </View>
@@ -119,7 +96,7 @@ export const PersonMedicationsTab = ({ personId, colourSet, personName }: Person
         renderItem={({ item: group }) => (
           <View style={{ marginBottom: 16 }}>
             <Text style={{
-              fontSize: 10, fontWeight: '700', color: '#A8A09A',
+              fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)',
               textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8,
             }}>
               {group.label}

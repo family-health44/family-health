@@ -47,8 +47,19 @@ export const Card = ({ children, colourSet, style, ...viewProps }: CardProps) =>
 
   return (
     <View
-      className="rounded-2xl border border-[#E8E4DC] bg-white p-4"
-      style={style}
+      style={[
+        {
+          backgroundColor: '#FFFFFF',
+          borderRadius: 16,
+          padding: 16,
+          shadowColor: '#17211C',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 8,
+          elevation: 2,
+        },
+        style,
+      ]}
       {...viewProps}
     >
       {children}
@@ -84,8 +95,18 @@ export const PressableCard = ({
 
   return (
     <PressableBase
-      className="rounded-2xl border border-[#E8E4DC] bg-white p-4 active:opacity-80"
-      accessibilityRole="button"
+      style={(pressed) => ({
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        padding: 16,
+        shadowColor: '#17211C',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        elevation: 2,
+        opacity: pressed ? 0.85 : 1,
+      })}
+      accessibilityRole="button" 
       {...pressableProps}
     >
       {children}

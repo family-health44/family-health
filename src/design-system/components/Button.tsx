@@ -23,16 +23,16 @@ interface ButtonProps extends Omit<PressableProps, 'style'> {
 // ─── Style maps ───────────────────────────────────────────────────────────────
 
 const containerStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-[#2A6049] active:bg-[#1A4D35]',
-  secondary: 'bg-white border border-[#C0D8CA] active:bg-[#E6F0EC]',
-  ghost: 'bg-transparent active:bg-[#E6F0EC]',
-  danger: 'bg-[#9B3A4A] active:bg-[#7A2030]',
+  primary: 'bg-[#1F5C41] active:bg-[#17452F]',
+  secondary: 'bg-white border border-[#BFD4C8] active:bg-[#E4EFE9]',
+  ghost: 'bg-transparent active:bg-[#E4EFE9]',
+  danger: 'bg-[#B33A4A] active:bg-[#8F2E3B]',
 };
 
 const textStyles: Record<ButtonVariant, string> = {
   primary: 'text-white',
-  secondary: 'text-[#1A4D35]',
-  ghost: 'text-[#2A6049]',
+  secondary: 'text-[#17452F]',
+  ghost: 'text-[#1F5C41]',
   danger: 'text-white',
 };
 
@@ -50,8 +50,8 @@ const sizeTextStyles: Record<ButtonSize, string> = {
 
 const spinnerColours: Record<ButtonVariant, string> = {
   primary: '#FFFFFF',
-  secondary: '#2A6049',
-  ghost: '#2A6049',
+  secondary: '#1F5C41',
+  ghost: '#1F5C41',
   danger: '#FFFFFF',
 };
 

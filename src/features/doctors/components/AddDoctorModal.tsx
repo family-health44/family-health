@@ -65,7 +65,7 @@ export const AddDoctorModal = ({ visible, isLoading, onAdd, onDismiss }: AddDoct
           <Pressable>
             <View
               style={{
-                backgroundColor: '#F7F5F0',
+                backgroundColor: '#F7F7F4',
                 borderTopLeftRadius: 24,
                 borderTopRightRadius: 24,
                 paddingBottom: Platform.OS === 'ios' ? 40 : 24,

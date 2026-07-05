@@ -1,12 +1,11 @@
 // src/features/medical-events/components/PersonMedicalEventsTab.tsx
 import { PressableBase } from '@/design-system/components/PressableBase';
+import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ErrorState, LoadingState } from '@/design-system/components/EmptyState';
 import { FAB } from '@/design-system/components/FAB';
-import { Fonts } from '@/design-system/tokens/fonts';
 import { usePersonMedicalEvents } from '../hooks/usePersonMedicalEvents';
 import { MedicalEventCard } from './MedicalEventCard';
 import { AddMedicalEventModal } from './AddMedicalEventModal';
@@ -23,11 +22,10 @@ interface PersonMedicalEventsTabProps {
 const SECTION_COLOURS = [
   { bg: '#EAF0F8', border: '#B0C8E8', text: '#1A3254' }, // blue
   { bg: '#EEF4E8', border: '#C2D9A8', text: '#243F0A' }, // green
-  { bg: '#FAEAEA', border: '#F0B8B8', text: '#7A2030' }, // red
+  { bg: '#FAEAEA', border: '#F0B8B8', text: '#8F2E3B' }, // red
 ];
 
 export const PersonMedicalEventsTab = ({ personId, personName }: PersonMedicalEventsTabProps) => {
-  const insets = useSafeAreaInsets();
   const [showAddModal, setShowAddModal] = useState(false);
   const [editing, setEditing] = useState<MedicalEvent | null>(null);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
@@ -37,15 +35,8 @@ export const PersonMedicalEventsTab = ({ personId, personName }: PersonMedicalEv
   if (error) return <ErrorState message={error.message} />;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
-      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8 }}>
-        <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}>
-          <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
-        </PressableBase>
-        <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 32 }}>Medical Events</Text>
-        {personName ? <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 2 }}>{personName}</Text> : null}
-      </View>
+    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+      <SubScreenHeader title="Medical Events" subtitle={personName || undefined} />
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 8, flexGrow: 1 }}>
         {groups.map((group, index) => {
@@ -71,7 +62,7 @@ export const PersonMedicalEventsTab = ({ personId, personName }: PersonMedicalEv
                 <View style={{ backgroundColor: 'white', borderLeftWidth: 1.5, borderRightWidth: 1.5, borderBottomWidth: 1.5, borderColor: sc.border, borderBottomLeftRadius: 12, borderBottomRightRadius: 12, overflow: 'hidden' }}>
                   {group.events.length === 0 ? (
                     <View style={{ padding: 14, alignItems: 'center' }}>
-                      <Text style={{ fontSize: 12, color: '#A8A09A', fontStyle: 'italic' }}>No {group.label.toLowerCase()} recorded yet</Text>
+                      <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)', fontStyle: 'italic' }}>No {group.label.toLowerCase()} recorded yet</Text>
                     </View>
                   ) : (
                     group.events.map((event, i) => (

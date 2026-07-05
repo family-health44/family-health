@@ -53,9 +53,9 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
     }
   }, [visit?.id]);
 
-  if (isLoading) return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><LoadingState message="Loading visit..." /></View>;
-  if (error) return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><ErrorState message={error.message} /></View>;
-  if (!visit) return <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}><ErrorState message="Visit not found." /></View>;
+  if (isLoading) return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><LoadingState message="Loading visit..." /></View>;
+  if (error) return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><ErrorState message={error.message} /></View>;
+  if (!visit) return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><ErrorState message="Visit not found." /></View>;
 
   const v = visit; // non-null alias
 
@@ -106,75 +106,75 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
     else Alert.alert('Cannot open calendar', 'Unable to open calendar app.');
   };
 
-  const inlineInputStyle = { fontSize: 14, color: '#1C1917', padding: 0, margin: 0 } as const;
-  const costInputStyle = { fontSize: 13, color: '#1C1917', fontWeight: '500' as const, textAlign: 'right' as const, minWidth: 80, padding: 0 };
+  const inlineInputStyle = { fontSize: 14, color: '#17211C', padding: 0, margin: 0 } as const;
+  const costInputStyle = { fontSize: 13, color: '#17211C', fontWeight: '500' as const, textAlign: 'right' as const, minWidth: 80, padding: 0 };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F5F0' }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <PressableBase onPress={() => router.navigate('/(app)/visits')} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
-          <Text style={{ fontSize: 15, color: '#2A6049' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#2A6049', fontWeight: '500' }}>Back</Text>
+          <Text style={{ fontSize: 15, color: '#1F5C41' }}>‹</Text>
+          <Text style={{ fontSize: 14, color: '#1F5C41', fontWeight: '500' }}>Back</Text>
         </PressableBase>
-        <PressableBase onPress={() => setShowEditModal(true)} accessibilityRole="button" accessibilityLabel="Edit visit" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: '#EEEAE3', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
-          <Text style={{ fontSize: 14, color: '#6B6866' }}>✎</Text>
+        <PressableBase onPress={() => setShowEditModal(true)} accessibilityRole="button" accessibilityLabel="Edit visit" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: '#ECEBE5', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
+          <Text style={{ fontSize: 14, color: 'rgba(23,33,28,0.65)' }}>✎</Text>
         </PressableBase>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4, paddingBottom: 100 }} keyboardShouldPersistTaps="handled">
         {/* Hero card */}
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 14, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 14, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <View style={{ width: 52, height: 52, borderRadius: 12, backgroundColor: '#E8EFF8', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Text style={{ fontSize: 24 }}>📅</Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 20, fontWeight: '300', fontFamily: Fonts.serif, color: '#1C1917', lineHeight: 24 }}>{v.title}</Text>
-            <Text style={{ fontSize: 12, color: '#A8A09A', marginTop: 3 }}>
+            <Text style={{ fontSize: 20, fontWeight: '300', fontFamily: Fonts.serif, color: '#17211C', lineHeight: 24 }}>{v.title}</Text>
+            <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)', marginTop: 3 }}>
               {formatDate(v.visitDate)}{v.visitTime ? ` at ${formatTime(v.visitTime)}` : ''} · {isUpcoming ? 'Upcoming' : 'Past'}
             </Text>
           </View>
         </View>
 
         {/* Details */}
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>Details</Text>
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
-          <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EDE8' }}>
-            <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Date</Text>
-            <Text style={{ fontSize: 13, color: '#1C1917', fontWeight: '500' }}>{formatDate(v.visitDate)}{v.visitTime ? ` at ${formatTime(v.visitTime)}` : ''}</Text>
+        <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>Details</Text>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
+          <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EFEA' }}>
+            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', flex: 1 }}>Date</Text>
+            <Text style={{ fontSize: 13, color: '#17211C', fontWeight: '500' }}>{formatDate(v.visitDate)}{v.visitTime ? ` at ${formatTime(v.visitTime)}` : ''}</Text>
           </View>
-          <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EDE8' }}>
-            <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Person</Text>
-            <Text style={{ fontSize: 13, color: '#1C1917', fontWeight: '500' }}>{v.personName}</Text>
+          <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EFEA' }}>
+            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', flex: 1 }}>Person</Text>
+            <Text style={{ fontSize: 13, color: '#17211C', fontWeight: '500' }}>{v.personName}</Text>
           </View>
           {v.doctorName ? (
-            <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EDE8' }}>
-              <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Doctor</Text>
-              <Text style={{ fontSize: 13, color: '#1C1917', fontWeight: '500' }}>{v.doctorName}</Text>
+            <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EFEA' }}>
+              <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', flex: 1 }}>Doctor</Text>
+              <Text style={{ fontSize: 13, color: '#17211C', fontWeight: '500' }}>{v.doctorName}</Text>
             </View>
           ) : null}
           {/* Costs — inline editable */}
-          <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EDE8', alignItems: 'center' }}>
-            <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Total cost</Text>
-            <Text style={{ fontSize: 13, color: '#A8A09A' }}>$</Text>
+          <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0EFEA', alignItems: 'center' }}>
+            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', flex: 1 }}>Total cost</Text>
+            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>$</Text>
             <TextInput value={totalCost} onChangeText={setTotalCost} onBlur={() => persist({ totalCost: parseCost(totalCost) })} placeholder="0.00" placeholderTextColor="#C8C4BC" keyboardType="decimal-pad" style={costInputStyle} />
           </View>
           <View style={{ flexDirection: 'row', padding: 12, alignItems: 'center' }}>
-            <Text style={{ fontSize: 13, color: '#A8A09A', flex: 1 }}>Out of pocket</Text>
-            <Text style={{ fontSize: 13, color: '#A8A09A' }}>$</Text>
+            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', flex: 1 }}>Out of pocket</Text>
+            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>$</Text>
             <TextInput value={outOfPocket} onChangeText={setOutOfPocket} onBlur={() => persist({ outOfPocket: parseCost(outOfPocket) })} placeholder="0.00" placeholderTextColor="#C8C4BC" keyboardType="decimal-pad" style={costInputStyle} />
           </View>
         </View>
 
         {/* Pre-appointment notes — inline editable */}
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>Pre-Appointment Notes</Text>
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, padding: 14, marginBottom: 16 }}>
-          <TextInput value={preNotes} onChangeText={setPreNotes} onBlur={() => persist({ preNotes: preNotes.trim() || null })} placeholder="What to discuss, questions to ask..." placeholderTextColor="#A8A09A" multiline style={{ ...inlineInputStyle, lineHeight: 20, minHeight: 40, textAlignVertical: 'top' }} />
+        <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>Pre-Appointment Notes</Text>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, padding: 14, marginBottom: 16 }}>
+          <TextInput value={preNotes} onChangeText={setPreNotes} onBlur={() => persist({ preNotes: preNotes.trim() || null })} placeholder="What to discuss, questions to ask..." placeholderTextColor="#8B928E" multiline style={{ ...inlineInputStyle, lineHeight: 20, minHeight: 40, textAlignVertical: 'top' }} />
         </View>
 
         {/* Post-appointment notes — inline editable */}
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#A8A09A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>Post-Appointment Notes</Text>
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3DDD5', borderRadius: 12, padding: 14, marginBottom: 16 }}>
-          <TextInput value={postNotes} onChangeText={setPostNotes} onBlur={() => persist({ postNotes: postNotes.trim() || null })} placeholder="Outcomes, follow-ups, results..." placeholderTextColor="#A8A09A" multiline style={{ ...inlineInputStyle, lineHeight: 20, minHeight: 40, textAlignVertical: 'top' }} />
+        <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>Post-Appointment Notes</Text>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, padding: 14, marginBottom: 16 }}>
+          <TextInput value={postNotes} onChangeText={setPostNotes} onBlur={() => persist({ postNotes: postNotes.trim() || null })} placeholder="Outcomes, follow-ups, results..." placeholderTextColor="#8B928E" multiline style={{ ...inlineInputStyle, lineHeight: 20, minHeight: 40, textAlignVertical: 'top' }} />
         </View>
 
         {/* Actions */}
@@ -190,7 +190,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
 
       {isUpcoming && (
         <View style={{ position: 'absolute', bottom: 24, left: 16, right: 16 }}>
-          <PressableBase onPress={() => router.push(`/(app)/appointments?visitId=${v.id}&personId=${v.personId ?? ''}&personName=${encodeURIComponent(v.personName ?? '')}&doctorName=${encodeURIComponent(v.doctorName ?? '')}&visitDate=${v.visitDate}&preNotes=${encodeURIComponent(v.preNotes ?? '')}` as never)} accessibilityRole="button" style={(pressed) => ({ backgroundColor: pressed ? '#1A4D35' : '#2A6049', borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 })}>
+          <PressableBase onPress={() => router.push(`/(app)/appointments?visitId=${v.id}&personId=${v.personId ?? ''}&personName=${encodeURIComponent(v.personName ?? '')}&doctorName=${encodeURIComponent(v.doctorName ?? '')}&visitDate=${v.visitDate}&preNotes=${encodeURIComponent(v.preNotes ?? '')}` as never)} accessibilityRole="button" style={(pressed) => ({ backgroundColor: pressed ? '#17452F' : '#1F5C41', borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 })}>
             <Text style={{ fontSize: 16, color: 'white' }}>▶</Text>
             <Text style={{ fontSize: 16, fontWeight: '600', color: 'white' }}>Start Appointment</Text>
           </PressableBase>

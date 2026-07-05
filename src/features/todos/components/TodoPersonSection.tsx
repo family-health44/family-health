@@ -19,13 +19,13 @@ const NEUTRAL_COLOUR = {
   bg: '#F5F3F0',
   border: '#E0DDD8',
   text: '#4A4744',
-  dot: '#6B6866',
+  dot: 'rgba(23,33,28,0.65)',
 } as const;
 
 export const TodoPersonSection = ({
   group, showCompleted, onToggle, onEdit, onDelete,
 }: TodoPersonSectionProps) => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   const isGeneral = group.colourIndex === -1;
   const colourSet = isGeneral
@@ -35,6 +35,8 @@ export const TodoPersonSection = ({
   const visibleTodos = showCompleted
     ? group.todos
     : group.todos.filter((t) => !t.completed);
+
+  const initials = group.personName.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 
   // Empty sections still render (collapsed-friendly) so every person is visible.
 
@@ -48,19 +50,27 @@ export const TodoPersonSection = ({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: colourSet.bg,
-          borderColor: colourSet.border,
-          borderWidth: 1,
-          borderRadius: 12,
-          paddingHorizontal: 14,
+          backgroundColor: '#FFFFFF',
+          borderRadius: 16,
+          paddingHorizontal: 13,
           paddingVertical: 11,
-          gap: 10,
+          gap: 11,
+          shadowColor: '#17211C',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 8,
+          elevation: 2,
         }}
       >
-        <Text style={{ flex: 1, fontSize: 15, fontWeight: '700', color: colourSet.text }}>
-          {group.personName}
-        </Text>
-        <Text style={{ color: colourSet.text, fontSize: 13, opacity: 0.7 }}>
+        <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: colourSet.dot, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ color: 'white', fontSize: 11, fontWeight: '700' }}>{initials}</Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 14, fontWeight: '600', color: '#17211C' }}>
+            {group.personName}
+          </Text>
+        </View>
+        <Text style={{ color: 'rgba(23,33,28,0.4)', fontSize: 13 }}>
           {collapsed ? '∨' : '∧'}
         </Text>
       </Pressable>
@@ -80,7 +90,7 @@ export const TodoPersonSection = ({
             ))
           ) : (
             <View style={{ padding: 12, alignItems: 'center' }}>
-              <Text style={{ fontSize: 12, color: '#A8A09A' }}>No open items</Text>
+              <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)' }}>No open items</Text>
             </View>
           )}
         </View>

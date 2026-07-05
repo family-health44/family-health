@@ -28,7 +28,7 @@ export const EmptyState = ({
       {title}
     </Text>
     {message ? (
-      <Text className="mt-2 text-center text-sm text-[#6B6866]">
+      <Text className="mt-2 text-center text-sm text-[#57605B]">
         {message}
       </Text>
     ) : null}
@@ -44,7 +44,7 @@ export const EmptyState = ({
 
 export const LoadingState = ({ message = 'Loading...' }: { message?: string }) => (
   <View className="flex-1 items-center justify-center">
-    <Text className="text-sm text-[#6B6866]">{message}</Text>
+    <Text className="text-sm text-[#57605B]">{message}</Text>
   </View>
 );
 

@@ -22,7 +22,7 @@ interface BadgeProps {
 // ─── Style maps ───────────────────────────────────────────────────────────────
 
 const containerStyles: Record<BadgeVariant, string> = {
-  success: 'bg-[#E6F0EC] border border-[#C0D8CA]',
+  success: 'bg-[#E4EFE9] border border-[#BFD4C8]',
   warning: 'bg-[#F5EBE0] border border-[#DEBFAA]',
   danger: 'bg-[#F5E8EB] border border-[#E0BDC4]',
   neutral: 'bg-[#EEECE8] border border-[#D8D4CC]',
@@ -30,9 +30,9 @@ const containerStyles: Record<BadgeVariant, string> = {
 };
 
 const textStyles: Record<BadgeVariant, string> = {
-  success: 'text-[#1A4D35]',
+  success: 'text-[#17452F]',
   warning: 'text-[#7A3A10]',
-  danger: 'text-[#7A2030]',
+  danger: 'text-[#8F2E3B]',
   neutral: 'text-[#4A4744]',
   info: 'text-[#1A3A6B]',
 };
