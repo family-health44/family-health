@@ -56,8 +56,6 @@ export const VisitsScreen = () => {
     router.push(`/(app)/visits/${visitId}`);
   };
 
-  const upcomingCount = listGroups?.find(g => g.label === 'Upcoming')?.visits.length ?? 0;
-
   if (isLoading) {
     return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><LoadingState message="Loading visits..." /></View>;
   }
@@ -67,7 +65,7 @@ export const VisitsScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
-      <ScreenHeader title="Visits" subtitle={`${upcomingCount} upcoming`}>
+      <ScreenHeader title="Visits">
         <VisitsViewToggle activeMode={viewMode} onModeChange={setViewMode} variant="onColour" />
       </ScreenHeader>
 

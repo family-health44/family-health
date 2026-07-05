@@ -1,6 +1,7 @@
 // src/features/doctors/screens/DoctorDetailScreen.tsx
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
+import { SectionCard, SectionEmpty, type SectionCardTone } from '@/design-system/components/SectionCard';
 import { useState } from 'react';
 import { View, Text, ScrollView, Linking, Alert, Modal, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
 import { router } from 'expo-router';
@@ -21,26 +22,10 @@ import { usePersonMedicationsQuery } from '@/features/medications/queries/medica
 
 interface DoctorDetailScreenProps { doctorId: string; personId: string; }
 
-const CollapsibleSection = ({ title, bg, border, text, children }: { title: string; bg: string; border: string; text: string; children: React.ReactNode }) => {
-  const [collapsed, setCollapsed] = useState(false);
-  return (
-    <View style={{ marginBottom: 10 }}>
-      <PressableBase onPress={() => setCollapsed(!collapsed)} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: bg, borderWidth: 1.5, borderColor: border, borderTopLeftRadius: 12, borderTopRightRadius: 12, borderBottomLeftRadius: collapsed ? 12 : 0, borderBottomRightRadius: collapsed ? 12 : 0, paddingHorizontal: 14, paddingVertical: 11 }}>
-        <Text style={{ flex: 1, fontSize: 13, fontWeight: '700', color: text }}>{title}</Text>
-        <Text style={{ color: border, fontSize: 13 }}>{collapsed ? '∨' : '∧'}</Text>
-      </PressableBase>
-      {!collapsed && (
-        <View style={{ backgroundColor: 'white', borderLeftWidth: 1.5, borderRightWidth: 1.5, borderBottomWidth: 1.5, borderColor: border, borderBottomLeftRadius: 12, borderBottomRightRadius: 12, overflow: 'hidden' }}>
-          {children}
-        </View>
-      )}
-    </View>
-  );
-};
-
-const EmptyRow = ({ text }: { text: string }) => (
-  <View style={{ padding: 14 }}><Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)', fontStyle: 'italic' }}>{text}</Text></View>
-);
+// Accent-pill tones per doctor section (decorative grouping).
+const VISITS_TONE: SectionCardTone = { pillBg: '#E6F1FB', pillText: '#0C447C' };   // blue
+const NOTES_TONE: SectionCardTone = { pillBg: '#EAF3DE', pillText: '#27500A' };    // green
+const MEDS_TONE: SectionCardTone = { pillBg: '#F5EBE0', pillText: '#7A3A10' };     // orange/brown
 
 export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenProps) => {
   const queryClient = useQueryClient();
@@ -151,9 +136,9 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
         </View>
         ) : null}
 
-        <CollapsibleSection title="Visits" bg="#E8EFF8" border="#C0CFDF" text="#1A3A6B">
+        <SectionCard title="Visits" tone={VISITS_TONE}>
           {doctorVisits.length === 0 ? (
-            <EmptyRow text="No visits with this doctor yet" />
+            <SectionEmpty text="No visits with this doctor yet" />
           ) : (
             doctorVisits.map((v, i) => (
               <PressableBase key={v.id} onPress={() => router.push(`/(app)/visits/${v.id}` as never)} style={(pressed) => ({ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EFEA', opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center' })}>
@@ -165,11 +150,11 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
               </PressableBase>
             ))
           )}
-        </CollapsibleSection>
+        </SectionCard>
 
-        <CollapsibleSection title="Notes" bg="#E4EFE9" border="#BFD4C8" text="#17452F">
+        <SectionCard title="Notes" tone={NOTES_TONE}>
           {doctorNotes.length === 0 ? (
-            <EmptyRow text="No notes for this doctor yet" />
+            <SectionEmpty text="No notes for this doctor yet" />
           ) : (
             doctorNotes.map((n, i) => (
               <View key={n.id} style={{ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EFEA' }}>
@@ -178,11 +163,11 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
               </View>
             ))
           )}
-        </CollapsibleSection>
+        </SectionCard>
 
-        <CollapsibleSection title="Medications Prescribed" bg="#F5EBE0" border="#DEBFAA" text="#7A3A10">
+        <SectionCard title="Medications Prescribed" tone={MEDS_TONE}>
           {doctorMeds.length === 0 ? (
-            <EmptyRow text="No medications prescribed yet" />
+            <SectionEmpty text="No medications prescribed yet" />
           ) : (
             doctorMeds.map((m, i) => (
               <View key={m.id} style={{ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EFEA' }}>
@@ -195,7 +180,7 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
               </View>
             ))
           )}
-        </CollapsibleSection>
+        </SectionCard>
       </ScrollView>
       <Modal visible={showEditModal} transparent animationType="slide" onRequestClose={() => setShowEditModal(false)}>
         <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }} onPress={() => setShowEditModal(false)}>
