@@ -11,7 +11,7 @@ import { useVisitsListQuery } from '../queries/visits.queries';
 import { useUpdateVisitMutation } from '../mutations/visits.mutations';
 import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
 import { EditVisitModal } from '../components/EditVisitModal';
-import { formatDate, formatTime } from '@/shared/utils/dates';
+import { formatDate, formatTime, todayISO } from '@/shared/utils/dates';
 import type { Visit } from '../types/visits.types';
 
 interface VisitDetailScreenProps {
@@ -57,7 +57,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
 
   const v = visit; // non-null alias
 
-  const today = new Date().toISOString().split('T')[0] ?? '';
+  const today = todayISO();
   const isUpcoming = v.visitDate >= today;
 
   // Save a single inline field by sending the full current param set.

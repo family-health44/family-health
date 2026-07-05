@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
 import { DateField } from '@/design-system/components/DateField';
+import { todayISO } from '@/shared/utils/dates';
 import { MEDICAL_EVENT_CONFIG, MEDICAL_EVENT_TYPES } from '../types/medical-events.types';
 
 import type { MedicalEventType } from '../types/medical-events.types';
@@ -36,7 +37,7 @@ interface AddMedicalEventModalProps {
 export const AddMedicalEventModal = ({
   visible, isLoading, onAdd, onDismiss,
 }: AddMedicalEventModalProps) => {
-  const today = new Date().toISOString().split('T')[0] ?? '';
+  const today = todayISO();
 
   const { control, handleSubmit, reset, watch, setValue, formState: { errors } } =
     useForm<FormValues>({

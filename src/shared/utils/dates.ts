@@ -74,6 +74,12 @@ export function toISODateString(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+// Today's date as YYYY-MM-DD from LOCAL components (never toISOString, which
+// shifts back a day in positive-offset zones like AEST before ~10:00).
+export function todayISO(): string {
+  return toISODateString(new Date());
+}
+
 const DOB_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 // ISO (YYYY-MM-DD) -> '3 Nov 2018'. Pure split, no Date, no timezone risk. '' on bad input.

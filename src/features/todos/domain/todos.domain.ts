@@ -87,7 +87,9 @@ export function countIncompleteTodos(groups: TodoPersonGroup[]): number {
 // Checks if a todo is overdue (has due date in the past and is not completed)
 export function isTodoOverdue(todo: Todo): boolean {
   if (!todo.dueDate || todo.completed) return false;
-  return todo.dueDate < new Date().toISOString().split('T')[0]!;
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  return todo.dueDate < today;
 }
 export function countOverdueTodos(groups: TodoPersonGroup[]): number {
   return groups.reduce((total, group) => {
