@@ -3,6 +3,7 @@
 // Add mode: editingLog = null. Edit mode: editingLog provided (adds Delete action).
 
 import { useState, useEffect, useRef } from 'react';
+import { Fonts } from '@/design-system/tokens/fonts';
 import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, TextInput, Alert } from 'react-native';
 
 import { PressableBase } from '@/design-system/components/PressableBase';
@@ -119,14 +120,14 @@ export const MedicationLogSheet = ({
                 <PressableBase onPress={onDismiss} hitSlop={10} style={(p) => ({ opacity: p ? 0.5 : 1 })}>
                   <Text style={{ fontSize: 22, color: 'rgba(23,33,28,0.65)' }}>×</Text>
                 </PressableBase>
-                <Text style={{ fontSize: 17, fontWeight: '700', color: '#17211C' }}>
+                <Text style={{ fontSize: 19, fontWeight: '700', color: '#17211C', fontFamily: Fonts.serif }}>
                   {editingLog ? 'Edit log entry' : 'Add log entry'}
                 </Text>
                 <View style={{ width: 22 }} />
               </View>
 
               <ScrollView ref={scrollRef} contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 12 }} keyboardShouldPersistTaps="handled">
-                <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, padding: 12, marginBottom: 18 }}>
+                <View style={{ backgroundColor: '#FFFFFF', borderRadius: 14, padding: 12, marginBottom: 18, shadowColor: '#17211C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
                   <Text style={{ fontSize: 14, fontWeight: '700', color: '#17211C' }}>{medicationLabel}</Text>
                   {medicationSubLabel ? <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.65)', marginTop: 2 }}>{medicationSubLabel}</Text> : null}
                 </View>
@@ -176,7 +177,7 @@ export const MedicationLogSheet = ({
                   style={[inputStyle, { height: 90, textAlignVertical: 'top', paddingTop: 12 }]} />
 
                 <Label text="Dose" />
-                <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden', marginBottom: 20 }}>
+                <View style={{ backgroundColor: '#FFFFFF', borderRadius: 14, overflow: 'hidden', marginBottom: 20, shadowColor: '#17211C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
                   {DOSE_OPTIONS.map((opt, i) => {
                     const active = doseStatus === opt.value;
                     return (

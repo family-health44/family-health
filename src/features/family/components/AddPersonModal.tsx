@@ -4,6 +4,7 @@
 // No business logic — parent hook handles the mutation.
 
 import { useEffect, useRef } from 'react';
+import { Fonts } from '@/design-system/tokens/fonts';
 import {
   View,
   Text,
@@ -117,9 +118,10 @@ export const AddPersonModal = ({
 
               <Text
                 style={{
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: '700',
-                  color: '#1A1A1A',
+                  color: '#17211C',
+                  fontFamily: Fonts.serif,
                   marginBottom: 20,
                 }}
               >

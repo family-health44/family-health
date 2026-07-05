@@ -3,6 +3,7 @@
 // React Hook Form + Zod. Same status picker pattern as AddMedicationModal.
 
 import React, { useState, useEffect } from 'react';
+import { Fonts } from '@/design-system/tokens/fonts';
 import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -148,7 +149,7 @@ export const EditMedicationModal = ({
               }} />
 
               <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
-                <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>
+                <Text style={{ fontSize: 22, fontWeight: '700', color: '#17211C', fontFamily: Fonts.serif, marginBottom: 4 }}>
                   Edit medication
                 </Text>
 

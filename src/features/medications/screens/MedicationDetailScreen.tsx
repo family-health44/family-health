@@ -5,11 +5,10 @@
 import { useState } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
 import { router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { ErrorState, LoadingState } from '@/design-system/components/EmptyState';
-import { Fonts } from '@/design-system/tokens/fonts';
+import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 
 import { useMedicationDetailQuery } from '../queries/medications.queries';
 import { usePersonMedications } from '../hooks/usePersonMedications';
@@ -37,7 +36,6 @@ interface MedicationDetailScreenProps {
 export const MedicationDetailScreen = ({
   personId, medicationId, personName, familyGroupId,
 }: MedicationDetailScreenProps) => {
-  const insets = useSafeAreaInsets();
   const [tab, setTab] = useState<Tab>('log');
   const [editing, setEditing] = useState(false);
   const [logSheetOpen, setLogSheetOpen] = useState(false);
@@ -77,24 +75,17 @@ export const MedicationDetailScreen = ({
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
-      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(p) => ({ opacity: p ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
-          <Text style={{ fontSize: 15, color: '#1F5C41' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#1F5C41', fontWeight: '500' }}>Back</Text>
-        </PressableBase>
-        <PressableBase onPress={() => setEditing(true)} accessibilityRole="button" accessibilityLabel="Edit medication" style={(p) => ({ opacity: p ? 0.6 : 1, padding: 4 })}>
-          <Text style={{ fontSize: 18, color: '#1F5C41' }}>✎</Text>
-        </PressableBase>
-      </View>
+      <SubScreenHeader
+        title={medication.name}
+        subtitle={[medication.reason, personName].filter(Boolean).join(' · ') || undefined}
+        right={
+          <PressableBase onPress={() => setEditing(true)} accessibilityRole="button" accessibilityLabel="Edit medication" style={(p) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center', opacity: p ? 0.6 : 1 })}>
+            <Text style={{ fontSize: 14, color: '#FFFFFF' }}>✎</Text>
+          </PressableBase>
+        }
+      />
 
-      <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4, paddingBottom: 100 }}>
-        <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 16, padding: 16, marginBottom: 14 }}>
-          <Text style={{ fontSize: 26, fontWeight: '300', fontFamily: Fonts.serif, color: '#17211C' }}>{medication.name}</Text>
-          <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.65)', marginTop: 2 }}>
-            {[medication.reason, personName].filter(Boolean).join(' · ')}
-          </Text>
-        </View>
-
+      <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 16, paddingBottom: 100 }}>
         <View style={{ flexDirection: 'row', gap: 10, marginBottom: 16 }}>
           <StatCard value={String(stats.count)} label="Log entries" />
           <StatCard value={mostCommon?.emoji ?? '—'} label="Most common" />

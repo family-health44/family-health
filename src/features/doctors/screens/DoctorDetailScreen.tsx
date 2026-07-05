@@ -1,9 +1,9 @@
 // src/features/doctors/screens/DoctorDetailScreen.tsx
 import { PressableBase } from '@/design-system/components/PressableBase';
+import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { useState } from 'react';
 import { View, Text, ScrollView, Linking, Alert, Modal, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
 import { router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
@@ -43,7 +43,6 @@ const EmptyRow = ({ text }: { text: string }) => (
 );
 
 export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenProps) => {
-  const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -117,39 +116,32 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
-      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
-          <Text style={{ fontSize: 15, color: '#1F5C41' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#1F5C41', fontWeight: '500' }}>Back</Text>
-        </PressableBase>
-        <PressableBase onPress={handleOpenEdit} accessibilityRole="button" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: '#ECEBE5', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
-          <Text style={{ fontSize: 14, color: 'rgba(23,33,28,0.65)' }}>✎</Text>
-        </PressableBase>
-      </View>
-      <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4 }}>
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 14, padding: 14, marginBottom: 12 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: showMoreInfo ? 12 : 0 }}>
-            <View style={{ width: 46, height: 46, borderRadius: 11, backgroundColor: '#E8EFF8', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Text style={{ fontSize: 20 }}>🩺</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: '#17211C' }}>{doctor.name}</Text>
-              {doctor.type ? <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)', marginTop: 2 }}>{doctor.type}</Text> : null}
-            </View>
-            <PressableBase onPress={() => setShowMoreInfo(!showMoreInfo)} style={(pressed) => ({ backgroundColor: '#ECEBE5', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5, opacity: pressed ? 0.7 : 1 })}>
-              <Text style={{ fontSize: 11, fontWeight: '600', color: '#1F5C41' }}>{showMoreInfo ? 'Less Info ↑' : 'More Info ↓'}</Text>
-            </PressableBase>
-          </View>
+      <SubScreenHeader
+        title={doctor.name}
+        subtitle={doctor.type || undefined}
+        right={
+          <PressableBase onPress={handleOpenEdit} accessibilityRole="button" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
+            <Text style={{ fontSize: 14, color: '#FFFFFF' }}>✎</Text>
+          </PressableBase>
+        }
+      />
+      <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 16 }}>
+        {(doctor.address || doctor.phone) ? (
+        <View style={{ backgroundColor: 'white', borderRadius: 16, padding: 14, marginBottom: 12, shadowColor: '#17211C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
+          <PressableBase onPress={() => setShowMoreInfo(!showMoreInfo)} style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: pressed ? 0.7 : 1 })}>
+            <Text style={{ fontSize: 13, fontWeight: '600', color: '#17211C' }}>Contact details</Text>
+            <Text style={{ fontSize: 11, fontWeight: '600', color: '#1F5C41' }}>{showMoreInfo ? 'Less ↑' : 'More ↓'}</Text>
+          </PressableBase>
           {showMoreInfo && (
-            <View style={{ borderTopWidth: 1, borderTopColor: '#F0EFEA', paddingTop: 10, gap: 8 }}>
+            <View style={{ borderTopWidth: 0.5, borderTopColor: 'rgba(23,33,28,0.08)', paddingTop: 10, marginTop: 10, gap: 8 }}>
               {doctor.address ? (
-                <View style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: '#F0EFEA' }}>
+                <View style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 0.5, borderBottomColor: 'rgba(23,33,28,0.08)' }}>
                   <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)', width: 60 }}>Address</Text>
                   <Text style={{ fontSize: 12, color: '#17211C', flex: 1, textAlign: 'right' }}>{doctor.address}</Text>
                 </View>
               ) : null}
               {doctor.phone ? (
-                <PressableBase onPress={handlePhone} style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: '#F0EFEA' }}>
+                <PressableBase onPress={handlePhone} style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 0.5, borderBottomColor: 'rgba(23,33,28,0.08)' }}>
                   <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)', width: 60 }}>Phone</Text>
                   <Text style={{ fontSize: 12, color: '#1F5C41', flex: 1, textAlign: 'right' }}>{doctor.phone}</Text>
                 </PressableBase>
@@ -157,6 +149,7 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
             </View>
           )}
         </View>
+        ) : null}
 
         <CollapsibleSection title="Visits" bg="#E8EFF8" border="#C0CFDF" text="#1A3A6B">
           {doctorVisits.length === 0 ? (

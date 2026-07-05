@@ -1,5 +1,6 @@
 // src/features/visits/components/EditVisitModal.tsx
 import { InlinePicker } from '@/design-system/components/InlinePicker';
+import { Fonts } from '@/design-system/tokens/fonts';
 import { useEffect, useState } from 'react';
 import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { toAppError } from '@/shared/types/errors';
@@ -84,7 +85,7 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
             <View style={{ backgroundColor: '#F7F7F4', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '92%' }}>
               <View style={{ width: 40, height: 4, backgroundColor: '#D0CCC4', borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 20 }} />
               <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
-                <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>Edit visit</Text>
+                <Text style={{ fontSize: 22, fontWeight: '700', color: '#17211C', fontFamily: Fonts.serif, marginBottom: 4 }}>Edit visit</Text>
                 <View style={{ gap: 4 }}>
                   <Text style={{ fontSize: 13, fontWeight: '600', color: 'rgba(23,33,28,0.65)' }}>Person</Text>
                   <View style={{ backgroundColor: '#ECEBE5', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11 }}>

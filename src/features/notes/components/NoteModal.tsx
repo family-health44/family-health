@@ -1,5 +1,6 @@
 // src/features/notes/components/NoteModal.tsx
 import { InlinePicker } from '@/design-system/components/InlinePicker';
+import { Fonts } from '@/design-system/tokens/fonts';
 import { useEffect, useState } from 'react';
 import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, Switch, Alert } from 'react-native';
 import { toAppError } from '@/shared/types/errors';
@@ -86,7 +87,7 @@ export const NoteModal = ({ visible, isLoading, editingNote, doctors, medication
             <View style={{ backgroundColor: '#F7F7F4', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '92%' }}>
               <View style={{ width: 40, height: 4, backgroundColor: '#D0CCC4', borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 20 }} />
               <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
-                <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>{editingNote ? 'Edit note' : 'Add note'}</Text>
+                <Text style={{ fontSize: 22, fontWeight: '700', color: '#17211C', fontFamily: Fonts.serif, marginBottom: 4 }}>{editingNote ? 'Edit note' : 'Add note'}</Text>
                 <Controller control={control} name="content" render={({ field: { onChange, onBlur, value } }) => (
                   <Input label="Note" isRequired placeholder="Write your note here..." autoCapitalize="sentences" multiline numberOfLines={6} style={{ minHeight: 120, textAlignVertical: 'top' }} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.content?.message} />
                 )} />

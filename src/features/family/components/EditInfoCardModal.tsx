@@ -4,6 +4,7 @@
 // Local InlinePicker copy matches the established modal pattern (A3 will consolidate).
 
 import { InlinePicker } from '@/design-system/components/InlinePicker';
+import { Fonts } from '@/design-system/tokens/fonts';
 import { useEffect, useState } from 'react';
 import {
   View,
@@ -96,7 +97,7 @@ export const EditInfoCardModal = ({
           <Pressable>
             <View style={{ backgroundColor: '#F7F7F4', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingHorizontal: 24, paddingTop: 16, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '90%' }}>
               <View style={{ width: 40, height: 4, backgroundColor: '#D0CCC4', borderRadius: 2, alignSelf: 'center', marginBottom: 16 }} />
-              <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 2 }}>Edit info card</Text>
+              <Text style={{ fontSize: 22, fontWeight: '700', color: '#17211C', fontFamily: Fonts.serif, marginBottom: 2 }}>Edit info card</Text>
               <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)', marginBottom: 16 }}>{personName}</Text>
 
               <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 14, paddingBottom: 8 }}>

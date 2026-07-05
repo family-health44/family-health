@@ -2,6 +2,7 @@
 // Modal for adding a new medication. React Hook Form + Zod. No business logic.
 
 import React, { useState } from 'react';
+import { Fonts } from '@/design-system/tokens/fonts';
 import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -127,7 +128,7 @@ export const AddMedicationModal = ({
               }} />
 
               <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
-                <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>
+                <Text style={{ fontSize: 22, fontWeight: '700', color: '#17211C', fontFamily: Fonts.serif, marginBottom: 4 }}>
                   Add medication
                 </Text>
 

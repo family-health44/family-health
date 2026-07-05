@@ -3,10 +3,9 @@
 // Shows past visits, medical events, and plain notes — filtered to this person + doctor.
 // Pure composition of existing queries. No new repo calls, no AI.
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { useLocalSearchParams, router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PressableBase } from '@/design-system/components/PressableBase';
-import { Fonts } from '@/design-system/tokens/fonts';
 import { isoToDisplayDate } from '@/shared/utils/dates';
 import { useVisitsForCalendarQuery } from '@/features/visits/queries/visits.queries';
 import { usePersonNotes } from '@/features/notes/hooks/usePersonNotes';
@@ -21,7 +20,6 @@ const SectionLabel = ({ text }: { text: string }) => (
 );
 
 export const AppointmentHistoryScreen = () => {
-  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
     personId: string;
     personName: string;
@@ -64,16 +62,10 @@ export const AppointmentHistoryScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
-      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E3E2DB' }}>
-        <PressableBase onPress={() => router.back()} style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}>
-          <Text style={{ fontSize: 15, color: '#1F5C41' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#1F5C41', fontWeight: '500' }}>Back</Text>
-        </PressableBase>
-        <Text style={{ fontSize: 21, fontWeight: '300', fontFamily: Fonts.serif, color: '#17211C' }}>History</Text>
-        <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.65)', marginTop: 2 }}>
-          {params.personName ?? ''}{params.doctorName ? ` · ${params.doctorName}` : ''}
-        </Text>
-      </View>
+      <SubScreenHeader
+        title="History"
+        subtitle={`${params.personName ?? ''}${params.doctorName ? ` · ${params.doctorName}` : ''}` || undefined}
+      />
 
       {isLoading ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>

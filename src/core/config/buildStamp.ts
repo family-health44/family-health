@@ -1,3 +1,3 @@
 // src/core/config/buildStamp.ts
 // Bump on every OTA during active G2 work — distinguishes "fix didn't load" from "fix broken".
-export const BUILD_STAMP = 'g2-p1-2';
+export const BUILD_STAMP = 'g2-p2-1';

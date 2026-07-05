@@ -2,6 +2,7 @@
 // Shared slide-up form for creating and editing a to-do. Add mode: initialTodo = null.
 // Edit mode: initialTodo provided (title changes to "Edit To Do", button to "Save changes").
 import { InlinePicker } from '@/design-system/components/InlinePicker';
+import { Fonts } from '@/design-system/tokens/fonts';
 import { useEffect } from 'react';
 import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
@@ -107,7 +108,7 @@ export const TodoFormModal = ({
             <View style={{ backgroundColor: '#F7F7F4', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '90%' }}>
               <View style={{ width: 40, height: 4, backgroundColor: '#D0CCC4', borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 20 }} />
               <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
-                <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>{isEdit ? 'Edit To Do' : 'Add To Do'}</Text>
+                <Text style={{ fontSize: 22, fontWeight: '700', color: '#17211C', fontFamily: Fonts.serif, marginBottom: 4 }}>{isEdit ? 'Edit To Do' : 'Add To Do'}</Text>
                 <View style={{ gap: 6 }}>
                   <InlinePicker label="Person *" options={personOptions} value={personId} onChange={(id) => setValue('personId', id ?? '', { shouldValidate: true })} />
                   {errors.personId ? <Text style={{ fontSize: 12, color: '#B91C1C' }}>{errors.personId.message}</Text> : null}

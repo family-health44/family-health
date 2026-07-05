@@ -2,12 +2,11 @@
 // Live appointment capture — single input, tag as Note / To do / Event.
 // Entries form a time-ordered stream. Auto-linked to person + doctor + visit on save.
 import { PressableBase } from '@/design-system/components/PressableBase';
+import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ErrorState } from '@/design-system/components/EmptyState';
-import { Fonts } from '@/design-system/tokens/fonts';
 import { formatTime, isoToDisplayDate, toISODateString } from '@/shared/utils/dates';
 import { AiTeaser } from '@/design-system/components/AiTeaser';
 import { MEDICAL_EVENT_CONFIG, MEDICAL_EVENT_TYPES } from '@/features/medical-events/types/medical-events.types';
@@ -34,7 +33,6 @@ interface StreamRow {
 }
 
 export const StartAppointmentScreen = () => {
-  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
     visitId: string;
     personId: string;
@@ -161,27 +159,17 @@ export const StartAppointmentScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
-      {/* Header */}
-      <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E3E2DB' }}>
-        <PressableBase onPress={handleCancel} style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 })}>
-          <Text style={{ fontSize: 15, color: '#1F5C41' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#1F5C41', fontWeight: '500' }}>Back</Text>
-        </PressableBase>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 21, fontWeight: '300', fontFamily: Fonts.serif, color: '#17211C', lineHeight: 26 }}>
-              {appointment.doctorName ?? 'Appointment'}
-            </Text>
-            <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.65)', marginTop: 2 }}>
-              {appointment.personName} · {isoToDisplayDate(appointment.visitDate)}
-            </Text>
+      <SubScreenHeader
+        title={appointment.doctorName ?? 'Appointment'}
+        subtitle={`${appointment.personName} · ${isoToDisplayDate(appointment.visitDate)}`}
+        onBack={handleCancel}
+        right={
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#FFFFFF' }} />
+            <Text style={{ fontSize: 11, fontWeight: '700', color: '#FFFFFF' }}>Live</Text>
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingTop: 4 }}>
-            <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#1F5C41' }} />
-            <Text style={{ fontSize: 11, fontWeight: '700', color: '#1F5C41' }}>Live</Text>
-          </View>
-        </View>
-      </View>
+        }
+      />
 
       {/* Pre-notes & history bar */}
       <PressableBase
