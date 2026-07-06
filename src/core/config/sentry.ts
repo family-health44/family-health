@@ -1,10 +1,12 @@
 // src/core/config/sentry.ts
-// Sentry initialisation. DSN comes from app.config.js `extra.sentryDsn`.
+// Sentry initialisation.
+// Read the DSN straight from process.env — Expo inlines EXPO_PUBLIC_* vars into
+// the bundle at build/export time. (Routing via app.config.js `extra` failed to
+// embed because app.config.js evaluates before .env.local is applied to it.)
 // The DSN is a write-only ingest key — safe to ship in a client bundle.
 import * as Sentry from '@sentry/react-native';
-import Constants from 'expo-constants';
 
-const dsn = (Constants.expoConfig?.extra as { sentryDsn?: string } | undefined)?.sentryDsn;
+const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
 
 export function initSentry() {
   if (!dsn) {
