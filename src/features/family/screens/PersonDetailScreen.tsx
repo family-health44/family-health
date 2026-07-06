@@ -87,6 +87,7 @@ export const PersonDetailScreen = () => {
     { key: 'notes',          label: 'Notes',          emoji: '📝',  bg: '#FBF3DD', route: `/(app)/family/${person.id}/notes` },
     { key: 'info-card',      label: 'Info Card',      emoji: '🪪',   bg: '#F5EBE0', route: `/(app)/family/${person.id}/info-card` },
     { key: 'documents',      label: 'Documents',      emoji: '📄',  bg: '#EEE8F7', route: `/(app)/family/${person.id}/documents` },
+    { key: 'snapshot',       label: 'Snapshot',       emoji: '📷',  bg: '#E9EDF0', route: `/(app)/family/${person.id}/snapshot` },
   ];
 
   const quickActions = [
