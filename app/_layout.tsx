@@ -13,26 +13,25 @@ import { useSyncManager } from '@/core/sync/useSyncManager';
 import { OfflineBanner } from '@/design-system/components/OfflineBanner';
 import { DrawerProvider } from '@/design-system/components/DrawerContext';
 import { ThemeProvider } from '@/design-system/theme/ThemeProvider';
+import { initSentry, Sentry } from '@/core/config/sentry';
+
+initSentry();
 
 SplashScreen.preventAutoHideAsync();
-
 function RootLayoutNav() {
   const { status } = useAuth();
   const { isOnline, isSyncing, pendingCount } = useSyncManager();
   const [fontsLoaded] = useFonts({
     'Fraunces': require('../assets/fonts/Fraunces-Variable.ttf'),
   });
-
   useEffect(() => {
     if (status !== 'loading' && fontsLoaded) {
       SplashScreen.hideAsync();
     }
   }, [status, fontsLoaded]);
-
   if (status === 'loading' || !fontsLoaded) {
     return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }} />;
   }
-
   return (
     <DrawerProvider>
       <View style={{ flex: 1 }}>
@@ -51,8 +50,7 @@ function RootLayoutNav() {
     </DrawerProvider>
   );
 }
-
-export default function RootLayout() {
+function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
@@ -63,3 +61,5 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+export default Sentry.wrap(RootLayout);

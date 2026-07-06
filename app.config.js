@@ -37,6 +37,7 @@ module.exports = ({ config }) => ({
   extra: {
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,
     supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
+    sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
     eas: {
       projectId: 'ba1462b3-731f-4539-9bbf-dbf563e815e0',
     },
