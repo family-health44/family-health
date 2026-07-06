@@ -3,7 +3,7 @@
 
 import React, { useState } from 'react';
 import { Fonts } from '@/design-system/tokens/fonts';
-import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,6 +13,7 @@ import { Input } from '@/design-system/components/Input';
 import { InlinePicker } from '@/design-system/components/InlinePicker';
 import { DateField } from '@/design-system/components/DateField';
 import { FORM_OPTIONS, TIME_OF_DAY_OPTIONS, WITH_FOOD_OPTIONS } from './medicationFieldOptions';
+import { toAppError } from '@/shared/types/errors';
 
 import type { MedicationStatus } from '../types/medications.types';
 import type { InsertMedicationParams } from '../repository/medications.repository';
@@ -76,23 +77,28 @@ export const AddMedicationModal = ({
     const repeatsParsed = values.repeatsLeft && values.repeatsLeft.trim() !== ''
       ? Number.parseInt(values.repeatsLeft, 10)
       : null;
-    await onAdd({
-      name:        values.name,
-      dosage:      values.dosage      ?? null,
-      frequency:   values.frequency   ?? null,
-      reason:      values.reason      ?? null,
-      status:      values.status      as MedicationStatus,
-      startDate:   values.startDate && values.startDate.trim() !== '' ? values.startDate : null,
-      endDate:     values.endDate && values.endDate.trim() !== '' ? values.endDate : null,
-      personId,
-      prescribedBy: null,
-      form:        values.form        ?? null,
-      timeOfDay:   values.timeOfDay   ?? null,
-      withFood:    values.withFood    ?? null,
-      repeatsLeft: Number.isNaN(repeatsParsed as number) ? null : repeatsParsed,
-      nextRefill:  values.nextRefill && values.nextRefill.trim() !== '' ? values.nextRefill : null,
-      pharmacy:    values.pharmacy && values.pharmacy.trim() !== '' ? values.pharmacy : null,
-    });
+    try {
+      await onAdd({
+        name:        values.name,
+        dosage:      values.dosage      ?? null,
+        frequency:   values.frequency   ?? null,
+        reason:      values.reason      ?? null,
+        status:      values.status      as MedicationStatus,
+        startDate:   values.startDate && values.startDate.trim() !== '' ? values.startDate : null,
+        endDate:     values.endDate && values.endDate.trim() !== '' ? values.endDate : null,
+        personId,
+        prescribedBy: null,
+        form:        values.form        ?? null,
+        timeOfDay:   values.timeOfDay   ?? null,
+        withFood:    values.withFood    ?? null,
+        repeatsLeft: Number.isNaN(repeatsParsed as number) ? null : repeatsParsed,
+        nextRefill:  values.nextRefill && values.nextRefill.trim() !== '' ? values.nextRefill : null,
+        pharmacy:    values.pharmacy && values.pharmacy.trim() !== '' ? values.pharmacy : null,
+      });
+    } catch (e) {
+      Alert.alert('Could not save', toAppError(e).message);
+      return;
+    }
     reset();
     onDismiss();
   };

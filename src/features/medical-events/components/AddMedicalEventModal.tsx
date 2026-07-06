@@ -1,7 +1,7 @@
 // src/features/medical-events/components/AddMedicalEventModal.tsx
 // Modal for adding a medical event — date, type selector, description.
 
-import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { Fonts } from '@/design-system/tokens/fonts';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,6 +12,7 @@ import { Input } from '@/design-system/components/Input';
 import { DateField } from '@/design-system/components/DateField';
 import { todayISO } from '@/shared/utils/dates';
 import { MEDICAL_EVENT_CONFIG, MEDICAL_EVENT_TYPES } from '../types/medical-events.types';
+import { toAppError } from '@/shared/types/errors';
 
 import type { MedicalEventType } from '../types/medical-events.types';
 import type { AddEventInput } from '../hooks/usePersonMedicalEvents';
@@ -48,12 +49,17 @@ export const AddMedicalEventModal = ({
   const selectedType = watch('eventType');
 
   const onSubmit = async (values: FormValues) => {
-    await onAdd({
-      eventDate: values.eventDate,
-      eventType: values.eventType,
-      description: values.description,
-      doctorId: null,
-    });
+    try {
+      await onAdd({
+        eventDate: values.eventDate,
+        eventType: values.eventType,
+        description: values.description,
+        doctorId: null,
+      });
+    } catch (e) {
+      Alert.alert('Could not save', toAppError(e).message);
+      return;
+    }
     reset({ eventDate: today, eventType: 'diagnosis', description: '' });
     onDismiss();
   };

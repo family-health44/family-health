@@ -2,7 +2,7 @@
 // Modal for editing an existing medical event — prefilled from the event.
 import { useEffect } from 'react';
 import { Fonts } from '@/design-system/tokens/fonts';
-import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -10,6 +10,7 @@ import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
 import { DateField } from '@/design-system/components/DateField';
 import { MEDICAL_EVENT_CONFIG, MEDICAL_EVENT_TYPES } from '../types/medical-events.types';
+import { toAppError } from '@/shared/types/errors';
 import type { MedicalEvent, MedicalEventType } from '../types/medical-events.types';
 import type { UpdateEventInput } from '../hooks/usePersonMedicalEvents';
 
@@ -47,13 +48,18 @@ export const EditMedicalEventModal = ({
 
   const onSubmit = async (values: FormValues) => {
     if (!event) return;
-    await onSave({
-      noteId: event.id,
-      eventDate: values.eventDate,
-      eventType: values.eventType,
-      description: values.description,
-      doctorId: event.doctorId,
-    });
+    try {
+      await onSave({
+        noteId: event.id,
+        eventDate: values.eventDate,
+        eventType: values.eventType,
+        description: values.description,
+        doctorId: event.doctorId,
+      });
+    } catch (e) {
+      Alert.alert('Could not save', toAppError(e).message);
+      return;
+    }
     onDismiss();
   };
 

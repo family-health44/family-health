@@ -14,6 +14,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 
 import { Input } from '@/design-system/components/Input';
@@ -21,6 +22,7 @@ import { Button } from '@/design-system/components/Button';
 import type { PersonInfoCard } from '../types/family.types';
 import type { UpdatePersonInfoParams } from '../repository/family.repository';
 import { DateField } from '@/design-system/components/DateField';
+import { toAppError } from '@/shared/types/errors';
 
 const BLOOD_TYPES = ['Unknown', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
@@ -74,19 +76,24 @@ export const EditInfoCardModal = ({
   }, [visible, initial]);
 
   const handleSave = async () => {
-    await onSave({
-      dob: dob || null,
-      medicare_number: orNull(medicare),
-      blood_type: bloodType === 'Unknown' ? null : bloodType,
-      immunisations_current: immun,
-      allergies: orNull(allergies),
-      diagnoses: orNull(diagnoses),
-      health_fund: orNull(healthFund),
-      health_fund_number: orNull(healthFundNo),
-      emergency_contact: orNull(emergencyName),
-      emergency_phone: orNull(emergencyPhone),
-      notes: orNull(notes),
-    });
+    try {
+      await onSave({
+        dob: dob || null,
+        medicare_number: orNull(medicare),
+        blood_type: bloodType === 'Unknown' ? null : bloodType,
+        immunisations_current: immun,
+        allergies: orNull(allergies),
+        diagnoses: orNull(diagnoses),
+        health_fund: orNull(healthFund),
+        health_fund_number: orNull(healthFundNo),
+        emergency_contact: orNull(emergencyName),
+        emergency_phone: orNull(emergencyPhone),
+        notes: orNull(notes),
+      });
+    } catch (e) {
+      Alert.alert('Could not save', toAppError(e).message);
+      return;
+    }
     onDismiss();
   };
 

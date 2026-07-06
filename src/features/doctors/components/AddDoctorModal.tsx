@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { Fonts } from '@/design-system/tokens/fonts';
-import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, Modal, Pressable, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,6 +13,7 @@ import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
 import { InlinePicker } from '@/design-system/components/InlinePicker';
 import { SPECIALTY_OPTIONS, OTHER_SPECIALTY } from '../domain/specialties';
+import { toAppError } from '@/shared/types/errors';
 
 const addDoctorSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -43,12 +44,17 @@ export const AddDoctorModal = ({ visible, isLoading, onAdd, onDismiss }: AddDoct
   }, [visible, reset]);
 
   const onSubmit = async (values: AddDoctorFormValues) => {
-    await onAdd({
-      name: values.name,
-      type: values.type ?? null,
-      phone: values.phone ?? null,
-      address: values.address ?? null,
-    });
+    try {
+      await onAdd({
+        name: values.name,
+        type: values.type ?? null,
+        phone: values.phone ?? null,
+        address: values.address ?? null,
+      });
+    } catch (e) {
+      Alert.alert('Could not save', toAppError(e).message);
+      return;
+    }
     reset();
     onDismiss();
   };

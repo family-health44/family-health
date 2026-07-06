@@ -11,6 +11,7 @@ import { Input } from '@/design-system/components/Input';
 import { InlinePicker } from '@/design-system/components/InlinePicker';
 import { SPECIALTY_LIST, SPECIALTY_OPTIONS, OTHER_SPECIALTY } from '../domain/specialties';
 import { isoToDisplayDate } from '@/shared/utils/dates';
+import { toAppError } from '@/shared/types/errors';
 import { usePersonDoctors } from '../hooks/usePersonDoctors';
 import { updateDoctor } from '../repository/doctors.repository';
 import { useQueryClient } from '@tanstack/react-query';
@@ -88,7 +89,7 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
       await updateDoctor({ doctorId, name: editName.trim(), type: editType.trim() || null, phone: editPhone.trim() || null, address: editAddress.trim() || null });
       queryClient.invalidateQueries({ queryKey: queryKeys.doctors.byPerson(personId) });
       setShowEditModal(false);
-    } catch { Alert.alert('Error', 'Could not save changes.'); }
+    } catch (e) { Alert.alert('Could not save', toAppError(e).message); }
     finally { setIsSaving(false); }
   };
 
