@@ -113,7 +113,7 @@ export const SnapshotScreen = () => {
           <Card>
             {snapshot.appointments.map((v, i) => (
               <Row key={v.id} last={i === snapshot.appointments.length - 1}
-                onPress={() => router.push(`/(app)/visits/${v.id}` as never)}
+                onPress={() => router.push(`/(app)/visits/${v.id}?from=snapshot&personId=${person.id}` as never)}
                 title={`${v.title}${v.doctorName ? ' — ' + v.doctorName : ''}`}
                 sub={`${fmtDate(v.visitDate)}${v.visitTime ? ' · ' + fmtTime(v.visitTime) : ''}`}
                 subColor={MUTED} />

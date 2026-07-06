@@ -4,7 +4,7 @@
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TextInput, Linking, Alert } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { useVisitsListQuery } from '../queries/visits.queries';
@@ -35,6 +35,11 @@ const parseCost = (raw: string): number | null => {
 const costToText = (n: number | null): string => (n == null ? '' : String(n));
 
 export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
+  const { from, personId: fromPersonId } = useLocalSearchParams<{ from?: string; personId?: string }>();
+  const handleBack = () => {
+    if (from === 'snapshot' && fromPersonId) router.navigate(`/(app)/family/${fromPersonId}/snapshot` as never);
+    else router.navigate('/(app)/visits');
+  };
   const { data: groups, isLoading, error } = useVisitsListQuery();
   const { data: doctorGroups } = useDoctorsQuery();
   const updateVisit = useUpdateVisitMutation();
@@ -155,7 +160,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
       <SubScreenHeader
         title={v.title}
         subtitle={`${formatDate(v.visitDate)}${v.visitTime ? ` at ${formatTime(v.visitTime)}` : ''} · ${isUpcoming ? 'Upcoming' : 'Past'}`}
-        onBack={() => (router.canGoBack() ? router.back() : router.navigate('/(app)/visits'))}
+        onBack={handleBack}
         right={
           <PressableBase onPress={() => setShowEditModal(true)} accessibilityRole="button" accessibilityLabel="Edit visit" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
             <Text style={{ fontSize: 14, color: '#FFFFFF' }}>✎</Text>
