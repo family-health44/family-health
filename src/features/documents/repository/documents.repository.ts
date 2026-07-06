@@ -36,6 +36,22 @@ export async function fetchDocumentsByPerson(personId: string): Promise<DbDocume
   }
 }
 
+export async function fetchDocumentsByVisit(visitId: string): Promise<DbDocument[]> {
+  try {
+    const { data, error } = await db
+      .from('documents')
+      .select(COLS)
+      .eq('visit_id', visitId)
+      .eq('hidden', false)
+      .order('uploaded_at', { ascending: false });
+
+    if (error) throw error;
+    return (data ?? []) as DbDocument[];
+  } catch (error) {
+    handleNetworkError(error);
+  }
+}
+
 // Signed URL for viewing/sharing a private object. Valid for `expiresIn` seconds.
 export async function createSignedUrl(filePath: string, expiresIn = 300): Promise<string> {
   try {

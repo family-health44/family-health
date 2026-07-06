@@ -4,7 +4,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/queryClient';
-import { fetchDocumentsByPerson } from '../repository/documents.repository';
+import { fetchDocumentsByPerson, fetchDocumentsByVisit } from '../repository/documents.repository';
 import { mapDbDocumentToDocument, sortDocuments } from '../domain/documents.domain';
 
 import type { Document } from '../types/documents.types';
@@ -17,5 +17,16 @@ export function usePersonDocumentsQuery(personId: string) {
       return sortDocuments(rows.map(mapDbDocumentToDocument));
     },
     enabled: Boolean(personId),
+  });
+}
+
+export function useVisitDocumentsQuery(visitId: string) {
+  return useQuery<Document[], Error>({
+    queryKey: queryKeys.documents.byVisit(visitId),
+    queryFn: async () => {
+      const rows = await fetchDocumentsByVisit(visitId);
+      return sortDocuments(rows.map(mapDbDocumentToDocument));
+    },
+    enabled: Boolean(visitId),
   });
 }
