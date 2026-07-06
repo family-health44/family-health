@@ -155,7 +155,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
       <SubScreenHeader
         title={v.title}
         subtitle={`${formatDate(v.visitDate)}${v.visitTime ? ` at ${formatTime(v.visitTime)}` : ''} · ${isUpcoming ? 'Upcoming' : 'Past'}`}
-        onBack={() => router.navigate('/(app)/visits')}
+        onBack={() => (router.canGoBack() ? router.back() : router.navigate('/(app)/visits'))}
         right={
           <PressableBase onPress={() => setShowEditModal(true)} accessibilityRole="button" accessibilityLabel="Edit visit" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
             <Text style={{ fontSize: 14, color: '#FFFFFF' }}>✎</Text>
