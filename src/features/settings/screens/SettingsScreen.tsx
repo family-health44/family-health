@@ -1,6 +1,5 @@
 // src/features/settings/screens/SettingsScreen.tsx
 import { BUILD_STAMP } from '@/core/config/buildStamp';
-import { Sentry } from '@/core/config/sentry';
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState } from 'react';
 import { View, Text, ScrollView, Alert, TextInput, ActivityIndicator } from 'react-native';
@@ -173,10 +172,7 @@ export const SettingsScreen = () => {
             <Text style={{ color: 'rgba(23,33,28,0.55)', fontSize: 14 }}>›</Text>
           </PressableBase>
         </View>
-
-        <PressableBase onPress={() => { Sentry.captureException(new Error('Sentry test event — g2-p3-5 activation check')); Alert.alert('Sentry', 'Test event sent.'); }} accessibilityRole="button">
-          <Text style={{ fontSize: 10, color: 'rgba(23,33,28,0.55)', textAlign: 'center', marginTop: 20 }}>{BUILD_STAMP}</Text>
-        </PressableBase>
+        <Text style={{ fontSize: 10, color: 'rgba(23,33,28,0.55)', textAlign: 'center', marginTop: 20 }}>{BUILD_STAMP}</Text>
       </ScrollView>
     </View>
   );
