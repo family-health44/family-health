@@ -3,6 +3,8 @@
 // Repositories catch Supabase errors and map them to these types.
 // Hooks and components only ever see AppError — never raw Supabase errors.
 
+import { Sentry } from '@/core/config/sentry';
+
 export type AppErrorCode =
   | 'NETWORK_ERROR'
   | 'AUTH_ERROR'
@@ -21,6 +23,16 @@ export class AppError extends Error {
     this.name = 'AppError';
     this.code = code;
     this.originalError = originalError;
+
+    // Report real faults to Sentry. Skip expected/user-correctable codes:
+    // NETWORK_ERROR (offline), VALIDATION_ERROR (dup/FK), NOT_FOUND, AUTH_ERROR.
+    const EXPECTED: AppErrorCode[] = ['NETWORK_ERROR', 'VALIDATION_ERROR', 'NOT_FOUND', 'AUTH_ERROR'];
+    if (!EXPECTED.includes(code)) {
+      Sentry.captureException(originalError ?? this, {
+        tags: { appErrorCode: code },
+        extra: { appMessage: message },
+      });
+    }
   }
 }
 
