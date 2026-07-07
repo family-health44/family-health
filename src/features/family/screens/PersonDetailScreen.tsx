@@ -195,9 +195,9 @@ export const PersonDetailScreen = () => {
         </PressableBase>
         <View style={{ backgroundColor: 'white', borderRadius: 16, overflow: 'hidden', shadowColor: '#17211C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
           {menuItems.map((item, index) => (
-            <PressableBase key={item.key} onPress={() => router.push(item.route as never)} accessibilityRole="button" accessibilityLabel={item.label} style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', padding: 14, borderBottomWidth: index < menuItems.length - 1 ? 1 : 0, borderBottomColor: 'rgba(23,33,28,0.08)', backgroundColor: pressed ? '#F7F7F4' : 'white', gap: 12 })}>
-              <View style={{ width: 34, height: 34, borderRadius: 9, backgroundColor: item.bg, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: 16 }}>{item.emoji}</Text>
+            <PressableBase key={item.key} onPress={() => router.push(item.route as never)} accessibilityRole="button" accessibilityLabel={item.label} style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', paddingVertical: 9, paddingHorizontal: 14, borderBottomWidth: index < menuItems.length - 1 ? 1 : 0, borderBottomColor: 'rgba(23,33,28,0.08)', backgroundColor: pressed ? '#F7F7F4' : 'white', gap: 11 })}>
+              <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: item.bg, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontSize: 14 }}>{item.emoji}</Text>
               </View>
               <Text style={{ flex: 1, fontSize: 14, fontWeight: '600', color: '#17211C' }}>{item.label}</Text>
               <Text style={{ color: 'rgba(23,33,28,0.55)', fontSize: 14 }}>›</Text>
