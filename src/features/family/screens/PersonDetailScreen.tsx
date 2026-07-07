@@ -140,7 +140,7 @@ export const PersonDetailScreen = () => {
       </ScrollView>
 
       <NoteModal visible={showNoteModal} editingNote={null} doctors={doctors} medications={medications} visits={personVisits} isLoading={isAddingNote} onSave={async (values) => { await addNote(values); setShowNoteModal(false); }} onDismiss={() => setShowNoteModal(false)} />
-      <AddTodoModal visible={showTodoModal} isLoading={isAddingTodo} defaultPersonId={person.id} doctors={doctors} visits={allVisits} onAdd={async (input) => { await addTodo(input); setShowTodoModal(false); }} onDismiss={() => setShowTodoModal(false)} />
+      <AddTodoModal visible={showTodoModal} isLoading={isAddingTodo} people={allPeople} defaultPersonId={person.id} doctors={doctors} visits={allVisits} onAdd={async (input) => { await addTodo(input); setShowTodoModal(false); }} onDismiss={() => setShowTodoModal(false)} />
       <AddVisitModal visible={showVisitModal} isLoading={isAddingVisit} people={allPeople} doctors={allDoctors} defaultPersonId={person.id} onAdd={async (input) => { await addVisit(input); setShowVisitModal(false); }} onDismiss={() => setShowVisitModal(false)} />
     </View>
   );
