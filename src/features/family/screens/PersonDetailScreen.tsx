@@ -20,6 +20,17 @@ import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
 import { useFamilyHome } from '@/features/family/hooks/useFamilyHome';
 import { usePersonMedicationsQuery } from '@/features/medications/queries/medications.queries';
 
+function fmtPreviewDate(iso: string): string {
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+}
+function fmtPreviewTime(t: string): string {
+  const [h = '0', m = '00'] = t.split(':');
+  const hr = parseInt(h, 10);
+  const ampm = hr >= 12 ? 'pm' : 'am';
+  const h12 = hr % 12 === 0 ? 12 : hr % 12;
+  return `${h12}:${m} ${ampm}`;
+}
 export const PersonDetailScreen = () => {
   const { personId } = useLocalSearchParams<{ personId: string }>();
   const insets = useSafeAreaInsets();
@@ -31,7 +42,7 @@ export const PersonDetailScreen = () => {
   const [showVisitModal, setShowVisitModal] = useState(false);
 
   const { addNote, isSubmitting: isAddingNote } = usePersonNotes(personId ?? '');
-  const { addTodo, isAdding: isAddingTodo } = useTodos();
+  const { addTodo, isAdding: isAddingTodo, groups: todoGroups = [] } = useTodos();
   const { addVisit, isAdding: isAddingVisit, listGroups } = useVisits();
   const { data: doctors = [] } = usePersonDoctorsQuery(personId ?? '');
   const { data: familyData } = useFamilyHome();
@@ -42,6 +53,18 @@ export const PersonDetailScreen = () => {
   const medications = medicationGroups.flatMap((g) => g.medications);
   const allVisits = (listGroups ?? []).flatMap((g) => g.visits);
   const personVisits = allVisits.filter((v) => v.personId === personId);
+  const todayISO = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })();
+  const personTodos = todoGroups.flatMap((g) => g.todos).filter((t) => t.personId === personId && !t.completed);
+  const previewTodos = [...personTodos].sort((a, b) => {
+    if (a.dueDate == null && b.dueDate == null) return 0;
+    if (a.dueDate == null) return 1;
+    if (b.dueDate == null) return -1;
+    return a.dueDate < b.dueDate ? -1 : a.dueDate > b.dueDate ? 1 : 0;
+  }).slice(0, 3);
+  const previewVisits = personVisits
+    .filter((v) => v.visitDate >= todayISO)
+    .sort((a, b) => (a.visitDate < b.visitDate ? -1 : a.visitDate > b.visitDate ? 1 : (a.visitTime ?? '').localeCompare(b.visitTime ?? '')))
+    .slice(0, 3);
 
   const promptEditName = () => {
     if (!person) return;
@@ -81,13 +104,13 @@ export const PersonDetailScreen = () => {
   const { colourSet } = person;
 
   const menuItems = [
+    { key: 'snapshot',       label: 'Snapshot',       emoji: '📷',  bg: '#E9EDF0', route: `/(app)/family/${person.id}/snapshot` },
     { key: 'doctors',        label: 'Doctors',        emoji: '👨‍⚕️', bg: '#E8EFF8', route: `/(app)/family/${person.id}/doctors` },
     { key: 'medications',    label: 'Medications',    emoji: '💊',   bg: '#E4EFE9', route: `/(app)/family/${person.id}/medications` },
     { key: 'medical-events', label: 'Medical Events', emoji: '🏥',  bg: '#F5E8EB', route: `/(app)/family/${person.id}/medical-events` },
     { key: 'notes',          label: 'Notes',          emoji: '📝',  bg: '#FBF3DD', route: `/(app)/family/${person.id}/notes` },
     { key: 'info-card',      label: 'Info Card',      emoji: '🪪',   bg: '#F5EBE0', route: `/(app)/family/${person.id}/info-card` },
     { key: 'documents',      label: 'Documents',      emoji: '📄',  bg: '#EEE8F7', route: `/(app)/family/${person.id}/documents` },
-    { key: 'snapshot',       label: 'Snapshot',       emoji: '📷',  bg: '#E9EDF0', route: `/(app)/family/${person.id}/snapshot` },
   ];
 
   const quickActions = [
@@ -126,6 +149,43 @@ export const PersonDetailScreen = () => {
             </PressableBase>
           ))}
         </View>
+        <PressableBase onPress={() => router.push(`/(app)/family/${person.id}/snapshot` as never)} accessibilityRole="button" accessibilityLabel="Open Snapshot" style={(pressed) => ({ backgroundColor: pressed ? '#F0EFEA' : 'white', borderRadius: 16, padding: 14, marginBottom: 14, shadowColor: '#17211C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 })}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+            <View style={{ width: 34, height: 34, borderRadius: 9, backgroundColor: '#E9EDF0', alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ fontSize: 16 }}>📷</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: '#17211C' }}>Snapshot</Text>
+              <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)' }}>Important at a glance</Text>
+            </View>
+            <Text style={{ color: 'rgba(23,33,28,0.55)', fontSize: 14 }}>›</Text>
+          </View>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 11, fontWeight: '700', color: '#A63D2F', marginBottom: 6 }}>To Do{previewTodos.length ? ` · ${previewTodos.length}` : ''}</Text>
+              {previewTodos.length === 0 ? (
+                <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.45)' }}>None</Text>
+              ) : previewTodos.map((t) => (
+                <View key={t.id} style={{ marginBottom: 8 }}>
+                  <Text style={{ fontSize: 12, fontWeight: '500', color: '#17211C' }} numberOfLines={1}>{t.title}</Text>
+                  <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)' }}>{t.dueDate ? `Due ${fmtPreviewDate(t.dueDate)}` : 'No due date'}</Text>
+                </View>
+              ))}
+            </View>
+            <View style={{ width: 1, backgroundColor: '#E3E2DB' }} />
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 11, fontWeight: '700', color: '#1F5C41', marginBottom: 6 }}>Upcoming Visits{previewVisits.length ? ` · ${previewVisits.length}` : ''}</Text>
+              {previewVisits.length === 0 ? (
+                <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.45)' }}>None</Text>
+              ) : previewVisits.map((v) => (
+                <View key={v.id} style={{ marginBottom: 8 }}>
+                  <Text style={{ fontSize: 12, fontWeight: '500', color: '#17211C' }} numberOfLines={1}>{v.title}{v.doctorName ? ` — ${v.doctorName}` : ''}</Text>
+                  <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)' }}>{fmtPreviewDate(v.visitDate)}{v.visitTime ? ` · ${fmtPreviewTime(v.visitTime)}` : ''}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </PressableBase>
         <View style={{ backgroundColor: 'white', borderRadius: 16, overflow: 'hidden', shadowColor: '#17211C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
           {menuItems.map((item, index) => (
             <PressableBase key={item.key} onPress={() => router.push(item.route as never)} accessibilityRole="button" accessibilityLabel={item.label} style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', padding: 14, borderBottomWidth: index < menuItems.length - 1 ? 1 : 0, borderBottomColor: 'rgba(23,33,28,0.08)', backgroundColor: pressed ? '#F7F7F4' : 'white', gap: 12 })}>
