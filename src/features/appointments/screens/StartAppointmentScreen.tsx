@@ -171,7 +171,7 @@ export const StartAppointmentScreen = () => {
         }
       />
 
-      {/* Pre-notes & history bar */}
+      {/* History bar */}
       <PressableBase
         onPress={() => router.push({
           pathname: '/appointment-history',
@@ -186,7 +186,7 @@ export const StartAppointmentScreen = () => {
         style={(pressed) => ({ opacity: pressed ? 0.7 : 1, paddingVertical: 10, paddingHorizontal: 14, backgroundColor: '#EAF3F7', borderBottomWidth: 1, borderBottomColor: '#DCE8EE', flexDirection: 'row', alignItems: 'center', gap: 8 })}
       >
         <Text style={{ fontSize: 14, color: '#185FA5' }}>ⓘ</Text>
-        <Text style={{ fontSize: 12, color: '#0C447C', flex: 1 }}>Pre-notes & history</Text>
+        <Text style={{ fontSize: 12, color: '#0C447C', flex: 1 }}>History</Text>
         <Text style={{ fontSize: 12, color: '#185FA5' }}>View ›</Text>
       </PressableBase>
 
