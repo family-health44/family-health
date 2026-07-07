@@ -1,3 +1,1 @@
-// src/core/config/buildStamp.ts
-// Bump on every OTA.
-export const BUILD_STAMP = 'snapshot-homepage';
+export const BUILD_STAMP = '20260707-0325';

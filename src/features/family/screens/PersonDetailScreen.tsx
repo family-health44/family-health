@@ -104,7 +104,6 @@ export const PersonDetailScreen = () => {
   const { colourSet } = person;
 
   const menuItems = [
-    { key: 'snapshot',       label: 'Snapshot',       emoji: '📷',  bg: '#E9EDF0', route: `/(app)/family/${person.id}/snapshot` },
     { key: 'doctors',        label: 'Doctors',        emoji: '👨‍⚕️', bg: '#E8EFF8', route: `/(app)/family/${person.id}/doctors` },
     { key: 'medications',    label: 'Medications',    emoji: '💊',   bg: '#E4EFE9', route: `/(app)/family/${person.id}/medications` },
     { key: 'medical-events', label: 'Medical Events', emoji: '🏥',  bg: '#F5E8EB', route: `/(app)/family/${person.id}/medical-events` },
@@ -156,7 +155,6 @@ export const PersonDetailScreen = () => {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 15, fontWeight: '700', color: '#17211C' }}>Snapshot</Text>
-              <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)' }}>Important at a glance</Text>
             </View>
             <Text style={{ color: 'rgba(23,33,28,0.55)', fontSize: 14 }}>›</Text>
           </View>
@@ -166,9 +164,12 @@ export const PersonDetailScreen = () => {
               {previewTodos.length === 0 ? (
                 <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.45)' }}>None</Text>
               ) : previewTodos.map((t) => (
-                <View key={t.id} style={{ marginBottom: 8 }}>
-                  <Text style={{ fontSize: 12, fontWeight: '500', color: '#17211C' }} numberOfLines={1}>{t.title}</Text>
-                  <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)' }}>{t.dueDate ? `Due ${fmtPreviewDate(t.dueDate)}` : 'No due date'}</Text>
+                <View key={t.id} style={{ flexDirection: 'row', gap: 7, marginBottom: 8 }}>
+                  <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#D64541', marginTop: 4 }} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 12, fontWeight: '500', color: '#17211C' }} numberOfLines={1}>{t.title}</Text>
+                    <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)' }}>{t.dueDate ? `Due ${fmtPreviewDate(t.dueDate)}` : 'No due date'}</Text>
+                  </View>
                 </View>
               ))}
             </View>
@@ -178,9 +179,15 @@ export const PersonDetailScreen = () => {
               {previewVisits.length === 0 ? (
                 <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.45)' }}>None</Text>
               ) : previewVisits.map((v) => (
-                <View key={v.id} style={{ marginBottom: 8 }}>
-                  <Text style={{ fontSize: 12, fontWeight: '500', color: '#17211C' }} numberOfLines={1}>{v.title}{v.doctorName ? ` — ${v.doctorName}` : ''}</Text>
-                  <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)' }}>{fmtPreviewDate(v.visitDate)}{v.visitTime ? ` · ${fmtPreviewTime(v.visitTime)}` : ''}</Text>
+                <View key={v.id} style={{ flexDirection: 'row', gap: 7, marginBottom: 8 }}>
+                  <View style={{ width: 18, height: 18, borderRadius: 5, backgroundColor: '#E4EFE9', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
+                    <Text style={{ fontSize: 11 }}>📅</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 12, fontWeight: '500', color: '#17211C' }} numberOfLines={1}>{v.title}</Text>
+                    {v.doctorName ? <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)' }} numberOfLines={1}>{v.doctorName}</Text> : null}
+                    <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)' }}>{fmtPreviewDate(v.visitDate)}{v.visitTime ? ` · ${fmtPreviewTime(v.visitTime)}` : ''}</Text>
+                  </View>
                 </View>
               ))}
             </View>
