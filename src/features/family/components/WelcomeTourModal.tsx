@@ -3,8 +3,9 @@
 // useOnboarding, cleared here on finish/skip). Full-screen modal so it works
 // inside the tab navigator without layout/guard changes.
 //
-// Pages: 3 value screens, then a final page prompting the user to add their
-// first family member (opens the existing AddPersonModal via onAddPerson).
+// Pages: 3 value screens, a medical disclaimer screen, then a final page
+// prompting the user to add their first family member (opens the existing
+// AddPersonModal via onAddPerson).
 
 import { useState } from 'react';
 import { View, Text, Modal } from 'react-native';
@@ -17,6 +18,7 @@ interface TourPage {
   emoji: string;
   title: string;
   body: string;
+  footnote?: string;
 }
 
 const PAGES: readonly TourPage[] = [
@@ -34,6 +36,12 @@ const PAGES: readonly TourPage[] = [
     emoji: '📅',
     title: 'Visits, sorted',
     body: 'Doctors, visits and important dates — all in one place you actually check.',
+  },
+  {
+    emoji: '📋',
+    title: 'A quick note before you start',
+    body: 'This app helps you store and organise your family\u2019s medical information. It does not provide medical advice, diagnosis, or treatment, and is not a medical device. Always consult a qualified health professional before making any medical decisions.',
+    footnote: 'You can revisit this anytime in Settings \u203A About.',
   },
   {
     emoji: '👤',
@@ -117,6 +125,11 @@ export const WelcomeTourModal = ({ visible, onClose, onAddPerson }: WelcomeTourM
           <Text style={{ fontSize: 14.5, color: 'rgba(23,33,28,0.55)', lineHeight: 22, marginTop: 12 }}>
             {current.body}
           </Text>
+          {current.footnote ? (
+            <Text style={{ fontSize: 12.5, color: 'rgba(23,33,28,0.45)', lineHeight: 18, marginTop: 16 }}>
+              {current.footnote}
+            </Text>
+          ) : null}
         </View>
 
         {/* Actions */}
