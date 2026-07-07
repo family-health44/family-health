@@ -203,6 +203,13 @@ export const StartAppointmentScreen = () => {
           body={`Get a summary of ${appointment.personName}'s history with ${appointment.doctorName ?? 'this doctor'} — past visits, notes, and current medications — before you walk in.`}
         />
 
+        {appointment.preNotes ? (
+          <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, padding: 12, marginBottom: 12 }}>
+            <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.65)', letterSpacing: 0.8, marginBottom: 6 }}>PRE-APPOINTMENT NOTES</Text>
+            <Text style={{ fontSize: 13, color: '#17211C', lineHeight: 18 }}>{appointment.preNotes}</Text>
+          </View>
+        ) : null}
+
         {/* Capture input */}
         <View style={{ backgroundColor: '#FFFFFF', borderWidth: pendingKind === 'event' ? 2 : 1, borderColor: pendingKind === 'event' ? '#B5D4F4' : '#E3E2DB', borderRadius: 12, padding: 10, marginBottom: 18 }}>
           <TextInput
@@ -211,7 +218,7 @@ export const StartAppointmentScreen = () => {
             placeholder="Type what the doctor said..."
             placeholderTextColor="#8B928E"
             multiline
-            style={{ fontSize: 14, color: '#17211C', paddingVertical: 6, paddingHorizontal: 4, minHeight: 24, textAlignVertical: 'top' }}
+            style={{ fontSize: 14, color: '#17211C', paddingVertical: 6, paddingHorizontal: 4, minHeight: 88, textAlignVertical: 'top' }}
           />
 
           {pendingKind === 'event' ? (
