@@ -80,6 +80,7 @@ export default function AppLayout() {
       <Tabs.Screen name="todos/index" options={{ title: 'To Do' }} />
       <Tabs.Screen name="visits/index" options={{ title: 'Visits' }} />
       <Tabs.Screen name="settings/index" options={{ href: null }} />
+      <Tabs.Screen name="settings/disclaimer" options={{ href: null }} />
       <Tabs.Screen name="appointments/index" options={{ href: null }} />
       <Tabs.Screen name="visits/[visitId]" options={{ href: null }} />
     </Tabs>

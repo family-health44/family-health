@@ -165,6 +165,14 @@ export const SettingsScreen = () => {
           </View>
         </View>
 
+        <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>About</Text>
+        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
+          <PressableBase onPress={() => router.push('/(app)/settings/disclaimer' as never)} accessibilityRole="button" style={(pressed) => ({ padding: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: pressed ? 0.6 : 1 })}>
+            <Text style={{ fontSize: 14, color: '#17211C' }}>Medical disclaimer</Text>
+            <Text style={{ color: 'rgba(23,33,28,0.55)', fontSize: 14 }}>›</Text>
+          </PressableBase>
+        </View>
+
         <Text style={{ fontSize: 10, fontWeight: '700', color: '#B33A4A', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>Danger Zone</Text>
         <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden' }}>
           <PressableBase onPress={handleDeleteAccount} accessibilityRole="button" style={(pressed) => ({ padding: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: pressed ? 0.6 : 1 })}>
