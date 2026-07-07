@@ -64,7 +64,7 @@ export const PersonDetailScreen = () => {
   const previewVisits = personVisits
     .filter((v) => v.visitDate >= todayISO)
     .sort((a, b) => (a.visitDate < b.visitDate ? -1 : a.visitDate > b.visitDate ? 1 : (a.visitTime ?? '').localeCompare(b.visitTime ?? '')))
-    .slice(0, 3);
+    .slice(0, 2);
 
   const promptEditName = () => {
     if (!person) return;
@@ -121,7 +121,7 @@ export const PersonDetailScreen = () => {
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
       {isFocused ? <StatusBar style="light" /> : null}
-      <View style={{ backgroundColor: colourSet.dot, paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 18, borderBottomLeftRadius: 26, borderBottomRightRadius: 26 }}>
+      <View style={{ backgroundColor: colourSet.dot, paddingTop: insets.top + 2, paddingHorizontal: 16, paddingBottom: 14, borderBottomLeftRadius: 26, borderBottomRightRadius: 26 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
             <Text style={{ fontSize: 15, color: '#FFFFFF' }}>‹</Text>
@@ -131,15 +131,15 @@ export const PersonDetailScreen = () => {
             <Text style={{ fontSize: 14, color: '#FFFFFF' }}>✎</Text>
           </PressableBase>
         </View>
-        <View style={{ alignItems: 'center', marginTop: 4 }}>
-          <View style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: 'rgba(255,255,255,0.22)', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
-            <Text style={{ color: 'white', fontSize: 18, fontWeight: '700' }}>{person.initials}</Text>
+        <View style={{ alignItems: 'center', marginTop: -6 }}>
+          <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: 'rgba(255,255,255,0.22)', alignItems: 'center', justifyContent: 'center', marginBottom: 5 }}>
+            <Text style={{ color: 'white', fontSize: 17, fontWeight: '700' }}>{person.initials}</Text>
           </View>
-          <Text style={{ fontSize: 21, fontWeight: '700', color: 'white' }}>{person.name}</Text>
+          <Text style={{ fontSize: 20, fontWeight: '700', color: 'white' }}>{person.name}</Text>
         </View>
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 14, paddingTop: 16 }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 14, paddingTop: 14 }}>
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 14 }}>
           {quickActions.map((action) => (
             <PressableBase key={action.key} onPress={action.onPress} accessibilityRole="button" accessibilityLabel={action.label} style={(pressed) => ({ flex: 1, backgroundColor: pressed ? '#F0EFEA' : 'white', borderRadius: 14, paddingVertical: 12, alignItems: 'center', gap: 5, shadowColor: '#17211C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 })}>
