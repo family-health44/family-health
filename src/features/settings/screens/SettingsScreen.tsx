@@ -128,7 +128,7 @@ export const SettingsScreen = () => {
               </View>
             </View>
           ) : (
-            <PressableBase onPress={handleEditFamilyName} style={(pressed) => ({ padding: 14, flexDirection: 'row', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
+            <PressableBase onPress={handleEditFamilyName} accessibilityRole="button" accessibilityLabel="Edit family name" style={(pressed) => ({ padding: 14, flexDirection: 'row', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
               <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', flex: 1 }}>Family name</Text>
               <Text style={{ fontSize: 13, color: '#17211C', marginRight: 8 }}>{data?.familyGroup.name ?? '—'}</Text>
               <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>✎</Text>

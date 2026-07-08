@@ -1,10 +1,10 @@
 // src/features/medical-events/components/MedicalEventCard.tsx
 // Cards always use white background — they live inside coloured section containers
 // and must not clash with the section header colour.
+// Type is conveyed by the section header, so the row does not repeat a type badge.
 
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { View, Text, Alert } from 'react-native';
-import { Badge } from '@/design-system/components/Badge';
 import { formatDate } from '@/shared/utils/dates';
 import { MEDICAL_EVENT_CONFIG } from '../types/medical-events.types';
 import type { MedicalEvent } from '../types/medical-events.types';
@@ -45,12 +45,9 @@ export const MedicalEventCard = ({ event, onDelete, onEdit, isLast = false }: Me
         opacity: pressed ? 0.75 : 1,
       })}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-        <Badge label={config.label} variant={config.badgeVariant} />
-        <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.65)', marginLeft: 'auto' }}>
-          {formatDate(event.eventDate)}
-        </Text>
-      </View>
+      <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.65)', marginBottom: 6 }}>
+        {formatDate(event.eventDate)}
+      </Text>
       {event.description ? (
         <Text style={{ fontSize: 14, color: '#1A1A1A', lineHeight: 20 }}>
           {event.description}
