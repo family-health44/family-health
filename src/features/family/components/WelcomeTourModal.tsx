@@ -25,7 +25,7 @@ const PAGES: readonly TourPage[] = [
   {
     emoji: '👨‍👩‍👧',
     title: 'Everyone in one place',
-    body: "Keep every family member's health together — no scattered notes, no forgotten details.",
+    body: "Keep every family member's records together — no scattered notes, no forgotten details.",
   },
   {
     emoji: '💊',

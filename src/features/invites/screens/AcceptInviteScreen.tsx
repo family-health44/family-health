@@ -52,7 +52,7 @@ export const AcceptInviteScreen = () => {
         <Text style={{ fontSize: 15, color: 'rgba(23,33,28,0.65)', marginTop: 12, lineHeight: 22, textAlign: 'center' }}>
           Join the{' '}
           <Text style={{ fontWeight: '700', color: '#1F5C41' }}>{familyGroupName}</Text>
-          {' '}family to view and manage their health records together.
+          {' '}family to view and organise their records together.
         </Text>
       </View>
 

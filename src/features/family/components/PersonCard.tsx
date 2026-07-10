@@ -14,7 +14,7 @@ export const PersonCard = ({ person, onPress }: PersonCardProps) => {
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
       accessibilityRole="button"
-      accessibilityLabel={`View ${person.name}'s health records`}
+      accessibilityLabel={`View ${person.name}'s records`}
       style={{
         backgroundColor: pressed ? '#F0EFEA' : '#FFFFFF',
         borderRadius: 16,
