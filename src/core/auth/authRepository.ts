@@ -105,7 +105,7 @@ export interface RequestPasswordResetParams {
 export async function requestPasswordReset(params: RequestPasswordResetParams): Promise<void> {
   try {
     const { error } = await db.auth.resetPasswordForEmail(params.email.trim().toLowerCase(), {
-      redirectTo: 'family-health://reset-password',
+      redirectTo: 'famfiles://reset-password',
     });
     if (error) throw toAppError(error);
   } catch (err) {

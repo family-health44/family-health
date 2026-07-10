@@ -57,7 +57,7 @@ export const DrawerMenu = ({ visible, onClose }: DrawerMenuProps) => {
         {/* App title + email */}
         <View style={{ paddingHorizontal: 20, paddingBottom: 24, borderBottomWidth: 1, borderBottomColor: '#E3E2DB', marginBottom: 16 }}>
           <Text style={{ fontSize: 28, fontWeight: '300', fontFamily: Fonts.serif, color: '#17211C', lineHeight: 32, marginBottom: 6 }}>
-            Family Health
+            FamFiles
           </Text>
           {session?.user?.email ? (
             <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>{session.user.email}</Text>

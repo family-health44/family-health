@@ -53,7 +53,7 @@ export const SettingsScreen = () => {
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert('Delete account', 'This will permanently delete your account and all family health data. This cannot be undone.', [
+    Alert.alert('Delete account', 'This will permanently delete your account and all your family data. This cannot be undone.', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Delete account',

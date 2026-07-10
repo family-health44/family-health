@@ -62,7 +62,7 @@ All data is user-provided and stored in their own Supabase instance. Prepare a p
 
 ### 2. Not a Medical Device disclaimer
 Add a disclaimer visible on first launch or in Settings:
-> "Family Health is a personal record-keeping tool and is not intended to provide medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional."
+> "FamFiles is a personal record-keeping tool and is not intended to provide medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional."
 
 Add this to `SettingsScreen` and consider showing it on first onboarding.
 

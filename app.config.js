@@ -1,8 +1,8 @@
 module.exports = ({ config }) => ({
   ...config,
-  name: 'Family Health',
+  name: 'FamFiles',
   slug: 'family-health',
-  scheme: 'family-health',
+  scheme: 'famfiles',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
@@ -14,9 +14,9 @@ module.exports = ({ config }) => ({
   },
   ios: {
     supportsTablet: false,
-    bundleIdentifier: 'com.familyhealthapp.ios',
+    bundleIdentifier: 'app.famfiles.ios',
     developmentTeam: 'U63S68M7JJ',
-    buildNumber: '2',
+    buildNumber: '3',
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
     },
@@ -49,7 +49,7 @@ module.exports = ({ config }) => ({
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#F7F5F0',
     },
-    package: 'com.familyhealthapp.ios',
+    package: 'app.famfiles.android',
   },
   updates: {
     url: 'https://u.expo.dev/ba1462b3-731f-4539-9bbf-dbf563e815e0',
@@ -78,7 +78,7 @@ module.exports = ({ config }) => ({
       'expo-image-picker',
       {
         photosPermission:
-          'Family Health needs access to your photos so you can attach them to a person\\u2019s records.',
+          'FamFiles needs access to your photos so you can attach them to a person\\u2019s records.',
       },
     ],
   ],

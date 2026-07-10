@@ -1,6 +1,6 @@
 // src/core/auth/useRecoveryDeepLink.ts
 // Catches password-recovery deep links
-// (family-health://reset-password?token_hash=...&type=recovery)
+// (famfiles://reset-password?token_hash=...&type=recovery)
 // and routes to the reset-password screen with the token_hash as a query param.
 // Uses verifyOtp (token_hash) — no PKCE code verifier required on native.
 
