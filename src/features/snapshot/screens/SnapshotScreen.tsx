@@ -7,6 +7,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
+import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
 import { usePersonDetail } from '@/features/family/hooks/usePersonDetail';
 import { useTodos } from '@/features/todos/hooks/useTodos';
 import { useVisits } from '@/features/visits/hooks/useVisits';
@@ -19,8 +20,8 @@ import { buildSnapshot, type SnapshotWindow } from '../domain/snapshot.domain';
 
 const RED = '#A63D2F';
 const GREEN = '#1F5C41';
-const MUTED = 'rgba(23,33,28,0.55)';
-const BORDER = '#E3E2DB';
+const PAGE = '#F4F2EC';
+const DIVIDER = 'rgba(23,33,28,0.07)';
 
 function fmtDate(iso: string): string {
   const d = new Date(iso + 'T00:00:00');
@@ -70,27 +71,30 @@ export const SnapshotScreen = () => {
   const todoById = (id: string) => personTodos.find((t) => t.id === id) ?? null;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+    <View style={{ flex: 1, backgroundColor: PAGE }}>
       {isFocused ? <StatusBar style="light" /> : null}
       <View style={{ backgroundColor: dot, paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 18, borderBottomLeftRadius: 26, borderBottomRightRadius: 26 }}>
         <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(p) => ({ opacity: p ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
-          <Text style={{ fontSize: 15, color: '#FFFFFF' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: '500' }}>Back</Text>
+          <Text style={{ ...Type.body, color: '#FFFFFF' }}>‹</Text>
+          <Text style={{ ...Type.caption, fontWeight: '500', color: '#FFFFFF' }}>Back</Text>
         </PressableBase>
-        <Text style={{ fontSize: 28, fontWeight: '300', color: '#FFFFFF', marginTop: 6 }}>{person.name} — Snapshot</Text>
+        <Text style={{ ...Type.display, color: '#FFFFFF', marginTop: 6 }}>{person.name} — Snapshot</Text>
       </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
-        <View style={{ flexDirection: 'row', backgroundColor: 'white', borderWidth: 1, borderColor: BORDER, borderRadius: 10, overflow: 'hidden', marginBottom: 14 }}>
-          {(['week', 'month'] as SnapshotWindow[]).map((w) => (
-            <PressableBase key={w} onPress={() => setWindow(w)} accessibilityRole="button" style={() => ({ flex: 1, paddingVertical: 9, alignItems: 'center', backgroundColor: window === w ? GREEN : 'transparent' })}>
-              <Text style={{ fontSize: 12, fontWeight: '600', color: window === w ? '#fff' : MUTED }}>{w === 'week' ? 'This week' : 'Next 30 days'}</Text>
-            </PressableBase>
-          ))}
+        <View style={{ flexDirection: 'row', backgroundColor: '#EAE8E1', borderRadius: 10, padding: 3, marginBottom: 18 }}>
+          {(['week', 'month'] as SnapshotWindow[]).map((w) => {
+            const active = window === w;
+            return (
+              <PressableBase key={w} onPress={() => setWindow(w)} accessibilityRole="button" style={() => ({ flex: 1, paddingVertical: 7, alignItems: 'center', borderRadius: 8, backgroundColor: active ? '#FFFFFF' : 'transparent', ...(active ? Shadow.resting : null) })}>
+                <Text style={{ ...Type.caption, fontWeight: '600', color: active ? TextColour.ink : TextColour.muted }}>{w === 'week' ? 'This week' : 'Next 30 days'}</Text>
+              </PressableBase>
+            );
+          })}
         </View>
 
         {snapshot.totalCount === 0 && (
-          <Text style={{ fontSize: 14, color: MUTED, textAlign: 'center', marginTop: 30 }}>Nothing coming up. All clear ✓</Text>
+          <Text style={{ ...Type.body, color: TextColour.muted, textAlign: 'center', marginTop: 30 }}>Nothing coming up. All clear ✓</Text>
         )}
 
         {snapshot.needsAction.length > 0 && <SectionLabel text="To Do" />}
@@ -100,7 +104,7 @@ export const SnapshotScreen = () => {
               <TodoRow key={t.id} last={i === snapshot.needsAction.length - 1}
                 title={t.title}
                 sub={t.overdue ? `${t.daysLate} day${t.daysLate === 1 ? '' : 's'} overdue` : `Due ${fmtDate(t.dueDate!)}`}
-                subColor={t.overdue ? RED : MUTED}
+                subColor={t.overdue ? RED : TextColour.muted}
                 done={personTodos.find((p) => p.id === t.id)?.completed ?? false}
                 onToggle={() => { const cur = todoById(t.id); if (cur) toggleTodo(cur.id, !cur.completed); }}
                 onPress={() => setEditingTodo(todoById(t.id))} />
@@ -116,7 +120,7 @@ export const SnapshotScreen = () => {
                 onPress={() => router.push(`/(app)/visits/${v.id}?from=snapshot&personId=${person.id}` as never)}
                 title={`${v.title}${v.doctorName ? ' — ' + v.doctorName : ''}`}
                 sub={`${fmtDate(v.visitDate)}${v.visitTime ? ' · ' + fmtTime(v.visitTime) : ''}`}
-                subColor={MUTED} />
+                subColor={TextColour.muted} />
             ))}
           </Card>
         )}
@@ -129,7 +133,7 @@ export const SnapshotScreen = () => {
                 onPress={() => router.push(`/(app)/family/${person.id}/medication/${m.id}` as never)}
                 title={`${m.name} — refill ${fmtDate(m.nextRefill)}`}
                 sub={`${m.repeatsLeft ?? 0} repeat${m.repeatsLeft === 1 ? '' : 's'} left${m.pharmacy ? ' · ' + m.pharmacy : ''}`}
-                subColor={MUTED} />
+                subColor={TextColour.muted} />
             ))}
           </Card>
         )}
@@ -150,26 +154,33 @@ export const SnapshotScreen = () => {
 };
 
 const SectionLabel = ({ text }: { text: string }) => (
-  <Text style={{ fontSize: 10, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', color: MUTED, marginTop: 16, marginBottom: 8 }}>{text}</Text>
+  <Text style={{ ...Type.micro, textTransform: 'uppercase', color: TextColour.faint, marginTop: 16, marginBottom: 10 }}>{text}</Text>
 );
 const Card = ({ children }: { children: React.ReactNode }) => (
-  <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: BORDER, borderRadius: 12, overflow: 'hidden' }}>{children}</View>
+  <View style={{ backgroundColor: 'white', borderRadius: 14, overflow: 'hidden', ...Shadow.resting }}>{children}</View>
 );
+const Divider = () => <View style={{ height: 1, backgroundColor: DIVIDER, marginHorizontal: 15 }} />;
 const Row = ({ title, sub, subColor, last, onPress }: { title: string; sub: string; subColor: string; last: boolean; onPress: () => void }) => (
-  <PressableBase onPress={onPress} accessibilityRole="button" style={(p) => ({ padding: 13, borderBottomWidth: last ? 0 : 1, borderBottomColor: BORDER, backgroundColor: p ? '#F7F7F4' : 'white' })}>
-    <Text style={{ fontSize: 14, fontWeight: '500', color: '#17211C' }}>{title}</Text>
-    <Text style={{ fontSize: 12, color: subColor, marginTop: 2 }}>{sub}</Text>
-  </PressableBase>
+  <>
+    <PressableBase onPress={onPress} accessibilityRole="button" style={(p) => ({ padding: 15, backgroundColor: p ? '#F7F7F4' : 'white' })}>
+      <Text style={{ ...Type.body, fontWeight: '500', color: TextColour.ink }}>{title}</Text>
+      <Text style={{ ...Type.caption, color: subColor, marginTop: 3 }}>{sub}</Text>
+    </PressableBase>
+    {!last && <Divider />}
+  </>
 );
 const TodoRow = ({ title, sub, subColor, last, done, onToggle, onPress }: { title: string; sub: string; subColor: string; last: boolean; done: boolean; onToggle: () => void; onPress: () => void }) => (
-  <View style={{ flexDirection: 'row', alignItems: 'center', padding: 13, borderBottomWidth: last ? 0 : 1, borderBottomColor: BORDER, gap: 11 }}>
-    <PressableBase onPress={onToggle} accessibilityRole="checkbox" accessibilityState={{ checked: done }} hitSlop={8}
-      style={() => ({ width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: done ? GREEN : '#C9C8C0', backgroundColor: done ? GREEN : 'transparent', alignItems: 'center', justifyContent: 'center' })}>
-      {done ? <Text style={{ color: '#fff', fontSize: 13, fontWeight: '700' }}>✓</Text> : null}
-    </PressableBase>
-    <PressableBase onPress={onPress} accessibilityRole="button" style={() => ({ flex: 1 })}>
-      <Text style={{ fontSize: 14, fontWeight: '500', color: '#17211C', textDecorationLine: done ? 'line-through' : 'none', opacity: done ? 0.55 : 1 }}>{title}</Text>
-      <Text style={{ fontSize: 12, color: subColor, marginTop: 2 }}>{sub}</Text>
-    </PressableBase>
-  </View>
+  <>
+    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 15, gap: 11 }}>
+      <PressableBase onPress={onToggle} accessibilityRole="checkbox" accessibilityState={{ checked: done }} hitSlop={8}
+        style={() => ({ width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: done ? GREEN : '#C9C8C0', backgroundColor: done ? GREEN : 'transparent', alignItems: 'center', justifyContent: 'center' })}>
+        {done ? <Text style={{ color: '#fff', fontSize: 13, fontWeight: '700' }}>✓</Text> : null}
+      </PressableBase>
+      <PressableBase onPress={onPress} accessibilityRole="button" style={() => ({ flex: 1 })}>
+        <Text style={{ ...Type.body, fontWeight: '500', color: TextColour.ink, textDecorationLine: done ? 'line-through' : 'none', opacity: done ? 0.55 : 1 }}>{title}</Text>
+        <Text style={{ ...Type.caption, color: subColor, marginTop: 3 }}>{sub}</Text>
+      </PressableBase>
+    </View>
+    {!last && <Divider />}
+  </>
 );
