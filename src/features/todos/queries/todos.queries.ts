@@ -20,18 +20,18 @@ export function useTodosQuery() {
         fetchPeople(),
       ]);
 
-      // Sort by creation order to assign stable colour indices (matches Family)
       const sortedPeople = sortPeopleByCreation(dbPeople);
-
       const personNameMap = new Map(sortedPeople.map((p) => [p.id, p.name]));
-      const personColourMap = new Map(
-        sortedPeople.map((p, i) => [p.id, i]),
-      );
+      const personColourMap = new Map(sortedPeople.map((p, i) => [p.id, i]));
       const orderedPersonIds = sortedPeople.map((p) => p.id);
 
-      const todos = dbTodos.map((db) =>
-        mapDbTodoToTodo(db, personNameMap.get(db.person_id ?? '') ?? null),
-      );
+      const todos = dbTodos.map((db) => {
+        const t = mapDbTodoToTodo(db, personNameMap.get(db.person_id ?? '') ?? null);
+        return {
+          ...t,
+          colourIndex: db.person_id ? personColourMap.get(db.person_id) ?? null : null,
+        };
+      });
 
       return groupTodosByPerson(todos, personColourMap, personNameMap, orderedPersonIds);
     },

@@ -30,6 +30,7 @@ const makeTodo = (overrides: Partial<Todo> = {}): Todo => ({
   completed: false,
   personId: 'person-1',
   personName: 'Jane',
+  colourIndex: null,
   doctorId: null,
   visitId: null,
   familyGroupId: 'group-1',

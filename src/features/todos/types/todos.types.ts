@@ -9,6 +9,7 @@ export interface Todo {
   completed: boolean;
   personId: string | null;
   personName: string | null;
+  colourIndex: number | null;
   doctorId: string | null;
   visitId: string | null;
   familyGroupId: string;
@@ -19,5 +20,14 @@ export interface TodoPersonGroup {
   personId: string | null;
   personName: string;
   colourIndex: number;
+  todos: Todo[];
+}
+
+// Todos grouped by urgency bucket (Overdue / This week / Later / No due date).
+export type TodoUrgencyKey = 'overdue' | 'week' | 'later' | 'nodate' | 'completed';
+
+export interface TodoUrgencyGroup {
+  key: TodoUrgencyKey;
+  label: string;
   todos: Todo[];
 }

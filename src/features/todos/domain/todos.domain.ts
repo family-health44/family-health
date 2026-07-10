@@ -2,7 +2,7 @@
 // Pure domain logic — zero external imports.
 
 import type { DbTodo } from '@/shared/types/database';
-import type { Todo, TodoPersonGroup } from '../types/todos.types';
+import type { Todo, TodoPersonGroup, TodoUrgencyGroup, TodoUrgencyKey } from '../types/todos.types';
 
 export function mapDbTodoToTodo(
   db: DbTodo,
@@ -16,6 +16,7 @@ export function mapDbTodoToTodo(
     completed: db.completed,
     personId: db.person_id,
     personName,
+    colourIndex: null,
     doctorId: db.doctor_id,
     visitId: db.visit_id,
     familyGroupId: db.family_group_id,
@@ -40,9 +41,7 @@ export function groupTodosByPerson(
   }
 
   const sortTodos = (a: Todo, b: Todo): number => {
-    // Incomplete before completed
     if (a.completed !== b.completed) return a.completed ? 1 : -1;
-    // Then by due date ascending (nulls last)
     if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
     if (a.dueDate) return -1;
     if (b.dueDate) return 1;
@@ -51,7 +50,6 @@ export function groupTodosByPerson(
 
   const groups: TodoPersonGroup[] = [];
 
-  // Person groups in creation order — every person gets a section, even with no todos.
   for (const personId of orderedPersonIds) {
     const todos = groupMap.get(personId) ?? [];
     groups.push({
@@ -62,13 +60,12 @@ export function groupTodosByPerson(
     });
   }
 
-  // Unassigned todos last
   const unassigned = groupMap.get(null);
   if (unassigned && unassigned.length > 0) {
     groups.push({
       personId: null,
       personName: 'General',
-      colourIndex: -1, // signals neutral styling
+      colourIndex: -1,
       todos: [...unassigned].sort(sortTodos),
     });
   }
@@ -76,7 +73,6 @@ export function groupTodosByPerson(
   return groups;
 }
 
-// Returns count of incomplete todos across all groups
 export function countIncompleteTodos(groups: TodoPersonGroup[]): number {
   return groups.reduce(
     (acc, g) => acc + g.todos.filter((t) => !t.completed).length,
@@ -84,15 +80,67 @@ export function countIncompleteTodos(groups: TodoPersonGroup[]): number {
   );
 }
 
-// Checks if a todo is overdue (has due date in the past and is not completed)
 export function isTodoOverdue(todo: Todo): boolean {
   if (!todo.dueDate || todo.completed) return false;
   const now = new Date();
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   return todo.dueDate < today;
 }
+
 export function countOverdueTodos(groups: TodoPersonGroup[]): number {
   return groups.reduce((total, group) => {
     return total + group.todos.filter((t) => !t.completed && isTodoOverdue(t)).length;
   }, 0);
+}
+
+// ── Urgency grouping (option B: flat list by time, person as tag) ─────────────
+function todayISO(): string {
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+}
+function weekAheadISO(): string {
+  const n = new Date();
+  n.setDate(n.getDate() + 7);
+  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+}
+
+export function groupTodosByUrgency(
+  todos: Todo[],
+  showCompleted: boolean,
+): TodoUrgencyGroup[] {
+  const today = todayISO();
+  const weekEnd = weekAheadISO();
+
+  const buckets: Record<TodoUrgencyKey, Todo[]> = {
+    overdue: [], week: [], later: [], nodate: [], completed: [],
+  };
+
+  for (const t of todos) {
+    if (t.completed) { buckets.completed.push(t); continue; }
+    if (!t.dueDate) { buckets.nodate.push(t); continue; }
+    if (t.dueDate < today) { buckets.overdue.push(t); continue; }
+    if (t.dueDate <= weekEnd) { buckets.week.push(t); continue; }
+    buckets.later.push(t);
+  }
+
+  const byDate = (a: Todo, b: Todo) =>
+    (a.dueDate ?? '').localeCompare(b.dueDate ?? '') || a.title.localeCompare(b.title);
+  const byTitle = (a: Todo, b: Todo) => a.title.localeCompare(b.title);
+
+  buckets.overdue.sort(byDate);
+  buckets.week.sort(byDate);
+  buckets.later.sort(byDate);
+  buckets.nodate.sort(byTitle);
+  buckets.completed.sort(byTitle);
+
+  const labels: Record<TodoUrgencyKey, string> = {
+    overdue: 'Overdue', week: 'This week', later: 'Later',
+    nodate: 'No due date', completed: 'Completed',
+  };
+  const order: TodoUrgencyKey[] = ['overdue', 'week', 'later', 'nodate'];
+  if (showCompleted) order.push('completed');
+
+  return order
+    .filter((k) => buckets[k].length > 0)
+    .map((k) => ({ key: k, label: labels[k], todos: buckets[k] }));
 }

@@ -36,6 +36,7 @@ export function mapDbTodoToTodo(row: DbTodo, personName: string | null = null): 
     completed: row.completed,
     personId: row.person_id,
     personName,
+    colourIndex: null,
     doctorId: row.doctor_id,
     visitId: row.visit_id,
     familyGroupId: row.family_group_id,

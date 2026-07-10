@@ -1,17 +1,18 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { View, Text, FlatList, RefreshControl } from 'react-native';
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { EmptyState, ErrorState, LoadingState } from '@/design-system/components/EmptyState';
 import { FAB } from '@/design-system/components/FAB';
 import { ScreenHeader } from '@/design-system/components/ScreenHeader';
 import { useTodos } from '../hooks/useTodos';
-import { TodoPersonSection } from '../components/TodoPersonSection';
+import { groupTodosByUrgency } from '../domain/todos.domain';
+import { TodoUrgencyList } from '../components/TodoUrgencyList';
 import { AddTodoModal } from '../components/AddTodoModal';
 import { EditTodoModal } from '../components/EditTodoModal';
 import { useFamilyHome } from '@/features/family/hooks/useFamilyHome';
 import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
 import { useVisits } from '../../visits/hooks/useVisits';
-import type { Todo, TodoPersonGroup } from '../types/todos.types';
+import type { Todo, TodoUrgencyGroup } from '../types/todos.types';
 
 export const TodosScreen = () => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -25,12 +26,16 @@ export const TodosScreen = () => {
   const doctors = (doctorGroups ?? []).flatMap((g) => g.doctors);
   const visits = calendarVisits ?? [];
 
+  const urgencyGroups = useMemo(() => {
+    const flat = groups.flatMap((g) => g.todos);
+    return groupTodosByUrgency(flat, showCompleted);
+  }, [groups, showCompleted]);
 
-  if (isLoading) return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><LoadingState message="Loading to-dos..." /></View>;
-  if (error) return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><ErrorState message={error.message} onRetry={refetch} /></View>;
+  if (isLoading) return <View style={{ flex: 1, backgroundColor: '#F4F2EC' }}><LoadingState message="Loading to-dos..." /></View>;
+  if (error) return <View style={{ flex: 1, backgroundColor: '#F4F2EC' }}><ErrorState message={error.message} onRetry={refetch} /></View>;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+    <View style={{ flex: 1, backgroundColor: '#F4F2EC' }}>
       <ScreenHeader
         title="To Do"
         right={
@@ -49,14 +54,18 @@ export const TodosScreen = () => {
         }
       />
 
-      <FlatList<TodoPersonGroup>
-        data={groups}
-        keyExtractor={(item) => item.personId ?? 'general'}
+      <FlatList<TodoUrgencyGroup>
+        data={urgencyGroups}
+        keyExtractor={(item) => item.key}
         contentContainerStyle={{ padding: 16, paddingTop: 16, flexGrow: 1 }}
         refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor="#1F5C41" />}
-        ListEmptyComponent={<EmptyState title="All done!" message="No active to-do items." />}
+        ListEmptyComponent={
+          <View style={{ flex: 1, justifyContent: 'center', paddingBottom: 80 }}>
+            <EmptyState title="You're all caught up" message="No to-dos due. Tap + to add one." />
+          </View>
+        }
         renderItem={({ item }) => (
-          <TodoPersonSection group={item} showCompleted={showCompleted} onToggle={toggleTodo} onEdit={setEditingTodo} onDelete={deleteTodo} />
+          <TodoUrgencyList group={item} onToggle={toggleTodo} onEdit={setEditingTodo} onDelete={deleteTodo} />
         )}
       />
 
