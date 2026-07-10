@@ -7,6 +7,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useIsFocused } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
+import { Icon } from '@/design-system/components/Icon';
+import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
 import { usePersonDetail } from '../hooks/usePersonDetail';
 import { usePersonMutations } from '../hooks/usePersonMutations';
 import { NoteModal } from '@/features/notes/components/NoteModal';
@@ -20,6 +22,11 @@ import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
 import { useFamilyHome } from '@/features/family/hooks/useFamilyHome';
 import { usePersonMedicationsQuery } from '@/features/medications/queries/medications.queries';
 
+const PAGE = '#F4F2EC';
+const DIVIDER = 'rgba(23,33,28,0.07)';
+const RED = '#A63D2F';
+const GREEN = '#1F5C41';
+
 function fmtPreviewDate(iso: string): string {
   const d = new Date(iso + 'T00:00:00');
   return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
@@ -31,6 +38,7 @@ function fmtPreviewTime(t: string): string {
   const h12 = hr % 12 === 0 ? 12 : hr % 12;
   return `${h12}:${m} ${ampm}`;
 }
+
 export const PersonDetailScreen = () => {
   const { personId } = useLocalSearchParams<{ personId: string }>();
   const insets = useSafeAreaInsets();
@@ -98,109 +106,110 @@ export const PersonDetailScreen = () => {
     ]);
   };
 
-  if (isLoading) return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><LoadingState message="Loading..." /></View>;
-  if (error || !person) return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><ErrorState message={error?.message ?? 'Person not found.'} onRetry={() => router.back()} /></View>;
+  if (isLoading) return <View style={{ flex: 1, backgroundColor: PAGE }}><LoadingState message="Loading..." /></View>;
+  if (error || !person) return <View style={{ flex: 1, backgroundColor: PAGE }}><ErrorState message={error?.message ?? 'Person not found.'} onRetry={() => router.back()} /></View>;
 
   const { colourSet } = person;
 
   const menuItems = [
-    { key: 'doctors',        label: 'Doctors',        emoji: '👨‍⚕️', bg: '#E8EFF8', route: `/(app)/family/${person.id}/doctors` },
-    { key: 'medications',    label: 'Medications',    emoji: '💊',   bg: '#E4EFE9', route: `/(app)/family/${person.id}/medications` },
-    { key: 'medical-events', label: 'Medical Events', emoji: '📋',  bg: '#F5E8EB', route: `/(app)/family/${person.id}/medical-events` },
-    { key: 'notes',          label: 'Notes',          emoji: '📝',  bg: '#FBF3DD', route: `/(app)/family/${person.id}/notes` },
-    { key: 'info-card',      label: 'Info Card',      emoji: '🪪',   bg: '#F5EBE0', route: `/(app)/family/${person.id}/info-card` },
-    { key: 'documents',      label: 'Documents',      emoji: '📄',  bg: '#EEE8F7', route: `/(app)/family/${person.id}/documents` },
-  ];
+    { key: 'doctors',        label: 'Doctors',        icon: 'stethoscope',            route: `/(app)/family/${person.id}/doctors` },
+    { key: 'medications',    label: 'Medications',    icon: 'pills',                  route: `/(app)/family/${person.id}/medications` },
+    { key: 'medical-events', label: 'Medical Events', icon: 'list.clipboard',         route: `/(app)/family/${person.id}/medical-events` },
+    { key: 'notes',          label: 'Notes',          icon: 'note.text',              route: `/(app)/family/${person.id}/notes` },
+    { key: 'info-card',      label: 'Info Card',      icon: 'person.text.rectangle',  route: `/(app)/family/${person.id}/info-card` },
+    { key: 'documents',      label: 'Documents',      icon: 'doc',                    route: `/(app)/family/${person.id}/documents` },
+  ] as const;
 
   const quickActions = [
-    { key: 'note',  label: 'Add Note',  emoji: '📝', onPress: () => setShowNoteModal(true) },
-    { key: 'todo',  label: 'Add To Do', emoji: '✅', onPress: () => setShowTodoModal(true) },
-    { key: 'visit', label: 'Add Visit', emoji: '📅', onPress: () => setShowVisitModal(true) },
-  ];
+    { key: 'note',  label: 'Add Note',  icon: 'square.and.pencil', onPress: () => setShowNoteModal(true) },
+    { key: 'todo',  label: 'Add To Do', icon: 'checkmark.circle',  onPress: () => setShowTodoModal(true) },
+    { key: 'visit', label: 'Add Visit', icon: 'calendar',          onPress: () => setShowVisitModal(true) },
+  ] as const;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+    <View style={{ flex: 1, backgroundColor: PAGE }}>
       {isFocused ? <StatusBar style="light" /> : null}
       <View style={{ backgroundColor: colourSet.dot, paddingTop: insets.top + 2, paddingHorizontal: 16, paddingBottom: 14, borderBottomLeftRadius: 26, borderBottomRightRadius: 26 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
-            <Text style={{ fontSize: 15, color: '#FFFFFF' }}>‹</Text>
-            <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: '500' }}>Back</Text>
+            <Text style={{ ...Type.body, color: '#FFFFFF' }}>‹</Text>
+            <Text style={{ ...Type.caption, fontWeight: '500', color: '#FFFFFF' }}>Back</Text>
           </PressableBase>
           <PressableBase onPress={handleManagePerson} accessibilityRole="button" accessibilityLabel="Edit person name" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
-            <Text style={{ fontSize: 14, color: '#FFFFFF' }}>✎</Text>
+            <Icon name="pencil" size={15} color="#FFFFFF" />
           </PressableBase>
         </View>
         <View style={{ alignItems: 'center', marginTop: -6 }}>
           <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: 'rgba(255,255,255,0.22)', alignItems: 'center', justifyContent: 'center', marginBottom: 5 }}>
             <Text style={{ color: 'white', fontSize: 17, fontWeight: '700' }}>{person.initials}</Text>
           </View>
-          <Text style={{ fontSize: 20, fontWeight: '700', color: 'white' }}>{person.name}</Text>
+          <Text style={{ ...Type.display, fontSize: 20, color: 'white' }}>{person.name}</Text>
         </View>
       </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 14, paddingTop: 14 }}>
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 14 }}>
           {quickActions.map((action) => (
-            <PressableBase key={action.key} onPress={action.onPress} accessibilityRole="button" accessibilityLabel={action.label} style={(pressed) => ({ flex: 1, backgroundColor: pressed ? '#F0EFEA' : 'white', borderRadius: 14, paddingVertical: 12, alignItems: 'center', gap: 5, shadowColor: '#17211C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 })}>
-              <Text style={{ fontSize: 22 }}>{action.emoji}</Text>
-              <Text style={{ fontSize: 10, fontWeight: '600', color: '#17211C' }}>{action.label}</Text>
+            <PressableBase key={action.key} onPress={action.onPress} accessibilityRole="button" accessibilityLabel={action.label} style={(pressed) => ({ flex: 1, backgroundColor: pressed ? '#F0EFEA' : 'white', borderRadius: 14, paddingVertical: 14, alignItems: 'center', gap: 7, ...Shadow.resting })}>
+              <Icon name={action.icon} size={22} color={GREEN} />
+              <Text style={{ ...Type.micro, fontWeight: '600', letterSpacing: 0, color: TextColour.ink }}>{action.label}</Text>
             </PressableBase>
           ))}
         </View>
-        <PressableBase onPress={() => router.push(`/(app)/family/${person.id}/snapshot` as never)} accessibilityRole="button" accessibilityLabel="Open Snapshot" style={(pressed) => ({ backgroundColor: pressed ? '#F0EFEA' : 'white', borderRadius: 16, padding: 14, marginBottom: 14, shadowColor: '#17211C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 })}>
+
+        <PressableBase onPress={() => router.push(`/(app)/family/${person.id}/snapshot` as never)} accessibilityRole="button" accessibilityLabel="Open Snapshot" style={(pressed) => ({ backgroundColor: pressed ? '#F0EFEA' : 'white', borderRadius: 16, padding: 15, marginBottom: 14, ...Shadow.resting })}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-            <View style={{ width: 34, height: 34, borderRadius: 9, backgroundColor: '#E9EDF0', alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ fontSize: 16 }}>📷</Text>
-            </View>
+            <Icon name="camera" size={20} color={GREEN} />
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 15, fontWeight: '700', color: '#17211C' }}>Snapshot</Text>
+              <Text style={{ ...Type.heading, color: TextColour.ink }}>Snapshot</Text>
             </View>
-            <Text style={{ color: 'rgba(23,33,28,0.55)', fontSize: 14 }}>›</Text>
+            <Text style={{ color: TextColour.muted, fontSize: 14 }}>›</Text>
           </View>
           <View style={{ flexDirection: 'row', gap: 12 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 11, fontWeight: '700', color: '#A63D2F', marginBottom: 6 }}>To Do{previewTodos.length ? ` · ${previewTodos.length}` : ''}</Text>
+              <Text style={{ ...Type.micro, color: RED, marginBottom: 6 }}>TO DO{previewTodos.length ? ` · ${previewTodos.length}` : ''}</Text>
               {previewTodos.length === 0 ? (
-                <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.45)' }}>None</Text>
+                <Text style={{ ...Type.caption, color: TextColour.faint }}>None</Text>
               ) : previewTodos.map((t) => (
                 <View key={t.id} style={{ flexDirection: 'row', gap: 7, marginBottom: 8 }}>
-                  <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#D64541', marginTop: 4 }} />
+                  <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: RED, marginTop: 5 }} />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 12, fontWeight: '500', color: '#17211C' }} numberOfLines={1}>{t.title}</Text>
-                    <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)' }}>{t.dueDate ? `Due ${fmtPreviewDate(t.dueDate)}` : 'No due date'}</Text>
+                    <Text style={{ ...Type.caption, fontWeight: '500', color: TextColour.ink }} numberOfLines={1}>{t.title}</Text>
+                    <Text style={{ ...Type.caption, color: TextColour.muted }}>{t.dueDate ? `Due ${fmtPreviewDate(t.dueDate)}` : 'No due date'}</Text>
                   </View>
                 </View>
               ))}
             </View>
-            <View style={{ width: 1, backgroundColor: '#E3E2DB' }} />
+            <View style={{ width: 1, backgroundColor: DIVIDER }} />
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 11, fontWeight: '700', color: '#1F5C41', marginBottom: 6 }}>Upcoming Visits{previewVisits.length ? ` · ${previewVisits.length}` : ''}</Text>
+              <Text style={{ ...Type.micro, color: GREEN, marginBottom: 6 }}>UPCOMING VISITS{previewVisits.length ? ` · ${previewVisits.length}` : ''}</Text>
               {previewVisits.length === 0 ? (
-                <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.45)' }}>None</Text>
+                <Text style={{ ...Type.caption, color: TextColour.faint }}>None</Text>
               ) : previewVisits.map((v) => (
                 <View key={v.id} style={{ flexDirection: 'row', gap: 7, marginBottom: 8 }}>
-                  <View style={{ width: 18, height: 18, borderRadius: 5, backgroundColor: '#E4EFE9', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
-                    <Text style={{ fontSize: 11 }}>📅</Text>
-                  </View>
+                  <Icon name="calendar" size={15} color={GREEN} />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 12, fontWeight: '500', color: '#17211C' }} numberOfLines={1}>{v.title}</Text>
-                    {v.doctorName ? <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)' }} numberOfLines={1}>{v.doctorName}</Text> : null}
-                    <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)' }}>{fmtPreviewDate(v.visitDate)}{v.visitTime ? ` · ${fmtPreviewTime(v.visitTime)}` : ''}</Text>
+                    <Text style={{ ...Type.caption, fontWeight: '500', color: TextColour.ink }} numberOfLines={1}>{v.title}</Text>
+                    {v.doctorName ? <Text style={{ ...Type.caption, color: TextColour.muted }} numberOfLines={1}>{v.doctorName}</Text> : null}
+                    <Text style={{ ...Type.caption, color: TextColour.muted }}>{fmtPreviewDate(v.visitDate)}{v.visitTime ? ` · ${fmtPreviewTime(v.visitTime)}` : ''}</Text>
                   </View>
                 </View>
               ))}
             </View>
           </View>
         </PressableBase>
-        <View style={{ backgroundColor: 'white', borderRadius: 16, overflow: 'hidden', shadowColor: '#17211C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
+
+        <View style={{ backgroundColor: 'white', borderRadius: 16, overflow: 'hidden', ...Shadow.resting }}>
           {menuItems.map((item, index) => (
-            <PressableBase key={item.key} onPress={() => router.push(item.route as never)} accessibilityRole="button" accessibilityLabel={item.label} style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', paddingVertical: 9, paddingHorizontal: 14, borderBottomWidth: index < menuItems.length - 1 ? 1 : 0, borderBottomColor: 'rgba(23,33,28,0.08)', backgroundColor: pressed ? '#F7F7F4' : 'white', gap: 11 })}>
-              <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: item.bg, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: 14 }}>{item.emoji}</Text>
+            <PressableBase key={item.key} onPress={() => router.push(item.route as never)} accessibilityRole="button" accessibilityLabel={item.label} style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', paddingVertical: 15, paddingHorizontal: 15, backgroundColor: pressed ? '#F7F7F4' : 'white', gap: 13 })}>
+              <View style={{ width: 26, alignItems: 'center' }}>
+                <Icon name={item.icon} size={20} color={GREEN} />
               </View>
-              <Text style={{ flex: 1, fontSize: 14, fontWeight: '600', color: '#17211C' }}>{item.label}</Text>
-              <Text style={{ color: 'rgba(23,33,28,0.55)', fontSize: 14 }}>›</Text>
+              <Text style={{ flex: 1, ...Type.body, fontWeight: '500', color: TextColour.ink }}>{item.label}</Text>
+              <Text style={{ color: TextColour.muted, fontSize: 14 }}>›</Text>
+              {index < menuItems.length - 1 && (
+                <View style={{ position: 'absolute', left: 54, right: 0, bottom: 0, height: 1, backgroundColor: DIVIDER }} />
+              )}
             </PressableBase>
           ))}
         </View>
