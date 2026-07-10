@@ -1,32 +1,32 @@
 // src/core/auth/useRecoveryDeepLink.ts
-// Catches password-recovery deep links (family-health://reset-password?code=...)
-// and routes to the reset-password screen with the code as a query param.
-// Supabase PKCE recovery returns a ?code= that must be exchanged for a session.
+// Catches password-recovery deep links
+// (family-health://reset-password?token_hash=...&type=recovery)
+// and routes to the reset-password screen with the token_hash as a query param.
+// Uses verifyOtp (token_hash) — no PKCE code verifier required on native.
 
 import { useEffect } from 'react';
 import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 
-function parseCode(url: string): string | null {
+function parseParam(url: string, key: string): string | null {
   const q = url.indexOf('?');
   if (q === -1) return null;
-  // Strip any fragment, then read query params.
   const afterQ = url.slice(q + 1);
   const query = afterQ.split('#')[0] ?? afterQ;
   for (const pair of query.split('&')) {
     const [k, v] = pair.split('=');
-    if (k === 'code' && v) return decodeURIComponent(v);
+    if (k === key && v) return decodeURIComponent(v);
   }
   return null;
 }
 
 function handleUrl(url: string): void {
   if (!url.includes('reset-password')) return;
-  const code = parseCode(url);
-  if (code) {
+  const tokenHash = parseParam(url, 'token_hash');
+  if (tokenHash) {
     router.replace({
       pathname: '/(auth)/reset-password',
-      params: { code },
+      params: { token_hash: tokenHash },
     } as never);
   }
 }

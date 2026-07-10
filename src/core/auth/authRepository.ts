@@ -113,13 +113,16 @@ export async function requestPasswordReset(params: RequestPasswordResetParams): 
   }
 }
 
-export interface ExchangeRecoveryCodeParams {
-  code: string;
+export interface VerifyRecoveryTokenParams {
+  tokenHash: string;
 }
 
-export async function exchangeRecoveryCode(params: ExchangeRecoveryCodeParams): Promise<void> {
+export async function verifyRecoveryToken(params: VerifyRecoveryTokenParams): Promise<void> {
   try {
-    const { error } = await db.auth.exchangeCodeForSession(params.code);
+    const { error } = await db.auth.verifyOtp({
+      token_hash: params.tokenHash,
+      type: 'recovery',
+    });
     if (error) throw toAppError(error);
   } catch (err) {
     throw toAppError(err);

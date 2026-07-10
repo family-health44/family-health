@@ -1,10 +1,10 @@
 // src/features/auth/hooks/useResetPassword.ts
-// Hook — exchanges the recovery code (PKCE) for a session, then updates password.
+// Hook — verifies the recovery token_hash (OTP) for a session, then updates password.
 
 import { useState, useCallback } from 'react';
 import { router } from 'expo-router';
 
-import { exchangeRecoveryCode, updatePassword } from '@/core/auth/authRepository';
+import { verifyRecoveryToken, updatePassword } from '@/core/auth/authRepository';
 import { toAppError, isAppError } from '@/shared/types/errors';
 
 import type { ResetPasswordFormValues } from '../types/auth.types';
@@ -14,7 +14,7 @@ export interface UseResetPasswordReturn {
   isLoading: boolean;
   error: AppError | null;
   sessionReady: boolean;
-  hydrateSession: (code: string) => Promise<void>;
+  hydrateSession: (tokenHash: string) => Promise<void>;
   submit: (values: ResetPasswordFormValues) => Promise<void>;
   clearError: () => void;
 }
@@ -26,11 +26,11 @@ export function useResetPassword(): UseResetPasswordReturn {
 
   const clearError = useCallback(() => setError(null), []);
 
-  const hydrateSession = useCallback(async (code: string): Promise<void> => {
+  const hydrateSession = useCallback(async (tokenHash: string): Promise<void> => {
     setIsLoading(true);
     setError(null);
     try {
-      await exchangeRecoveryCode({ code });
+      await verifyRecoveryToken({ tokenHash });
       setSessionReady(true);
     } catch (err) {
       setError(isAppError(err) ? err : toAppError(err));
