@@ -113,17 +113,13 @@ export async function requestPasswordReset(params: RequestPasswordResetParams): 
   }
 }
 
-export interface SetSessionFromTokensParams {
-  accessToken: string;
-  refreshToken: string;
+export interface ExchangeRecoveryCodeParams {
+  code: string;
 }
 
-export async function setSessionFromTokens(params: SetSessionFromTokensParams): Promise<void> {
+export async function exchangeRecoveryCode(params: ExchangeRecoveryCodeParams): Promise<void> {
   try {
-    const { error } = await db.auth.setSession({
-      access_token: params.accessToken,
-      refresh_token: params.refreshToken,
-    });
+    const { error } = await db.auth.exchangeCodeForSession(params.code);
     if (error) throw toAppError(error);
   } catch (err) {
     throw toAppError(err);

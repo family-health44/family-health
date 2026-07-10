@@ -13,7 +13,7 @@ import { resetPasswordSchema } from '../types/auth.types';
 import type { ResetPasswordFormValues } from '../types/auth.types';
 
 export const ResetPasswordScreen = () => {
-  const params = useLocalSearchParams<{ access_token?: string; refresh_token?: string }>();
+  const params = useLocalSearchParams<{ code?: string }>();
   const { isLoading, error, sessionReady, hydrateSession, submit, clearError } = useResetPassword();
 
   const { control, handleSubmit, formState: { errors } } = useForm<ResetPasswordFormValues>({
@@ -22,9 +22,7 @@ export const ResetPasswordScreen = () => {
   });
 
   useEffect(() => {
-    const at = params.access_token;
-    const rt = params.refresh_token;
-    if (at && rt) void hydrateSession(at, rt);
+    if (params.code) void hydrateSession(params.code);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -34,11 +32,11 @@ export const ResetPasswordScreen = () => {
     </Text>
   );
 
-  const missingTokens = !params.access_token || !params.refresh_token;
+  const missingCode = !params.code;
 
   return (
     <AuthScreenShell emoji="🔑" title={title} subtitle="Choose a new password for your account">
-      {missingTokens ? (
+      {missingCode ? (
         <View className="rounded-xl border border-[#E0BDC4] bg-[#F5E8EB] px-4 py-3" accessibilityRole="alert">
           <Text className="text-sm text-[#8F2E3B]">
             This reset link is invalid or has expired. Please request a new one from the sign-in screen.
