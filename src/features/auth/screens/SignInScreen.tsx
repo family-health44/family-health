@@ -25,21 +25,16 @@ export const SignInScreen = () => {
   }, []);
 
   const title = (
-    <>
-      <Text style={{ fontFamily: Fonts.serif, fontSize: 40, fontWeight: '700', color: '#FFFFFF', lineHeight: 42, textAlign: 'center' }}>
-        Family
-      </Text>
-      <Text style={{ fontFamily: Fonts.serif, fontSize: 40, fontWeight: '700', color: 'rgba(255,255,255,0.82)', lineHeight: 42, marginTop: -2, textAlign: 'center' }}>
-        Health
-      </Text>
-    </>
+    <Text style={{ fontFamily: Fonts.serif, fontSize: 40, fontWeight: '700', color: '#FFFFFF', lineHeight: 42, textAlign: 'center' }}>
+      FamFiles
+    </Text>
   );
 
   return (
     <AuthScreenShell
-      emoji="🏥"
+      emoji="📁"
       title={title}
-      subtitle="Your family's health, all in one place"
+      subtitle="Your family's records, all in one place"
       footer={
         <View className="flex-row items-center justify-center gap-1">
           <Text className="text-sm text-[#57605B]">{"Don't have an account?"}</Text>
