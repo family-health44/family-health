@@ -11,6 +11,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/design-system/theme/ThemeProvider';
 import { Fonts } from '@/design-system/tokens/fonts';
+import { Type } from '@/design-system/tokens/typography';
 import { HamburgerButton } from './HamburgerButton';
 import { useDrawer } from './DrawerContext';
 
@@ -42,11 +43,11 @@ export const ScreenHeader = ({ title, subtitle, right, children, bgColour }: Scr
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         <HamburgerButton onPress={openDrawer} variant="onColour" />
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'baseline', gap: 8 }}>
-          <Text style={{ fontFamily: Fonts.serif, fontWeight: '700', fontSize: 30, lineHeight: 34, color: t.colours.headerText }}>
+          <Text style={{ fontFamily: Fonts.serif, ...Type.display, lineHeight: 34, color: t.colours.headerText }}>
             {title}
           </Text>
           {subtitle ? (
-            <Text style={{ fontSize: 12, color: t.colours.headerTextSub }}>{subtitle}</Text>
+            <Text style={{ ...Type.caption, color: t.colours.headerTextSub }}>{subtitle}</Text>
           ) : null}
         </View>
         {right}

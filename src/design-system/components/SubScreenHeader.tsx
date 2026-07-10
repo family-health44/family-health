@@ -9,6 +9,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/design-system/theme/ThemeProvider';
 import { Fonts } from '@/design-system/tokens/fonts';
+import { Type } from '@/design-system/tokens/typography';
 import { PressableBase } from './PressableBase';
 
 interface SubScreenHeaderProps {
@@ -43,16 +44,16 @@ export const SubScreenHeader = ({ title, subtitle, right, children, bgColour, on
           accessibilityLabel="Back"
           style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4 })}
         >
-          <Text style={{ fontSize: 15, color: '#FFFFFF' }}>‹</Text>
-          <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: '500' }}>Back</Text>
+          <Text style={{ ...Type.body, color: '#FFFFFF' }}>‹</Text>
+          <Text style={{ ...Type.caption, fontWeight: '500', color: '#FFFFFF' }}>Back</Text>
         </PressableBase>
         {right}
       </View>
-      <Text style={{ fontSize: 26, fontWeight: '700', fontFamily: Fonts.serif, color: t.colours.headerText, lineHeight: 30 }}>
+      <Text style={{ ...Type.title, fontFamily: Fonts.serif, color: t.colours.headerText, lineHeight: 30 }}>
         {title}
       </Text>
       {subtitle ? (
-        <Text style={{ fontSize: 12, color: t.colours.headerTextSub, marginTop: 2 }}>{subtitle}</Text>
+        <Text style={{ ...Type.caption, color: t.colours.headerTextSub, marginTop: 2 }}>{subtitle}</Text>
       ) : null}
       {children}
     </View>

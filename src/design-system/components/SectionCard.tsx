@@ -6,6 +6,7 @@
 import { PressableBase } from './PressableBase';
 import { useState } from 'react';
 import { View, Text } from 'react-native';
+import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
 
 export interface SectionCardTone {
   pillBg: string;
@@ -28,11 +29,7 @@ export const SectionCard = ({ title, tone, children, defaultCollapsed = false }:
         borderRadius: 14,
         padding: 14,
         marginBottom: 10,
-        shadowColor: '#17211C',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 2,
+        ...Shadow.resting,
       }}
     >
       <PressableBase
@@ -53,9 +50,9 @@ export const SectionCard = ({ title, tone, children, defaultCollapsed = false }:
             borderRadius: 999,
           }}
         >
-          <Text style={{ fontSize: 12, fontWeight: '600', color: tone.pillText }}>{title}</Text>
+          <Text style={{ ...Type.caption, fontWeight: '600', color: tone.pillText }}>{title}</Text>
         </View>
-        <Text style={{ color: '#C8C4BC', fontSize: 13 }}>{collapsed ? '⌄' : '⌃'}</Text>
+        <Text style={{ color: '#C8C4BC', ...Type.label, fontWeight: '400' }}>{collapsed ? '⌄' : '⌃'}</Text>
       </PressableBase>
       {!collapsed && <View style={{ marginTop: 10 }}>{children}</View>}
     </View>
@@ -64,5 +61,5 @@ export const SectionCard = ({ title, tone, children, defaultCollapsed = false }:
 
 // Empty-state row used inside a SectionCard body.
 export const SectionEmpty = ({ text }: { text: string }) => (
-  <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.5)', fontStyle: 'italic' }}>{text}</Text>
+  <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.muted, fontStyle: 'italic' }}>{text}</Text>
 );
