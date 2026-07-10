@@ -63,6 +63,9 @@ export const SignInScreen = () => {
             value={value} onChangeText={(text) => { onChange(text); if (error) clearError(); }}
             onBlur={onBlur} error={errors.password?.message} />
         )} />
+        <Pressable onPress={() => router.push('/(auth)/forgot-password' as never)} accessibilityRole="link" className="self-end -mt-2">
+          <Text className="text-sm font-semibold text-[#1F5C41]">Forgot password?</Text>
+        </Pressable>
         {error ? (
           <View className="rounded-xl border border-[#E0BDC4] bg-[#F5E8EB] px-4 py-3" accessibilityRole="alert">
             <Text className="text-sm text-[#8F2E3B]">{error.message}</Text>

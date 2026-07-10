@@ -97,3 +97,48 @@ export async function createFamilyGroup(params: CreateFamilyGroupParams): Promis
 
   return group.id;
 }
+
+export interface RequestPasswordResetParams {
+  email: string;
+}
+
+export async function requestPasswordReset(params: RequestPasswordResetParams): Promise<void> {
+  try {
+    const { error } = await db.auth.resetPasswordForEmail(params.email.trim().toLowerCase(), {
+      redirectTo: 'family-health://reset-password',
+    });
+    if (error) throw toAppError(error);
+  } catch (err) {
+    throw toAppError(err);
+  }
+}
+
+export interface SetSessionFromTokensParams {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export async function setSessionFromTokens(params: SetSessionFromTokensParams): Promise<void> {
+  try {
+    const { error } = await db.auth.setSession({
+      access_token: params.accessToken,
+      refresh_token: params.refreshToken,
+    });
+    if (error) throw toAppError(error);
+  } catch (err) {
+    throw toAppError(err);
+  }
+}
+
+export interface UpdatePasswordParams {
+  password: string;
+}
+
+export async function updatePassword(params: UpdatePasswordParams): Promise<void> {
+  try {
+    const { error } = await db.auth.updateUser({ password: params.password });
+    if (error) throw toAppError(error);
+  } catch (err) {
+    throw toAppError(err);
+  }
+}
