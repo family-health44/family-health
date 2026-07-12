@@ -27,6 +27,17 @@ const DIVIDER = 'rgba(23,33,28,0.07)';
 const RED = '#A63D2F';
 const GREEN = '#1F5C41';
 
+// Per-icon accent colours (SF Symbols have no multicolour variant for these)
+const C_DOCTORS = '#2A9D8F';
+const C_MEDS = '#4A72C4';
+const C_EVENTS = '#C9862E';
+const C_NOTES = '#D4A72C';
+const C_INFO = '#7A5FC0';
+const C_DOCS = '#5C8FD6';
+const C_NOTE_ADD = '#7A5FC0';
+const C_TODO_ADD = '#C9862E';
+const C_VISIT_ADD = '#2A9D8F';
+
 function fmtPreviewDate(iso: string): string {
   const d = new Date(iso + 'T00:00:00');
   return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
@@ -112,18 +123,18 @@ export const PersonDetailScreen = () => {
   const { colourSet } = person;
 
   const menuItems = [
-    { key: 'doctors',        label: 'Doctors',        icon: 'stethoscope',            route: `/(app)/family/${person.id}/doctors` },
-    { key: 'medications',    label: 'Medications',    icon: 'pills',                  route: `/(app)/family/${person.id}/medications` },
-    { key: 'medical-events', label: 'Medical Events', icon: 'list.clipboard',         route: `/(app)/family/${person.id}/medical-events` },
-    { key: 'notes',          label: 'Notes',          icon: 'note.text',              route: `/(app)/family/${person.id}/notes` },
-    { key: 'info-card',      label: 'Info Card',      icon: 'person.text.rectangle',  route: `/(app)/family/${person.id}/info-card` },
-    { key: 'documents',      label: 'Documents',      icon: 'doc',                    route: `/(app)/family/${person.id}/documents` },
+    { key: 'doctors',        label: 'Doctors',        icon: 'stethoscope',            colour: C_DOCTORS, route: `/(app)/family/${person.id}/doctors` },
+    { key: 'medications',    label: 'Medications',    icon: 'pills',                  colour: C_MEDS, route: `/(app)/family/${person.id}/medications` },
+    { key: 'medical-events', label: 'Medical Events', icon: 'list.clipboard',         colour: C_EVENTS, route: `/(app)/family/${person.id}/medical-events` },
+    { key: 'notes',          label: 'Notes',          icon: 'note.text',              colour: C_NOTES, route: `/(app)/family/${person.id}/notes` },
+    { key: 'info-card',      label: 'Info Card',      icon: 'person.text.rectangle',  colour: C_INFO, route: `/(app)/family/${person.id}/info-card` },
+    { key: 'documents',      label: 'Documents',      icon: 'doc',                    colour: C_DOCS, route: `/(app)/family/${person.id}/documents` },
   ] as const;
 
   const quickActions = [
-    { key: 'note',  label: 'Add Note',  icon: 'square.and.pencil', onPress: () => setShowNoteModal(true) },
-    { key: 'todo',  label: 'Add To Do', icon: 'checkmark.circle',  onPress: () => setShowTodoModal(true) },
-    { key: 'visit', label: 'Add Visit', icon: 'calendar',          onPress: () => setShowVisitModal(true) },
+    { key: 'note',  label: 'Add Note',  icon: 'square.and.pencil', colour: C_NOTE_ADD, onPress: () => setShowNoteModal(true) },
+    { key: 'todo',  label: 'Add To Do', icon: 'checkmark.circle',  colour: C_TODO_ADD, onPress: () => setShowTodoModal(true) },
+    { key: 'visit', label: 'Add Visit', icon: 'calendar',          colour: C_VISIT_ADD, onPress: () => setShowVisitModal(true) },
   ] as const;
 
   return (
@@ -151,7 +162,7 @@ export const PersonDetailScreen = () => {
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 14 }}>
           {quickActions.map((action) => (
             <PressableBase key={action.key} onPress={action.onPress} accessibilityRole="button" accessibilityLabel={action.label} style={(pressed) => ({ flex: 1, backgroundColor: pressed ? '#F0EFEA' : 'white', borderRadius: 14, paddingVertical: 14, alignItems: 'center', gap: 7, ...Shadow.resting })}>
-              <Icon name={action.icon} size={22} color={GREEN} />
+              <Icon name={action.icon} size={24} color={action.colour} />
               <Text style={{ ...Type.micro, fontWeight: '600', letterSpacing: 0, color: TextColour.ink }}>{action.label}</Text>
             </PressableBase>
           ))}
@@ -203,7 +214,7 @@ export const PersonDetailScreen = () => {
           {menuItems.map((item, index) => (
             <PressableBase key={item.key} onPress={() => router.push(item.route as never)} accessibilityRole="button" accessibilityLabel={item.label} style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', paddingVertical: 15, paddingHorizontal: 15, backgroundColor: pressed ? '#F7F7F4' : 'white', gap: 13 })}>
               <View style={{ width: 26, alignItems: 'center' }}>
-                <Icon name={item.icon} size={20} color={GREEN} />
+                <Icon name={item.icon} size={22} color={item.colour} />
               </View>
               <Text style={{ flex: 1, ...Type.body, fontWeight: '500', color: TextColour.ink }}>{item.label}</Text>
               <Text style={{ color: TextColour.muted, fontSize: 14 }}>›</Text>
