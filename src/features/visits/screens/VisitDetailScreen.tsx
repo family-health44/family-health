@@ -7,6 +7,7 @@ import { View, Text, ScrollView, TextInput, Linking, Alert } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
+import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
 import { useVisitsListQuery } from '../queries/visits.queries';
 import { useUpdateVisitMutation, useDeleteVisitMutation } from '../mutations/visits.mutations';
 import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
@@ -25,6 +26,10 @@ interface VisitDetailScreenProps {
   visitId: string;
 }
 
+const PAGE = '#F4F2EC';
+const DIVIDER = 'rgba(23,33,28,0.07)';
+const GREEN = '#1F5C41';
+
 const parseCost = (raw: string): number | null => {
   const t = raw.trim();
   if (!t) return null;
@@ -33,6 +38,11 @@ const parseCost = (raw: string): number | null => {
 };
 
 const costToText = (n: number | null): string => (n == null ? '' : String(n));
+
+const SectionLabel = ({ text }: { text: string }) => (
+  <Text style={{ ...Type.micro, textTransform: 'uppercase', color: TextColour.faint, marginBottom: 8 }}>{text}</Text>
+);
+const DividerLine = () => <View style={{ height: 1, backgroundColor: DIVIDER, marginHorizontal: 14 }} />;
 
 export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
   const { from, personId: fromPersonId } = useLocalSearchParams<{ from?: string; personId?: string }>();
@@ -51,7 +61,6 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
 
   const visit = groups?.flatMap((g) => g.visits).find((v) => v.id === visitId);
 
-  // Local editable state for the inline fields, seeded from the visit.
   const [preNotes, setPreNotes] = useState('');
   const [postNotes, setPostNotes] = useState('');
   const [totalCost, setTotalCost] = useState('');
@@ -66,16 +75,15 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
     }
   }, [visit?.id]);
 
-  if (isLoading) return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><LoadingState message="Loading visit..." /></View>;
-  if (error) return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><ErrorState message={error.message} /></View>;
-  if (!visit) return <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}><ErrorState message="Visit not found." /></View>;
+  if (isLoading) return <View style={{ flex: 1, backgroundColor: PAGE }}><LoadingState message="Loading visit..." /></View>;
+  if (error) return <View style={{ flex: 1, backgroundColor: PAGE }}><ErrorState message={error.message} /></View>;
+  if (!visit) return <View style={{ flex: 1, backgroundColor: PAGE }}><ErrorState message="Visit not found." /></View>;
 
-  const v = visit; // non-null alias
+  const v = visit;
 
   const today = todayISO();
   const isUpcoming = v.visitDate >= today;
 
-  // Save a single inline field by sending the full current param set.
   const persist = async (patch: Partial<Pick<Visit, 'preNotes' | 'postNotes' | 'totalCost' | 'outOfPocket'>>) => {
     try {
       await updateVisit.mutateAsync({
@@ -152,11 +160,12 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
     }
   };
 
-  const inlineInputStyle = { fontSize: 14, color: '#17211C', padding: 0, margin: 0 } as const;
-  const costInputStyle = { fontSize: 13, color: '#17211C', fontWeight: '500' as const, textAlign: 'right' as const, minWidth: 80, padding: 0 };
+  const detailRow = { flexDirection: 'row' as const, paddingVertical: 13, paddingHorizontal: 14, alignItems: 'center' as const };
+  const inlineInputStyle = { ...Type.body, fontSize: 14, color: TextColour.ink, padding: 0, margin: 0 } as const;
+  const costInputStyle = { ...Type.label, color: TextColour.ink, fontWeight: '500' as const, textAlign: 'right' as const, minWidth: 80, padding: 0 };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+    <View style={{ flex: 1, backgroundColor: PAGE }}>
       <SubScreenHeader
         title={v.title}
         subtitle={`${formatDate(v.visitDate)}${v.visitTime ? ` at ${formatTime(v.visitTime)}` : ''} · ${isUpcoming ? 'Upcoming' : 'Past'}`}
@@ -169,74 +178,78 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
       />
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 16, paddingBottom: 100 }} keyboardShouldPersistTaps="handled">
-        {/* Details */}
-        <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>Details</Text>
-        <View style={{ backgroundColor: 'white', borderRadius: 16, overflow: 'hidden', marginBottom: 16, shadowColor: '#17211C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
-          <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(23,33,28,0.08)' }}>
-            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', flex: 1 }}>Date</Text>
-            <Text style={{ fontSize: 13, color: '#17211C', fontWeight: '500' }}>{formatDate(v.visitDate)}{v.visitTime ? ` at ${formatTime(v.visitTime)}` : ''}</Text>
+        <SectionLabel text="Details" />
+        <View style={{ backgroundColor: 'white', borderRadius: 14, overflow: 'hidden', marginBottom: 18, ...Shadow.resting }}>
+          <View style={detailRow}>
+            <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.muted, flex: 1 }}>Date</Text>
+            <Text style={{ ...Type.label, color: TextColour.ink }}>{formatDate(v.visitDate)}{v.visitTime ? ` at ${formatTime(v.visitTime)}` : ''}</Text>
           </View>
-          <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(23,33,28,0.08)' }}>
-            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', flex: 1 }}>Person</Text>
-            <Text style={{ fontSize: 13, color: '#17211C', fontWeight: '500' }}>{v.personName}</Text>
+          <DividerLine />
+          <View style={detailRow}>
+            <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.muted, flex: 1 }}>Person</Text>
+            <Text style={{ ...Type.label, color: TextColour.ink }}>{v.personName}</Text>
           </View>
           {v.doctorName ? (
-            <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(23,33,28,0.08)' }}>
-              <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', flex: 1 }}>Doctor</Text>
-              <Text style={{ fontSize: 13, color: '#17211C', fontWeight: '500' }}>{v.doctorName}</Text>
-            </View>
+            <>
+              <DividerLine />
+              <View style={detailRow}>
+                <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.muted, flex: 1 }}>Doctor</Text>
+                <Text style={{ ...Type.label, color: TextColour.ink }}>{v.doctorName}</Text>
+              </View>
+            </>
           ) : null}
-          {/* Costs — inline editable */}
-          <View style={{ flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(23,33,28,0.08)', alignItems: 'center' }}>
-            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', flex: 1 }}>Total cost</Text>
-            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>$</Text>
+          <DividerLine />
+          <View style={detailRow}>
+            <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.muted, flex: 1 }}>Total cost</Text>
+            <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.muted }}>$</Text>
             <TextInput value={totalCost} onChangeText={setTotalCost} onBlur={() => persist({ totalCost: parseCost(totalCost) })} placeholder="0.00" placeholderTextColor="#C8C4BC" keyboardType="decimal-pad" style={costInputStyle} />
           </View>
-          <View style={{ flexDirection: 'row', padding: 12, alignItems: 'center' }}>
-            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', flex: 1 }}>Out of pocket</Text>
-            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>$</Text>
+          <DividerLine />
+          <View style={detailRow}>
+            <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.muted, flex: 1 }}>Out of pocket</Text>
+            <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.muted }}>$</Text>
             <TextInput value={outOfPocket} onChangeText={setOutOfPocket} onBlur={() => persist({ outOfPocket: parseCost(outOfPocket) })} placeholder="0.00" placeholderTextColor="#C8C4BC" keyboardType="decimal-pad" style={costInputStyle} />
           </View>
         </View>
 
-        {/* Pre-appointment notes — inline editable */}
-        <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>Pre-Appointment Notes</Text>
-        <View style={{ backgroundColor: 'white', borderRadius: 16, padding: 14, marginBottom: 16, shadowColor: '#17211C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
+        <SectionLabel text="Pre-Appointment Notes" />
+        <View style={{ backgroundColor: 'white', borderRadius: 14, padding: 15, marginBottom: 18, ...Shadow.resting }}>
           <TextInput value={preNotes} onChangeText={setPreNotes} onBlur={() => persist({ preNotes: preNotes.trim() || null })} placeholder="What to discuss, questions to ask..." placeholderTextColor="#8B928E" multiline style={{ ...inlineInputStyle, lineHeight: 20, minHeight: 40, textAlignVertical: 'top' }} />
         </View>
 
-        {/* Post-appointment notes — inline editable */}
-        <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>Post-Appointment Notes</Text>
-        <View style={{ backgroundColor: 'white', borderRadius: 16, padding: 14, marginBottom: 16, shadowColor: '#17211C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
+        <SectionLabel text="Post-Appointment Notes" />
+        <View style={{ backgroundColor: 'white', borderRadius: 14, padding: 15, marginBottom: 18, ...Shadow.resting }}>
           <TextInput value={postNotes} onChangeText={setPostNotes} onBlur={() => persist({ postNotes: postNotes.trim() || null })} placeholder="Outcomes, follow-ups, results..." placeholderTextColor="#8B928E" multiline style={{ ...inlineInputStyle, lineHeight: 20, minHeight: 40, textAlignVertical: 'top' }} />
         </View>
 
-        {/* Actions */}
         {(visitDocuments && visitDocuments.length > 0) ? (
-          <View style={{ marginBottom: 8 }}>
-            {visitDocuments.map((doc) => (
-              <PressableBase key={doc.id} onPress={() => void openDocument(doc)} accessibilityRole="button" accessibilityLabel={doc.name} style={(pressed) => ({ opacity: pressed ? 0.7 : 1, flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', borderWidth: 0.5, borderColor: '#E6E2DA', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, marginBottom: 8 })}>
-                <Text style={{ fontSize: 20 }}>📄</Text>
-                <View style={{ flex: 1, minWidth: 0 }}>
-                  <Text numberOfLines={1} style={{ fontSize: 14, color: '#17211C' }}>{doc.name}</Text>
-                  <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginTop: 2 }}>{formatFileSize(doc.fileSize)}</Text>
-                </View>
-                <Text style={{ fontSize: 16, color: 'rgba(23,33,28,0.4)' }}>↗</Text>
-              </PressableBase>
+          <View style={{ backgroundColor: 'white', borderRadius: 14, overflow: 'hidden', marginBottom: 12, ...Shadow.resting }}>
+            {visitDocuments.map((doc, i) => (
+              <View key={doc.id}>
+                {i > 0 && <DividerLine />}
+                <PressableBase onPress={() => void openDocument(doc)} accessibilityRole="button" accessibilityLabel={doc.name} style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12, paddingHorizontal: 14, backgroundColor: pressed ? '#F7F7F4' : 'white' })}>
+                  <Text style={{ fontSize: 20 }}>📄</Text>
+                  <View style={{ flex: 1, minWidth: 0 }}>
+                    <Text numberOfLines={1} style={{ ...Type.body, fontSize: 14, color: TextColour.ink }}>{doc.name}</Text>
+                    <Text style={{ ...Type.caption, fontWeight: '400', color: TextColour.muted, marginTop: 2 }}>{formatFileSize(doc.fileSize)}</Text>
+                  </View>
+                  <Text style={{ fontSize: 16, color: TextColour.faint }}>↗</Text>
+                </PressableBase>
+              </View>
             ))}
           </View>
         ) : null}
         <PressableBase onPress={handleAddDocument} disabled={addDoc.isPending} accessibilityRole="button" style={(pressed) => ({ opacity: addDoc.isPending ? 0.6 : 1, backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10 })}>
           <Text style={{ fontSize: 18 }}>📄</Text>
-          <Text style={{ fontSize: 14, fontWeight: '500', color: '#2C5282' }}>{addDoc.isPending ? 'Adding…' : 'Add Document'}</Text>
+          <Text style={{ ...Type.body, fontSize: 14, fontWeight: '500', color: '#2C5282' }}>{addDoc.isPending ? 'Adding…' : 'Add Document'}</Text>
         </PressableBase>
       </ScrollView>
 
       {isUpcoming && (
         <View style={{ position: 'absolute', bottom: 24, left: 16, right: 16 }}>
-          <PressableBase onPress={() => router.push(`/(app)/appointments?visitId=${v.id}&personId=${v.personId ?? ''}&personName=${encodeURIComponent(v.personName ?? '')}&doctorName=${encodeURIComponent(v.doctorName ?? '')}&visitDate=${v.visitDate}&preNotes=${encodeURIComponent(v.preNotes ?? '')}` as never)} accessibilityRole="button" style={(pressed) => ({ backgroundColor: pressed ? '#17452F' : '#1F5C41', borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 })}>
+          <PressableBase onPress={() => router.push(`/(app)/appointments?visitId=${v.id}&personId=${v.personId ?? ''}&personName=${encodeURIComponent(v.personName ?? '')}&doctorName=${encodeURIComponent(v.doctorName ?? '')}&visitDate=${v.visitDate}&preNotes=${encodeURIComponent(v.preNotes ?? '')}` as never)} accessibilityRole="button" style={(pressed) => ({ backgroundColor: pressed ? '#17452F' : GREEN, borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, ...Shadow.raised })}>
             <Text style={{ fontSize: 16, color: 'white' }}>▶</Text>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: 'white' }}>Start Appointment</Text>
+            <Text style={{ ...Type.heading, color: 'white' }}>Start Appointment</Text>
           </PressableBase>
         </View>
       )}

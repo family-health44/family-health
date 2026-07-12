@@ -9,6 +9,7 @@ import { LoadingState, ErrorState } from '@/design-system/components/EmptyState'
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
 import { InlinePicker } from '@/design-system/components/InlinePicker';
+import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
 import { SPECIALTY_LIST, SPECIALTY_OPTIONS, OTHER_SPECIALTY } from '../domain/specialties';
 import { isoToDisplayDate } from '@/shared/utils/dates';
 import { toAppError } from '@/shared/types/errors';
@@ -23,10 +24,16 @@ import { usePersonMedicationsQuery } from '@/features/medications/queries/medica
 
 interface DoctorDetailScreenProps { doctorId: string; personId: string; }
 
+const PAGE = '#F4F2EC';
+const DIVIDER = 'rgba(23,33,28,0.07)';
+const GREEN = '#1F5C41';
+
 // Accent-pill tones per doctor section (decorative grouping).
 const VISITS_TONE: SectionCardTone = { pillBg: '#E6F1FB', pillText: '#0C447C' };   // blue
 const NOTES_TONE: SectionCardTone = { pillBg: '#EAF3DE', pillText: '#27500A' };    // green
 const MEDS_TONE: SectionCardTone = { pillBg: '#F5EBE0', pillText: '#7A3A10' };     // orange/brown
+
+const RowDivider = () => <View style={{ height: 1, backgroundColor: DIVIDER, marginHorizontal: 14 }} />;
 
 export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenProps) => {
   const queryClient = useQueryClient();
@@ -44,18 +51,16 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
   const { data: notes = [] } = usePersonNotesQuery(personId);
   const { data: medGroups = [] } = usePersonMedicationsQuery(personId);
 
-  if (isLoading) return <LoadingState message="Loading doctor..." />;
-  if (error) return <ErrorState message={error.message} />;
+  if (isLoading) return <View style={{ flex: 1, backgroundColor: PAGE }}><LoadingState message="Loading doctor..." /></View>;
+  if (error) return <View style={{ flex: 1, backgroundColor: PAGE }}><ErrorState message={error.message} /></View>;
 
   const doctor = doctors.find((d) => d.id === doctorId);
-  if (!doctor) return <ErrorState message="Doctor not found." />;
+  if (!doctor) return <View style={{ flex: 1, backgroundColor: PAGE }}><ErrorState message="Doctor not found." /></View>;
 
-  // Visits with this doctor (this person), newest first
   const doctorVisits = (visitsQuery.data ?? [])
     .filter((v) => v.personId === personId && v.doctorId === doctorId)
     .sort((a, b) => b.visitDate.localeCompare(a.visitDate));
 
-  // Notes linked to this doctor, excluding event-marker notes + hidden, newest first
   const noteText = (content: string) =>
     parseNoteContent(content)
       .filter((seg) => seg.type === 'text')
@@ -66,7 +71,6 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
     .filter((n) => n.doctorId === doctorId && !n.hidden && noteText(n.content).length > 0)
     .sort((a, b) => (b.noteDate ?? '').localeCompare(a.noteDate ?? ''));
 
-  // Medications prescribed by this doctor (across all status groups)
   const doctorMeds = medGroups
     .flatMap((g) => g.medications)
     .filter((m) => m.prescribedBy === doctorId);
@@ -101,35 +105,36 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+    <View style={{ flex: 1, backgroundColor: PAGE }}>
       <SubScreenHeader
         title={doctor.name}
         subtitle={doctor.type || undefined}
         right={
-          <PressableBase onPress={handleOpenEdit} accessibilityRole="button" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
+          <PressableBase onPress={handleOpenEdit} accessibilityRole="button" accessibilityLabel="Edit doctor" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
             <Text style={{ fontSize: 14, color: '#FFFFFF' }}>✎</Text>
           </PressableBase>
         }
       />
       <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 16 }}>
         {(doctor.address || doctor.phone) ? (
-        <View style={{ backgroundColor: 'white', borderRadius: 16, padding: 14, marginBottom: 12, shadowColor: '#17211C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
-          <PressableBase onPress={() => setShowMoreInfo(!showMoreInfo)} style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: pressed ? 0.7 : 1 })}>
-            <Text style={{ fontSize: 13, fontWeight: '600', color: '#17211C' }}>Contact details</Text>
-            <Text style={{ fontSize: 11, fontWeight: '600', color: '#1F5C41' }}>{showMoreInfo ? 'Less ↑' : 'More ↓'}</Text>
+        <View style={{ backgroundColor: 'white', borderRadius: 14, padding: 14, marginBottom: 12, ...Shadow.resting }}>
+          <PressableBase onPress={() => setShowMoreInfo(!showMoreInfo)} accessibilityRole="button" style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: pressed ? 0.7 : 1 })}>
+            <Text style={{ ...Type.label, color: TextColour.ink }}>Contact details</Text>
+            <Text style={{ ...Type.micro, letterSpacing: 0, color: GREEN }}>{showMoreInfo ? 'Less ↑' : 'More ↓'}</Text>
           </PressableBase>
           {showMoreInfo && (
-            <View style={{ borderTopWidth: 0.5, borderTopColor: 'rgba(23,33,28,0.08)', paddingTop: 10, marginTop: 10, gap: 8 }}>
+            <View style={{ paddingTop: 10, marginTop: 10, gap: 8 }}>
+              <View style={{ height: 1, backgroundColor: DIVIDER, marginTop: -10 }} />
               {doctor.address ? (
-                <View style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 0.5, borderBottomColor: 'rgba(23,33,28,0.08)' }}>
-                  <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)', width: 60 }}>Address</Text>
-                  <Text style={{ fontSize: 12, color: '#17211C', flex: 1, textAlign: 'right' }}>{doctor.address}</Text>
+                <View style={{ flexDirection: 'row', paddingVertical: 4 }}>
+                  <Text style={{ ...Type.caption, fontWeight: '400', color: TextColour.muted, width: 60 }}>Address</Text>
+                  <Text style={{ ...Type.caption, fontWeight: '400', color: TextColour.ink, flex: 1, textAlign: 'right' }}>{doctor.address}</Text>
                 </View>
               ) : null}
               {doctor.phone ? (
-                <PressableBase onPress={handlePhone} style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 0.5, borderBottomColor: 'rgba(23,33,28,0.08)' }}>
-                  <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)', width: 60 }}>Phone</Text>
-                  <Text style={{ fontSize: 12, color: '#1F5C41', flex: 1, textAlign: 'right' }}>{doctor.phone}</Text>
+                <PressableBase onPress={handlePhone} accessibilityRole="button" accessibilityLabel={`Call ${doctor.phone}`} style={{ flexDirection: 'row', paddingVertical: 4 }}>
+                  <Text style={{ ...Type.caption, fontWeight: '400', color: TextColour.muted, width: 60 }}>Phone</Text>
+                  <Text style={{ ...Type.caption, fontWeight: '400', color: GREEN, flex: 1, textAlign: 'right' }}>{doctor.phone}</Text>
                 </PressableBase>
               ) : null}
             </View>
@@ -142,13 +147,16 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
             <SectionEmpty text="No visits with this doctor yet" />
           ) : (
             doctorVisits.map((v, i) => (
-              <PressableBase key={v.id} onPress={() => router.push(`/(app)/visits/${v.id}` as never)} style={(pressed) => ({ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EFEA', opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center' })}>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 13, color: '#17211C' }}>{v.title || 'Visit'}</Text>
-                  <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginTop: 2 }}>{isoToDisplayDate(v.visitDate)}</Text>
-                </View>
-                <Text style={{ fontSize: 14, color: '#C8C4BC' }}>›</Text>
-              </PressableBase>
+              <View key={v.id}>
+                {i > 0 && <RowDivider />}
+                <PressableBase onPress={() => router.push(`/(app)/visits/${v.id}` as never)} accessibilityRole="button" style={(pressed) => ({ paddingHorizontal: 14, paddingVertical: 12, opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center' })}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.ink }}>{v.title || 'Visit'}</Text>
+                    <Text style={{ ...Type.caption, fontWeight: '400', color: TextColour.muted, marginTop: 2 }}>{isoToDisplayDate(v.visitDate)}</Text>
+                  </View>
+                  <Text style={{ fontSize: 14, color: TextColour.faint }}>›</Text>
+                </PressableBase>
+              </View>
             ))
           )}
         </SectionCard>
@@ -158,9 +166,12 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
             <SectionEmpty text="No notes for this doctor yet" />
           ) : (
             doctorNotes.map((n, i) => (
-              <View key={n.id} style={{ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EFEA' }}>
-                <Text style={{ fontSize: 13, color: '#17211C', lineHeight: 18 }}>{noteText(n.content)}</Text>
-                {n.noteDate ? <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginTop: 2 }}>{isoToDisplayDate(n.noteDate)}</Text> : null}
+              <View key={n.id}>
+                {i > 0 && <RowDivider />}
+                <View style={{ paddingHorizontal: 14, paddingVertical: 12 }}>
+                  <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.ink, lineHeight: 18 }}>{noteText(n.content)}</Text>
+                  {n.noteDate ? <Text style={{ ...Type.caption, fontWeight: '400', color: TextColour.muted, marginTop: 2 }}>{isoToDisplayDate(n.noteDate)}</Text> : null}
+                </View>
               </View>
             ))
           )}
@@ -171,13 +182,16 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
             <SectionEmpty text="No medications prescribed yet" />
           ) : (
             doctorMeds.map((m, i) => (
-              <View key={m.id} style={{ paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F0EFEA' }}>
-                <Text style={{ fontSize: 13, color: '#17211C' }}>{m.name}</Text>
-                {(m.dosage || m.frequency) ? (
-                  <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginTop: 2 }}>
-                    {[m.dosage, m.frequency].filter(Boolean).join(' · ')}
-                  </Text>
-                ) : null}
+              <View key={m.id}>
+                {i > 0 && <RowDivider />}
+                <View style={{ paddingHorizontal: 14, paddingVertical: 12 }}>
+                  <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.ink }}>{m.name}</Text>
+                  {(m.dosage || m.frequency) ? (
+                    <Text style={{ ...Type.caption, fontWeight: '400', color: TextColour.muted, marginTop: 2 }}>
+                      {[m.dosage, m.frequency].filter(Boolean).join(' · ')}
+                    </Text>
+                  ) : null}
+                </View>
               </View>
             ))
           )}
@@ -187,10 +201,10 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
         <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }} onPress={() => setShowEditModal(false)}>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, justifyContent: 'flex-end' }}>
             <Pressable>
-              <View style={{ backgroundColor: '#F7F7F4', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '85%' }}>
+              <View style={{ backgroundColor: PAGE, borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, maxHeight: '85%', ...Shadow.modal }}>
                 <View style={{ width: 40, height: 4, backgroundColor: '#D0CCC4', borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 20 }} />
                 <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
-                  <Text style={{ fontSize: 20, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>Edit doctor</Text>
+                  <Text style={{ ...Type.title, color: TextColour.ink, marginBottom: 4 }}>Edit doctor</Text>
                   <Input label="Name" isRequired value={editName} onChangeText={setEditName} autoCapitalize="words" />
                   <InlinePicker label="Specialty / Type" options={SPECIALTY_OPTIONS} value={editTypeChoice}
                     onChange={(id) => { setEditTypeChoice(id); setEditType(id && id !== OTHER_SPECIALTY ? id : ''); }} />

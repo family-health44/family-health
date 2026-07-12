@@ -1,12 +1,8 @@
 // src/design-system/components/EmptyState.tsx
-// EmptyState — shown when a list has no items, or when an error occurs.
-// Used consistently across all feature screens for loading, empty, and error states.
-
+// EmptyState / LoadingState / ErrorState — token styles.
 import { View, Text } from 'react-native';
-
+import { Type, TextColour } from '@/design-system/tokens/typography';
 import { Button } from './Button';
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface EmptyStateProps {
   title: string;
@@ -15,52 +11,26 @@ interface EmptyStateProps {
   onAction?: () => void;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
-export const EmptyState = ({
-  title,
-  message,
-  actionLabel,
-  onAction,
-}: EmptyStateProps) => (
-  <View className="flex-1 items-center justify-center px-8 py-12">
-    <Text className="text-center text-lg font-semibold text-[#3D3D3D]">
-      {title}
-    </Text>
+export const EmptyState = ({ title, message, actionLabel, onAction }: EmptyStateProps) => (
+  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, paddingVertical: 48 }}>
+    <Text style={{ ...Type.heading, textAlign: 'center', color: TextColour.ink }}>{title}</Text>
     {message ? (
-      <Text className="mt-2 text-center text-sm text-[#57605B]">
-        {message}
-      </Text>
+      <Text style={{ ...Type.body, fontSize: 14, textAlign: 'center', color: TextColour.muted, marginTop: 8 }}>{message}</Text>
     ) : null}
     {actionLabel && onAction ? (
-      <View className="mt-6">
+      <View style={{ marginTop: 24 }}>
         <Button label={actionLabel} onPress={onAction} variant="primary" />
       </View>
     ) : null}
   </View>
 );
 
-// ─── Loading state ────────────────────────────────────────────────────────────
-
 export const LoadingState = ({ message = 'Loading...' }: { message?: string }) => (
-  <View className="flex-1 items-center justify-center">
-    <Text className="text-sm text-[#57605B]">{message}</Text>
+  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <Text style={{ ...Type.body, fontSize: 14, color: TextColour.muted }}>{message}</Text>
   </View>
 );
 
-// ─── Error state ──────────────────────────────────────────────────────────────
-
-export const ErrorState = ({
-  message = 'Something went wrong.',
-  onRetry,
-}: {
-  message?: string;
-  onRetry?: () => void;
-}) => (
-  <EmptyState
-    title="Something went wrong"
-    message={message}
-    actionLabel={onRetry ? 'Try again' : undefined}
-    onAction={onRetry}
-  />
+export const ErrorState = ({ message = 'Something went wrong.', onRetry }: { message?: string; onRetry?: () => void }) => (
+  <EmptyState title="Something went wrong" message={message} actionLabel={onRetry ? 'Try again' : undefined} onAction={onRetry} />
 );

@@ -1,51 +1,31 @@
 // src/design-system/components/Badge.tsx
-// Badge primitive — small status/label chips.
-// Used for medication status (active/inactive/completed), todo due dates, etc.
-// Variants map to semantic meaning — not arbitrary colours.
-
+// Badge primitive — small status/label chips. Semantic variants, token styles.
 import { View, Text } from 'react-native';
+import { Type } from '@/design-system/tokens/typography';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type BadgeVariant =
-  | 'success'   // active medications, completed items
-  | 'warning'   // upcoming/due soon
-  | 'danger'    // overdue, inactive
-  | 'neutral'   // completed/archived
-  | 'info';     // general info
+type BadgeVariant = 'success' | 'warning' | 'danger' | 'neutral' | 'info';
 
 interface BadgeProps {
   label: string;
   variant?: BadgeVariant;
 }
 
-// ─── Style maps ───────────────────────────────────────────────────────────────
-
-const containerStyles: Record<BadgeVariant, string> = {
-  success: 'bg-[#E4EFE9] border border-[#BFD4C8]',
-  warning: 'bg-[#F5EBE0] border border-[#DEBFAA]',
-  danger: 'bg-[#F5E8EB] border border-[#E0BDC4]',
-  neutral: 'bg-[#EEECE8] border border-[#D8D4CC]',
-  info: 'bg-[#E8EFF8] border border-[#C0CFDF]',
+const tones: Record<BadgeVariant, { bg: string; border: string; text: string }> = {
+  success: { bg: '#E4EFE9', border: '#BFD4C8', text: '#17452F' },
+  warning: { bg: '#F5EBE0', border: '#DEBFAA', text: '#7A3A10' },
+  danger:  { bg: '#F5E8EB', border: '#E0BDC4', text: '#8F2E3B' },
+  neutral: { bg: '#EEECE8', border: '#D8D4CC', text: '#4A4744' },
+  info:    { bg: '#E8EFF8', border: '#C0CFDF', text: '#1A3A6B' },
 };
 
-const textStyles: Record<BadgeVariant, string> = {
-  success: 'text-[#17452F]',
-  warning: 'text-[#7A3A10]',
-  danger: 'text-[#8F2E3B]',
-  neutral: 'text-[#4A4744]',
-  info: 'text-[#1A3A6B]',
+export const Badge = ({ label, variant = 'neutral' }: BadgeProps) => {
+  const t = tones[variant];
+  return (
+    <View
+      accessibilityRole="text"
+      style={{ alignSelf: 'flex-start', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 2, backgroundColor: t.bg, borderWidth: 1, borderColor: t.border }}
+    >
+      <Text style={{ ...Type.caption, color: t.text }}>{label}</Text>
+    </View>
+  );
 };
-
-// ─── Component ────────────────────────────────────────────────────────────────
-
-export const Badge = ({ label, variant = 'neutral' }: BadgeProps) => (
-  <View
-    className={`self-start rounded-full px-2.5 py-0.5 ${containerStyles[variant]}`}
-    accessibilityRole="text"
-  >
-    <Text className={`text-xs font-medium ${textStyles[variant]}`}>
-      {label}
-    </Text>
-  </View>
-);

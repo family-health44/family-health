@@ -1,13 +1,9 @@
 // src/design-system/components/Button.tsx
 // Button primitive — the only button component used across the entire app.
-// Variants: primary, secondary, ghost, danger.
-// Sizes: sm, md, lg.
-// Handles loading and disabled states consistently.
-// No business logic — purely presentational.
-
-import { ActivityIndicator, Pressable, Text, type PressableProps } from 'react-native';
-
-// ─── Types ────────────────────────────────────────────────────────────────────
+// Variants: primary, secondary, ghost, danger. Sizes: sm, md, lg.
+// Inline token styles (runtime-themable); no NativeWind classes.
+import { ActivityIndicator, Pressable, Text, type PressableProps, type ViewStyle, type TextStyle } from 'react-native';
+import { Type } from '@/design-system/tokens/typography';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -20,85 +16,68 @@ interface ButtonProps extends Omit<PressableProps, 'style'> {
   isFullWidth?: boolean;
 }
 
-// ─── Style maps ───────────────────────────────────────────────────────────────
+const GREEN = '#1F5C41';
+const GREEN_PRESSED = '#17452F';
+const GREEN_TINT = '#E4EFE9';
+const RED = '#B33A4A';
+const RED_PRESSED = '#8F2E3B';
 
-const containerStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-[#1F5C41] active:bg-[#17452F]',
-  secondary: 'bg-white border border-[#BFD4C8] active:bg-[#E4EFE9]',
-  ghost: 'bg-transparent active:bg-[#E4EFE9]',
-  danger: 'bg-[#B33A4A] active:bg-[#8F2E3B]',
+const container = (variant: ButtonVariant, pressed: boolean): ViewStyle => {
+  switch (variant) {
+    case 'primary':   return { backgroundColor: pressed ? GREEN_PRESSED : GREEN };
+    case 'secondary': return { backgroundColor: pressed ? GREEN_TINT : '#FFFFFF', borderWidth: 1, borderColor: '#BFD4C8' };
+    case 'ghost':     return { backgroundColor: pressed ? GREEN_TINT : 'transparent' };
+    case 'danger':    return { backgroundColor: pressed ? RED_PRESSED : RED };
+  }
 };
 
-const textStyles: Record<ButtonVariant, string> = {
-  primary: 'text-white',
-  secondary: 'text-[#17452F]',
-  ghost: 'text-[#1F5C41]',
-  danger: 'text-white',
-};
-
-const sizeContainerStyles: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 rounded-lg',
-  md: 'px-5 py-3 rounded-xl',
-  lg: 'px-6 py-4 rounded-xl',
-};
-
-const sizeTextStyles: Record<ButtonSize, string> = {
-  sm: 'text-sm font-medium',
-  md: 'text-base font-semibold',
-  lg: 'text-lg font-semibold',
-};
-
-const spinnerColours: Record<ButtonVariant, string> = {
+const textColour: Record<ButtonVariant, string> = {
   primary: '#FFFFFF',
-  secondary: '#1F5C41',
-  ghost: '#1F5C41',
+  secondary: '#17452F',
+  ghost: GREEN,
   danger: '#FFFFFF',
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
+const sizeContainer: Record<ButtonSize, ViewStyle> = {
+  sm: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
+  md: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12 },
+  lg: { paddingHorizontal: 24, paddingVertical: 16, borderRadius: 12 },
+};
+
+const sizeText: Record<ButtonSize, TextStyle> = {
+  sm: { ...Type.label },
+  md: { ...Type.body, fontWeight: '600' },
+  lg: { ...Type.heading },
+};
+
+const spinnerColours: Record<ButtonVariant, string> = {
+  primary: '#FFFFFF', secondary: GREEN, ghost: GREEN, danger: '#FFFFFF',
+};
 
 export const Button = ({
-  label,
-  variant = 'primary',
-  size = 'md',
-  isLoading = false,
-  isFullWidth = false,
-  disabled,
-  ...pressableProps
+  label, variant = 'primary', size = 'md', isLoading = false, isFullWidth = false, disabled, ...pressableProps
 }: ButtonProps) => {
   const isDisabled = disabled === true || isLoading;
-
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled: isDisabled, busy: isLoading }}
       disabled={isDisabled}
-      className={[
-        'flex-row items-center justify-center',
-        containerStyles[variant],
-        sizeContainerStyles[size],
-        isFullWidth ? 'w-full' : 'self-start',
-        isDisabled ? 'opacity-50' : 'opacity-100',
-      ].join(' ')}
+      style={({ pressed }) => ({
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+        ...container(variant, pressed),
+        ...sizeContainer[size],
+        alignSelf: isFullWidth ? 'stretch' : 'flex-start',
+        width: isFullWidth ? '100%' : undefined,
+        opacity: isDisabled ? 0.5 : 1,
+      })}
       {...pressableProps}
     >
       {isLoading ? (
-        <ActivityIndicator
-          size="small"
-          color={spinnerColours[variant]}
-          accessibilityLabel="Loading"
-        />
+        <ActivityIndicator size="small" color={spinnerColours[variant]} accessibilityLabel="Loading" />
       ) : (
-        <Text
-          className={[
-            'text-center',
-            textStyles[variant],
-            sizeTextStyles[size],
-          ].join(' ')}
-        >
-          {label}
-        </Text>
+        <Text style={{ textAlign: 'center', color: textColour[variant], ...sizeText[size] }}>{label}</Text>
       )}
     </Pressable>
   );

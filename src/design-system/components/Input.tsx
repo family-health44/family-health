@@ -1,13 +1,9 @@
 // src/design-system/components/Input.tsx
 // Input primitive — used with React Hook Form via Controller.
-// Supports ref forwarding for programmatic focus (e.g. modal auto-focus).
-// Handles label, error state, helper text, and secure text entry.
-// No business logic — purely presentational.
-
-import { forwardRef } from 'react';
+// Ref forwarding preserved. Token styles; focus border via state.
+import { forwardRef, useState } from 'react';
 import { View, Text, TextInput, type TextInputProps } from 'react-native';
-
-// ─── Types ────────────────────────────────────────────────────────────────────
+import { Type, TextColour } from '@/design-system/tokens/typography';
 
 interface InputProps extends TextInputProps {
   label: string;
@@ -16,55 +12,48 @@ interface InputProps extends TextInputProps {
   isRequired?: boolean;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+const GREEN = '#1F5C41';
+const RED = '#B33A4A';
+const BORDER = '#C8C4BC';
 
 export const Input = forwardRef<TextInput, InputProps>(
-  ({ label, error, helperText, isRequired = false, ...textInputProps }, ref) => {
+  ({ label, error, helperText, isRequired = false, onFocus, onBlur, ...textInputProps }, ref) => {
     const hasError = Boolean(error);
+    const [focused, setFocused] = useState(false);
+    const borderColor = hasError ? RED : focused ? GREEN : BORDER;
 
     return (
-      <View className="w-full gap-1.5">
-        {/* Label */}
-        <View className="flex-row">
-          <Text className="text-sm font-medium text-[#3D3D3D]">{label}</Text>
-          {isRequired && (
-            <Text className="ml-0.5 text-sm text-[#B33A4A]">{' *'}</Text>
-          )}
+      <View style={{ width: '100%', gap: 6 }}>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={{ ...Type.label, color: TextColour.secondary }}>{label}</Text>
+          {isRequired && <Text style={{ ...Type.label, color: RED, marginLeft: 2 }}>{' *'}</Text>}
         </View>
 
-        {/* Input field */}
         <TextInput
           ref={ref}
           accessibilityLabel={label}
           accessibilityHint={helperText}
-          className={[
-            'rounded-xl border px-4 text-base text-[#1A1A1A]',
-            'bg-white',
-            hasError
-              ? 'border-[#B33A4A]'
-              : 'border-[#C8C4BC] focus:border-[#1F5C41]',
-          ].join(' ')}
-          style={{ minHeight: 48, paddingTop: 12, paddingBottom: 12, fontSize: 16, lineHeight: 22 }}
+          style={{
+            borderRadius: 12, borderWidth: 1, borderColor,
+            paddingHorizontal: 16, backgroundColor: '#FFFFFF',
+            color: TextColour.ink,
+            minHeight: 48, paddingTop: 12, paddingBottom: 12, fontSize: 16, lineHeight: 22,
+          }}
           placeholderTextColor="#8B928E"
           autoCapitalize="none"
           autoCorrect={false}
+          onFocus={(e) => { setFocused(true); onFocus?.(e); }}
+          onBlur={(e) => { setFocused(false); onBlur?.(e); }}
           {...textInputProps}
         />
 
-        {/* Error message */}
         {hasError && (
-          <Text
-            className="text-sm text-[#B33A4A]"
-            accessibilityRole="alert"
-            accessibilityLiveRegion="polite"
-          >
+          <Text style={{ ...Type.caption, fontWeight: '400', color: RED }} accessibilityRole="alert" accessibilityLiveRegion="polite">
             {error}
           </Text>
         )}
-
-        {/* Helper text — only shown when no error */}
         {!hasError && helperText ? (
-          <Text className="text-sm text-[#57605B]">{helperText}</Text>
+          <Text style={{ ...Type.caption, fontWeight: '400', color: TextColour.muted }}>{helperText}</Text>
         ) : null}
       </View>
     );
