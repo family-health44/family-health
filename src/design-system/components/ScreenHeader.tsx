@@ -34,7 +34,7 @@ export const ScreenHeader = ({ title, subtitle, right, children, bgColour }: Scr
         backgroundColor: bgColour ?? t.colours.headerBg,
         paddingTop: insets.top + 6,
         paddingHorizontal: 16,
-        paddingBottom: children ? 14 : 20,
+        paddingBottom: 14,
         borderBottomLeftRadius: t.radius.header,
         borderBottomRightRadius: t.radius.header,
       }}
@@ -52,7 +52,7 @@ export const ScreenHeader = ({ title, subtitle, right, children, bgColour }: Scr
         </View>
         {right}
       </View>
-      {children}
+      {children ?? <View style={{ height: 36, marginTop: 12 }} />}
     </View>
   );
 };
