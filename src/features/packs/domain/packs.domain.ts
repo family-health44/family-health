@@ -127,6 +127,11 @@ export function buildTodosSection(todos: Todo[], personId: string): PdfSection {
   return { kind: 'list', heading: 'Open to dos', items };
 }
 
+// The visit's saved pre-appointment notes. Verbatim — no editing, no synthesis.
+export function buildPreNotesSection(preNotes: string | null): PdfSection {
+  return { kind: 'text', heading: 'Pre-appointment notes', body: preNotes ?? '' };
+}
+
 // Free text typed at pack time. Not persisted.
 export function buildQuestionsSection(text: string): PdfSection {
   const items: PdfListItem[] = text
@@ -167,7 +172,9 @@ export interface PackInput {
 // A section is only included if selected AND it has content — a Pack full of
 // empty headings is worse than a shorter Pack.
 function hasContent(s: PdfSection): boolean {
-  return s.kind === 'rows' ? s.rows.length > 0 : s.items.length > 0;
+  if (s.kind === 'rows') return s.rows.length > 0;
+  if (s.kind === 'list') return s.items.length > 0;
+  return s.body.trim().length > 0;
 }
 
 export function buildPackSections(
@@ -176,6 +183,7 @@ export function buildPackSections(
 ): PdfSection[] {
   const builders: Record<PackSectionKey, () => PdfSection> = {
     info: () => buildInfoSection(input.person),
+    prenotes: () => buildPreNotesSection(input.visit.preNotes),
     medications: () => buildMedicationsSection(input.medicationGroups),
     events: () => buildEventsSection(input.eventGroups),
     doctors: () => buildDoctorsSection(input.doctors),
@@ -216,10 +224,12 @@ export function buildPackDocument(
 export function buildPackPlainText(doc: PdfDocument): string {
   const body = doc.sections
     .map((s) => {
-      const lines =
+      const lines: string[] =
         s.kind === 'rows'
           ? s.rows.map((r) => `${r.label}: ${r.value}`)
-          : s.items.map((i) => (i.secondary ? `${i.primary} — ${i.secondary}` : i.primary));
+          : s.kind === 'list'
+            ? s.items.map((i) => (i.secondary ? `${i.primary} — ${i.secondary}` : i.primary))
+            : s.body.split('\n').map((l) => l.trim()).filter((l) => l.length > 0);
       return `${s.heading.toUpperCase()}\n${lines.join('\n')}`;
     })
     .join('\n\n');

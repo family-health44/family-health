@@ -31,7 +31,8 @@ export type InfoCardPdfRow = PdfRow;
 // A section is either label/value rows, or a bulleted list of lines.
 export type PdfSection =
   | { kind: 'rows'; heading: string; rows: PdfRow[] }
-  | { kind: 'list'; heading: string; items: PdfListItem[] };
+  | { kind: 'list'; heading: string; items: PdfListItem[] }
+  | { kind: 'text'; heading: string; body: string };
 
 export interface PdfListItem {
   primary: string;
@@ -50,7 +51,7 @@ const STYLES = `
   * { font-family: -apple-system, Helvetica, Arial, sans-serif; }
   body { padding: 32px; color: #17211C; }
   h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
-  .sub { font-size: 12px; color: #8A857E; margin: 0 0 24px; }
+  .sub { font-size: 12px; color: #5F5B55; margin: 0 0 24px; }
   h2 {
     font-size: 11px; font-weight: 700; text-transform: uppercase;
     letter-spacing: 0.8px; color: #1F5C41;
@@ -60,14 +61,15 @@ const STYLES = `
   section { page-break-inside: avoid; }
   table { width: 100%; border-collapse: collapse; }
   td { padding: 9px 8px; border-bottom: 1px solid #ECE8E1; font-size: 13px; vertical-align: top; }
-  .l { color: #8A857E; width: 40%; }
+  .l { color: #5F5B55; width: 40%; }
   .v { color: #17211C; font-weight: 500; }
   ul { margin: 0; padding: 0; list-style: none; }
   li { padding: 9px 8px; border-bottom: 1px solid #ECE8E1; font-size: 13px; }
   .p { color: #17211C; font-weight: 500; }
-  .s { color: #8A857E; font-size: 12px; margin-top: 2px; }
-  .empty { color: #8A857E; font-size: 13px; padding: 9px 8px; }
-  .foot { margin-top: 32px; font-size: 10px; color: #B0ABA3; }
+  .s { color: #4A4640; font-size: 12px; margin-top: 2px; }
+  .empty { color: #5F5B55; font-size: 13px; padding: 9px 8px; }
+  .tx { color: #17211C; font-size: 13px; line-height: 19px; margin: 0 0 6px; padding: 0 8px; }
+  .foot { margin-top: 32px; font-size: 10px; color: #8A857E; }
 `;
 
 function renderRows(rows: PdfRow[]): string {
@@ -92,8 +94,22 @@ function renderList(items: PdfListItem[]): string {
   return `<ul>${body}</ul>`;
 }
 
+function renderText(body: string): string {
+  if (!body.trim()) return `<p class="empty">Nothing recorded.</p>`;
+  const paras = body
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0)
+    .map((l) => `<p class="tx">${escapeHtml(l)}</p>`)
+    .join('');
+  return paras;
+}
+
 function renderSection(s: PdfSection): string {
-  const inner = s.kind === 'rows' ? renderRows(s.rows) : renderList(s.items);
+  const inner =
+    s.kind === 'rows' ? renderRows(s.rows)
+    : s.kind === 'list' ? renderList(s.items)
+    : renderText(s.body);
   return `<section><h2>${escapeHtml(s.heading)}</h2>${inner}</section>`;
 }
 

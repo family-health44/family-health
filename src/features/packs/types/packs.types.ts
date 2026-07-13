@@ -7,6 +7,7 @@
 
 export type PackSectionKey =
   | 'info'
+  | 'prenotes'
   | 'medications'
   | 'events'
   | 'doctors'
@@ -23,6 +24,7 @@ export interface PackSectionConfig {
 
 export const PACK_SECTIONS: PackSectionConfig[] = [
   { key: 'info', label: 'Person details', hint: 'DOB, Medicare, allergies, health fund' },
+  { key: 'prenotes', label: 'Pre-appointment notes', hint: 'What you saved on this visit' },
   { key: 'medications', label: 'Current medications', hint: 'Active and as-needed' },
   { key: 'events', label: 'Conditions & events', hint: 'Diagnoses, procedures, illnesses' },
   { key: 'doctors', label: 'Doctors & providers', hint: 'Contact details' },
@@ -36,6 +38,7 @@ export type PackSelection = Record<PackSectionKey, boolean>;
 
 export const DEFAULT_PACK_SELECTION: PackSelection = {
   info: true,
+  prenotes: true,
   medications: true,
   events: true,
   doctors: false,

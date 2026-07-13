@@ -79,6 +79,8 @@ export const AppointmentPackScreen = () => {
         return;
       }
       await sharePdfDocument(doc, buildPackPlainText(doc), PACK_FOOTER);
+      // Share sheet has closed (sent, saved, or dismissed) — the pack is done.
+      goBack();
     } catch {
       Alert.alert('Could not create pack', 'Please try again.');
     } finally {
