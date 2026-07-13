@@ -40,7 +40,7 @@ const C_VISIT_ADD = '#2A9D8F';
 
 function fmtPreviewDate(iso: string): string {
   const d = new Date(iso + 'T00:00:00');
-  return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+  return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 }
 function fmtPreviewTime(t: string): string {
   const [h = '0', m = '00'] = t.split(':');
@@ -185,8 +185,7 @@ export const PersonDetailScreen = () => {
                 <View key={t.id} style={{ flexDirection: 'row', gap: 7, marginBottom: 8 }}>
                   <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: RED, marginTop: 5 }} />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ ...Type.caption, fontWeight: '500', color: TextColour.ink }} numberOfLines={1}>{t.title}</Text>
-                    <Text style={{ ...Type.caption, color: TextColour.muted }}>{t.dueDate ? `Due ${fmtPreviewDate(t.dueDate)}` : 'No due date'}</Text>
+                    <Text style={{ ...Type.caption, fontWeight: '500', color: TextColour.ink }} numberOfLines={2}>{t.title}</Text>
                   </View>
                 </View>
               ))}
@@ -200,7 +199,7 @@ export const PersonDetailScreen = () => {
                 <View key={v.id} style={{ flexDirection: 'row', gap: 7, marginBottom: 8 }}>
                   <Icon name="calendar" size={15} color={GREEN} />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ ...Type.caption, fontWeight: '500', color: TextColour.ink }} numberOfLines={1}>{v.title}</Text>
+                    <Text style={{ ...Type.caption, fontWeight: '500', color: TextColour.ink }} numberOfLines={2}>{v.title}</Text>
                     {v.doctorName ? <Text style={{ ...Type.caption, color: TextColour.muted }} numberOfLines={1}>{v.doctorName}</Text> : null}
                     <Text style={{ ...Type.caption, color: TextColour.muted }}>{fmtPreviewDate(v.visitDate)}{v.visitTime ? ` · ${fmtPreviewTime(v.visitTime)}` : ''}</Text>
                   </View>
