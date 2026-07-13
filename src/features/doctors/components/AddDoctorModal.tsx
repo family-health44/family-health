@@ -69,7 +69,7 @@ export const AddDoctorModal = ({ visible, isLoading, onAdd, onDismiss }: AddDoct
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1, justifyContent: 'flex-end' }}
         >
-          <Pressable>
+          <Pressable style={{ maxHeight: '90%' }}>
             <View
               style={{
                 backgroundColor: '#F7F7F4',

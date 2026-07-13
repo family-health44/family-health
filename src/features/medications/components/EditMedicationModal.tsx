@@ -140,7 +140,7 @@ export const EditMedicationModal = ({
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1, justifyContent: 'flex-end' }}
         >
-          <Pressable>
+          <Pressable style={{ maxHeight: '90%' }}>
             <View style={{
               backgroundColor: '#F7F7F4',
               borderTopLeftRadius: 24,
@@ -154,7 +154,7 @@ export const EditMedicationModal = ({
                 borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 20,
               }} />
 
-              <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
+              <ScrollView style={{ flexGrow: 0 }} contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
                 <Text style={{ fontSize: 22, fontWeight: '700', color: '#17211C', fontFamily: Fonts.serif, marginBottom: 4 }}>
                   Edit medication
                 </Text>

@@ -119,7 +119,7 @@ export const AddMedicationModal = ({
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1, justifyContent: 'flex-end' }}
         >
-          <Pressable>
+          <Pressable style={{ maxHeight: '90%' }}>
             <View style={{
               backgroundColor: '#F7F7F4',
               borderTopLeftRadius: 24,
@@ -133,7 +133,7 @@ export const AddMedicationModal = ({
                 borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 20,
               }} />
 
-              <ScrollView contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
+              <ScrollView style={{ flexGrow: 0 }} contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
                 <Text style={{ fontSize: 22, fontWeight: '700', color: '#17211C', fontFamily: Fonts.serif, marginBottom: 4 }}>
                   Add medication
                 </Text>
