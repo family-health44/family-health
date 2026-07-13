@@ -7,7 +7,7 @@
 
 import { PDFDocument } from 'pdf-lib';
 import { File, Paths } from 'expo-file-system';
-import { decode } from 'base64-arraybuffer';
+import { decode, encode } from 'base64-arraybuffer';
 
 import { createSignedUrl } from '@/features/documents/repository/documents.repository';
 import type { Document } from '@/features/documents/types/documents.types';
@@ -48,14 +48,7 @@ async function downloadBase64(doc: Document): Promise<string> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Download failed: ${res.status}`);
   const buf = await res.arrayBuffer();
-
-  let binary = '';
-  const bytes = new Uint8Array(buf);
-  const CHUNK = 0x8000; // avoid blowing the arg limit on String.fromCharCode
-  for (let i = 0; i < bytes.length; i += CHUNK) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + CHUNK));
-  }
-  return btoa(binary);
+  return encode(buf);
 }
 
 // Draws an embedded image on its own page, scaled to fit A4 with a margin.
@@ -167,10 +160,10 @@ export async function mergeDocumentsIntoPack(
     return { uri: packUri, mergedCount: 0, skipped };
   }
 
-  const outBytes = await merged.saveAsBase64();
+  const outBase64 = await merged.saveAsBase64();
   const out = new File(Paths.cache, `AppointmentPack-${Date.now()}.pdf`);
   out.create({ overwrite: true });
-  out.write(decode(outBytes) as unknown as Uint8Array);
+  out.write(new Uint8Array(decode(outBase64)));
 
   return { uri: out.uri, mergedCount, skipped };
 }

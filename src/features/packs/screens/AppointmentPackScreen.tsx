@@ -124,8 +124,10 @@ export const AppointmentPackScreen = () => {
       await sharePdfFile(uri, buildPackPlainText(doc));
       // Share sheet has closed (sent, saved, or dismissed) — the pack is done.
       goBack();
-    } catch {
-      Alert.alert('Could not create pack', 'Please try again.');
+    } catch (e) {
+      // TEMP: surface the real error while we shake out the merge path on device.
+      const msg = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+      Alert.alert('Could not create pack', msg);
     } finally {
       setIsSharing(false);
       setProgress(null);
