@@ -2,12 +2,16 @@
 // Month calendar — full grid Mon–Sun, today highlighted.
 // Two layouts (toggle in the nav row):
 //   compact  — dot markers + tap-a-day to reveal its visits below
-//   detailed — each cell shows visit chips inline (cap 2 + "+N")
+//   detailed — each cell shows visit chips inline (cap 4 + "+N")
+//
+// Accent discipline: green marks ONE thing — the selected day. Today is a
+// neutral ring; chevrons and the layout toggle are neutral chrome.
 
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState, useEffect } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 
+import { Type, TextColour } from '@/design-system/tokens/typography';
 import { buildMonthGrid, WEEK_DAY_LABELS, MONTH_NAMES, todayISO } from '../domain/visits.domain';
 import { VisitCard } from './VisitCard';
 import { getPersonColour } from '@/shared/utils/avatar';
@@ -15,6 +19,12 @@ import { getPersonColour } from '@/shared/utils/avatar';
 import type { Visit, CalendarDay } from '../types/visits.types';
 
 const MAX_CHIPS = 4;
+
+const GREEN = '#1F5C41';
+const DIVIDER = 'rgba(23,33,28,0.07)';
+const TRACK = '#ECEBE5';
+const OUT_OF_MONTH = 'rgba(23,33,28,0.28)';
+const DOT = '#2F80ED';
 
 interface MonthCalendarViewProps {
   visits: Visit[];
@@ -61,42 +71,57 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Month navigation + view toggle */}
+      {/* Month navigation + layout toggle */}
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingBottom: 12 }}>
-        <PressableBase onPress={goToPrevMonth} accessibilityLabel="Previous month" style={(pressed) => ({ padding: 8, opacity: pressed ? 0.5 : 1 })}>
-          <Text style={{ fontSize: 20, color: '#1F5C41' }}>‹</Text>
+        <PressableBase onPress={goToPrevMonth} accessibilityLabel="Previous month" style={(pressed) => ({ paddingHorizontal: 10, paddingVertical: 6, opacity: pressed ? 0.5 : 1 })}>
+          <Text style={{ fontSize: 20, lineHeight: 22, color: TextColour.secondary }}>‹</Text>
         </PressableBase>
-        <Text style={{ flex: 1, textAlign: 'center', fontSize: 15, fontWeight: '600', color: '#1A1A1A' }}>
+
+        <Text style={{ flex: 1, textAlign: 'center', ...Type.heading, color: TextColour.ink }}>
           {MONTH_NAMES[month]} {year}
         </Text>
-        <PressableBase onPress={goToNextMonth} accessibilityLabel="Next month" style={(pressed) => ({ padding: 8, opacity: pressed ? 0.5 : 1 })}>
-          <Text style={{ fontSize: 20, color: '#1F5C41' }}>›</Text>
+
+        <PressableBase onPress={goToNextMonth} accessibilityLabel="Next month" style={(pressed) => ({ paddingHorizontal: 10, paddingVertical: 6, opacity: pressed ? 0.5 : 1 })}>
+          <Text style={{ fontSize: 20, lineHeight: 22, color: TextColour.secondary }}>›</Text>
         </PressableBase>
-        <PressableBase
-          onPress={() => setDetailed(d => !d)}
-          accessibilityRole="button"
-          accessibilityLabel={detailed ? 'Switch to compact view' : 'Switch to detailed view'}
-          style={(pressed) => ({
-            marginLeft: 6,
-            backgroundColor: detailed ? '#1F5C41' : 'white',
-            borderWidth: 1,
-            borderColor: detailed ? '#1F5C41' : '#BFD4C8',
-            borderRadius: 6,
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-            opacity: pressed ? 0.7 : 1,
+
+        {/* Segmented pill — matches VisitsViewToggle */}
+        <View style={{ flexDirection: 'row', backgroundColor: TRACK, borderRadius: 9, padding: 3, marginLeft: 6 }}>
+          {([false, true] as const).map((mode) => {
+            const isActive = detailed === mode;
+            return (
+              <PressableBase
+                key={String(mode)}
+                onPress={() => setDetailed(mode)}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: isActive }}
+                accessibilityLabel={mode ? 'Detailed view' : 'Compact view'}
+                style={(pressed) => ({
+                  paddingHorizontal: 10,
+                  paddingVertical: 5,
+                  borderRadius: 6,
+                  backgroundColor: isActive ? '#FFFFFF' : 'transparent',
+                  shadowColor: isActive ? '#17211C' : 'transparent',
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: isActive ? 0.08 : 0,
+                  shadowRadius: 2,
+                  elevation: isActive ? 1 : 0,
+                  opacity: pressed ? 0.7 : 1,
+                })}
+              >
+                <Text style={{ ...Type.caption, fontWeight: isActive ? '700' : '600', color: isActive ? TextColour.ink : TextColour.muted }}>
+                  {mode ? 'Detailed' : 'Compact'}
+                </Text>
+              </PressableBase>
+            );
           })}
-        >
-          <Text style={{ fontSize: 11, fontWeight: '600', color: detailed ? 'white' : '#1F5C41' }}>
-            {detailed ? 'Compact' : 'Detailed'}
-          </Text>
-        </PressableBase>
+        </View>
       </View>
 
       {/* Day-of-week headers */}
-      <View style={{ flexDirection: 'row', paddingHorizontal: 8, marginBottom: 4 }}>
+      <View style={{ flexDirection: 'row', paddingHorizontal: 8, marginBottom: 6 }}>
         {WEEK_DAY_LABELS.map((label) => (
-          <Text key={label} style={{ flex: 1, textAlign: 'center', fontSize: 11, fontWeight: '600', color: 'rgba(23,33,28,0.65)' }}>
+          <Text key={label} style={{ flex: 1, textAlign: 'center', ...Type.micro, color: TextColour.faint }}>
             {label}
           </Text>
         ))}
@@ -116,18 +141,18 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
                   width: '14.28%',
                   height: `${100 / rows}%`,
                   borderTopWidth: 1,
-                  borderTopColor: '#E3E2DB',
+                  borderTopColor: DIVIDER,
                   paddingHorizontal: 2,
                   paddingTop: 2,
                   overflow: 'hidden',
-                  backgroundColor: isToday ? '#E4EFE9' : 'transparent',
                 }}
               >
                 <Text style={{
-                  fontSize: 10,
+                  ...Type.micro,
+                  letterSpacing: 0,
                   textAlign: 'right',
-                  fontWeight: isToday ? '700' : '400',
-                  color: isToday ? '#1F5C41' : !day.isCurrentMonth ? '#C8C4BC' : '#1A1A1A',
+                  fontWeight: isToday ? '700' : '500',
+                  color: isToday ? TextColour.ink : !day.isCurrentMonth ? OUT_OF_MONTH : TextColour.secondary,
                 }}>
                   {day.dayNumber}
                 </Text>
@@ -155,7 +180,7 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
                   );
                 })}
                 {extra > 0 && (
-                  <Text style={{ fontSize: 8, fontWeight: '700', color: 'rgba(23,33,28,0.65)', marginTop: 1, paddingHorizontal: 3 }}>
+                  <Text style={{ fontSize: 8, fontWeight: '700', color: TextColour.faint, marginTop: 1, paddingHorizontal: 3 }}>
                     +{extra}
                   </Text>
                 )}
@@ -183,20 +208,20 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
                   <View style={{
                     width: 32, height: 32, borderRadius: 16,
                     alignItems: 'center', justifyContent: 'center',
-                    backgroundColor: isSelected ? '#1F5C41' : isToday ? '#E4EFE9' : 'transparent',
-                    borderWidth: isToday && !isSelected ? 1 : 0,
-                    borderColor: '#1F5C41',
+                    backgroundColor: isSelected ? GREEN : 'transparent',
+                    borderWidth: isToday && !isSelected ? 1.5 : 0,
+                    borderColor: 'rgba(23,33,28,0.22)',
                   }}>
                     <Text style={{
-                      fontSize: 13,
+                      ...Type.label,
                       fontWeight: isToday || isSelected ? '700' : '400',
-                      color: isSelected ? '#FFFFFF' : !day.isCurrentMonth ? '#C8C4BC' : '#1A1A1A',
+                      color: isSelected ? '#FFFFFF' : !day.isCurrentMonth ? OUT_OF_MONTH : TextColour.ink,
                     }}>
                       {day.dayNumber}
                     </Text>
                   </View>
                   {hasVisits && (
-                    <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: isSelected ? '#FFFFFF' : '#2F80ED', marginTop: 3 }} />
+                    <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: isSelected ? '#FFFFFF' : DOT, marginTop: 3 }} />
                   )}
                 </PressableBase>
               );
@@ -204,18 +229,18 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
           </View>
 
           {/* Selected day visits — region always reserved so the grid never shifts */}
-          <View style={{ flex: 1, borderTopWidth: 1, borderTopColor: '#E3E2DB', marginTop: 8 }}>
+          <View style={{ flex: 1, borderTopWidth: 1, borderTopColor: DIVIDER, marginTop: 10 }}>
             {selectedDay && (
               <ScrollView
                 contentContainerStyle={{ padding: 16 }}
                 showsVerticalScrollIndicator
                 indicatorStyle="black"
               >
-                <Text style={{ fontSize: 13, fontWeight: '600', color: 'rgba(23,33,28,0.65)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 10 }}>
+                <Text style={{ ...Type.micro, textTransform: 'uppercase', color: TextColour.faint, marginBottom: 10 }}>
                   {new Date(selectedDay.date + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' })}
                 </Text>
                 {selectedDay.visits.length === 0 ? (
-                  <Text style={{ fontSize: 14, color: 'rgba(23,33,28,0.65)' }}>No visits on this day</Text>
+                  <Text style={{ ...Type.body, color: TextColour.muted }}>No visits on this day</Text>
                 ) : (
                   selectedDay.visits.map((visit) => (
                     <VisitCard key={visit.id} visit={visit} onPress={onVisitPress} />

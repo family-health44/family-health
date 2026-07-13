@@ -6,13 +6,17 @@ import { View, Text, Pressable } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
-import { Fonts } from '@/design-system/tokens/fonts';
+import { Type, TextColour } from '@/design-system/tokens/typography';
 import { AuthScreenShell } from '../components/AuthScreenShell';
 import { Input } from '@/design-system/components/Input';
 import { Button } from '@/design-system/components/Button';
 import { useSignUp } from '../hooks/useSignUp';
 import { signUpSchema } from '../types/auth.types';
 import type { SignUpFormValues } from '../types/auth.types';
+
+const GREEN = '#1F5C41';
+const ERROR_BG = '#F5E8EB';
+const ERROR_TEXT = '#8F2E3B';
 
 export const SignUpScreen = () => {
   const { isLoading, error, needsConfirmation, confirmationEmail, signUp, clearError } = useSignUp();
@@ -31,9 +35,9 @@ export const SignUpScreen = () => {
     return (
       <AuthScreenShell emoji="📧" title="Check your email">
         <View style={{ gap: 16 }}>
-          <Text style={{ fontSize: 14, color: 'rgba(23,33,28,0.65)', textAlign: 'center', lineHeight: 21 }}>
+          <Text style={{ ...Type.body, color: TextColour.secondary, textAlign: 'center', lineHeight: 21 }}>
             We've sent a confirmation link to{'\n'}
-            <Text style={{ fontWeight: '700', color: '#1F5C41' }}>{confirmationEmail}</Text>.
+            <Text style={{ fontWeight: '700', color: TextColour.ink }}>{confirmationEmail}</Text>.
             {'\n\n'}Tap the link to confirm your account, then sign in.
           </Text>
           <Button label="Back to sign in" variant="primary" size="lg" isFullWidth
@@ -50,15 +54,15 @@ export const SignUpScreen = () => {
       title="Create your account"
       subtitle="If you've been invited to a family, sign up with the email you were invited with."
       footer={
-        <View className="flex-row items-center justify-center gap-1">
-          <Text className="text-sm text-[#57605B]">Already have an account?</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+          <Text style={{ ...Type.body, color: TextColour.muted }}>Already have an account?</Text>
           <Pressable onPress={() => router.replace('/(auth)/sign-in')} accessibilityRole="link">
-            <Text className="text-sm font-semibold text-[#1F5C41]">Sign in</Text>
+            <Text style={{ ...Type.body, fontWeight: '600', color: GREEN }}>Sign in</Text>
           </Pressable>
         </View>
       }
     >
-      <View className="gap-5">
+      <View style={{ gap: 20 }}>
         <Controller control={control} name="email" render={({ field: { onChange, onBlur, value } }) => (
           <Input label="Email" isRequired keyboardType="email-address" textContentType="emailAddress"
             autoComplete="email" autoCapitalize="none" returnKeyType="next" value={value}
@@ -80,8 +84,8 @@ export const SignUpScreen = () => {
         )} />
 
         {error ? (
-          <View className="rounded-xl border border-[#E0BDC4] bg-[#F5E8EB] px-4 py-3" accessibilityRole="alert">
-            <Text className="text-sm text-[#8F2E3B]">{error.message}</Text>
+          <View style={{ borderRadius: 12, backgroundColor: ERROR_BG, paddingHorizontal: 16, paddingVertical: 12 }} accessibilityRole="alert">
+            <Text style={{ ...Type.body, color: ERROR_TEXT }}>{error.message}</Text>
           </View>
         ) : null}
 

@@ -4,10 +4,21 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { PressableBase } from '@/design-system/components/PressableBase';
+import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
 import { useGroupInvitesQuery } from '../queries/invites.queries';
 import { useCreateInviteMutation, useRevokeInviteMutation } from '../mutations/invites.mutations';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const DIVIDER = 'rgba(23,33,28,0.07)';
+const GREEN = '#1F5C41';
+const RED = '#B33A4A';
+const AMBER = '#C9956A';
+
+const Card = ({ children }: { children: React.ReactNode }) => (
+  <View style={{ backgroundColor: 'white', borderRadius: 14, overflow: 'hidden', marginBottom: 8, ...Shadow.resting }}>{children}</View>
+);
+const Divider = () => <View style={{ height: 1, backgroundColor: DIVIDER, marginHorizontal: 15 }} />;
 
 export const InviteFamilyMemberSection = () => {
   const { data: invites, isLoading } = useGroupInvitesQuery();
@@ -47,13 +58,14 @@ export const InviteFamilyMemberSection = () => {
 
   return (
     <>
-      <Text style={{ fontSize: 10, fontWeight: '700', color: 'rgba(23,33,28,0.55)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 16 }}>
+      <Text style={{ ...Type.micro, textTransform: 'uppercase', color: TextColour.faint, marginBottom: 8, marginTop: 20 }}>
         Family Members
       </Text>
-      <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
+
+      <Card>
         {adding ? (
-          <View style={{ padding: 14, gap: 10 }}>
-            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>Invite by email</Text>
+          <View style={{ padding: 16, gap: 12 }}>
+            <Text style={{ ...Type.caption, color: TextColour.muted }}>Invite by email</Text>
             <TextInput
               value={email}
               onChangeText={setEmail}
@@ -61,56 +73,76 @@ export const InviteFamilyMemberSection = () => {
               autoCapitalize="none"
               keyboardType="email-address"
               placeholder="name@example.com"
-              placeholderTextColor="#C4BDB5"
-              style={{ fontSize: 14, color: '#17211C', borderWidth: 1, borderColor: '#1F5C41', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8 }}
+              placeholderTextColor={TextColour.faint}
+              style={{ ...Type.body, color: TextColour.ink, backgroundColor: '#F4F2EC', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10 }}
             />
             <View style={{ flexDirection: 'row', gap: 8 }}>
-              <PressableBase onPress={() => { setAdding(false); setEmail(''); }} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#E3E2DB', alignItems: 'center', opacity: pressed ? 0.6 : 1 })}>
-                <Text style={{ fontSize: 14, color: 'rgba(23,33,28,0.65)' }}>Cancel</Text>
+              <PressableBase
+                onPress={() => { setAdding(false); setEmail(''); }}
+                style={(pressed) => ({ flex: 1, paddingVertical: 11, borderRadius: 10, backgroundColor: '#F4F2EC', alignItems: 'center', opacity: pressed ? 0.6 : 1 })}
+              >
+                <Text style={{ ...Type.body, fontWeight: '600', color: TextColour.secondary }}>Cancel</Text>
               </PressableBase>
-              <PressableBase onPress={handleSend} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, backgroundColor: '#1F5C41', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
-                <Text style={{ fontSize: 14, color: 'white', fontWeight: '600' }}>{createInvite.isPending ? 'Sending…' : 'Send invite'}</Text>
+              <PressableBase
+                onPress={handleSend}
+                style={(pressed) => ({ flex: 1, paddingVertical: 11, borderRadius: 10, backgroundColor: GREEN, alignItems: 'center', opacity: pressed ? 0.7 : 1 })}
+              >
+                <Text style={{ ...Type.body, fontWeight: '600', color: 'white' }}>
+                  {createInvite.isPending ? 'Sending…' : 'Send invite'}
+                </Text>
               </PressableBase>
             </View>
           </View>
         ) : (
-          <PressableBase onPress={() => setAdding(true)} style={(pressed) => ({ padding: 14, flexDirection: 'row', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
-            <Text style={{ fontSize: 14, color: '#1F5C41', fontWeight: '500', flex: 1 }}>+ Invite a family member</Text>
+          <PressableBase
+            onPress={() => setAdding(true)}
+            style={(pressed) => ({ paddingVertical: 15, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}
+          >
+            <Text style={{ ...Type.body, fontWeight: '600', color: GREEN, flex: 1 }}>+ Invite a family member</Text>
           </PressableBase>
         )}
-      </View>
+      </Card>
 
       {isLoading ? (
-        <View style={{ padding: 14 }}><ActivityIndicator color="#1F5C41" /></View>
+        <View style={{ paddingVertical: 16 }}><ActivityIndicator color={GREEN} /></View>
       ) : null}
 
       {pending.length > 0 ? (
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
+        <Card>
           {pending.map((inv, idx) => (
-            <View key={inv.id} style={{ padding: 14, flexDirection: 'row', alignItems: 'center', borderTopWidth: idx === 0 ? 0 : 1, borderTopColor: '#F0EFEA' }}>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 13, color: '#17211C' }}>{inv.invited_email}</Text>
-                <Text style={{ fontSize: 11, color: '#C9956A', marginTop: 2 }}>Pending</Text>
+            <View key={inv.id}>
+              {idx > 0 ? <Divider /> : null}
+              <View style={{ paddingVertical: 13, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ ...Type.body, color: TextColour.ink }}>{inv.invited_email}</Text>
+                  <Text style={{ ...Type.caption, color: AMBER, marginTop: 2 }}>Pending</Text>
+                </View>
+                <PressableBase
+                  onPress={() => handleRevoke(inv.id, inv.invited_email)}
+                  style={(pressed) => ({ opacity: pressed ? 0.6 : 1, paddingHorizontal: 4, paddingVertical: 4 })}
+                >
+                  <Text style={{ ...Type.label, color: RED }}>Revoke</Text>
+                </PressableBase>
               </View>
-              <PressableBase onPress={() => handleRevoke(inv.id, inv.invited_email)} style={(pressed) => ({ opacity: pressed ? 0.6 : 1, paddingHorizontal: 4 })}>
-                <Text style={{ fontSize: 13, color: '#B33A4A' }}>Revoke</Text>
-              </PressableBase>
             </View>
           ))}
-        </View>
+        </Card>
       ) : null}
 
       {accepted.length > 0 ? (
-        <View style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, overflow: 'hidden', marginBottom: 4 }}>
+        <Card>
           {accepted.map((inv, idx) => (
-            <View key={inv.id} style={{ padding: 14, flexDirection: 'row', alignItems: 'center', borderTopWidth: idx === 0 ? 0 : 1, borderTopColor: '#F0EFEA' }}>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 13, color: '#17211C' }}>{inv.invited_email}</Text>
-                <Text style={{ fontSize: 11, color: '#1F5C41', marginTop: 2 }}>Joined</Text>
+            <View key={inv.id}>
+              {idx > 0 ? <Divider /> : null}
+              <View style={{ paddingVertical: 13, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ ...Type.body, color: TextColour.ink }}>{inv.invited_email}</Text>
+                  <Text style={{ ...Type.caption, color: GREEN, marginTop: 2 }}>Joined</Text>
+                </View>
               </View>
             </View>
           ))}
-        </View>
+        </Card>
       ) : null}
     </>
   );

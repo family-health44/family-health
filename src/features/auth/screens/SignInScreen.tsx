@@ -4,13 +4,17 @@ import { View, Text, Pressable } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
-import { Fonts } from '@/design-system/tokens/fonts';
+import { Type, TextColour } from '@/design-system/tokens/typography';
 import { AuthScreenShell } from '../components/AuthScreenShell';
 import { Input } from '@/design-system/components/Input';
 import { Button } from '@/design-system/components/Button';
 import { useSignIn } from '../hooks/useSignIn';
 import { signInSchema } from '../types/auth.types';
 import type { SignInFormValues } from '../types/auth.types';
+
+const GREEN = '#1F5C41';
+const ERROR_BG = '#F5E8EB';
+const ERROR_TEXT = '#8F2E3B';
 
 export const SignInScreen = () => {
   const { isLoading, error, signIn, clearError } = useSignIn();
@@ -25,7 +29,7 @@ export const SignInScreen = () => {
   }, []);
 
   const title = (
-    <Text style={{ fontFamily: Fonts.serif, fontSize: 40, fontWeight: '700', color: '#FFFFFF', lineHeight: 42, textAlign: 'center' }}>
+    <Text style={{ fontSize: 40, fontWeight: '700', color: '#FFFFFF', lineHeight: 42, textAlign: 'center' }}>
       FamFiles
     </Text>
   );
@@ -36,15 +40,15 @@ export const SignInScreen = () => {
       title={title}
       subtitle="Your family's records, all in one place"
       footer={
-        <View className="flex-row items-center justify-center gap-1">
-          <Text className="text-sm text-[#57605B]">{"Don't have an account?"}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+          <Text style={{ ...Type.body, color: TextColour.muted }}>{"Don't have an account?"}</Text>
           <Pressable onPress={() => router.push('/(auth)/sign-up' as never)} accessibilityRole="link">
-            <Text className="text-sm font-semibold text-[#1F5C41]">Sign up</Text>
+            <Text style={{ ...Type.body, fontWeight: '600', color: GREEN }}>Sign up</Text>
           </Pressable>
         </View>
       }
     >
-      <View className="gap-5">
+      <View style={{ gap: 20 }}>
         <Controller control={control} name="email" render={({ field: { onChange, onBlur, value } }) => (
           <Input label="Email" isRequired keyboardType="email-address" textContentType="emailAddress"
             autoComplete="email" autoCapitalize="none" returnKeyType="next" value={value}
@@ -58,12 +62,12 @@ export const SignInScreen = () => {
             value={value} onChangeText={(text) => { onChange(text); if (error) clearError(); }}
             onBlur={onBlur} error={errors.password?.message} />
         )} />
-        <Pressable onPress={() => router.push('/(auth)/forgot-password' as never)} accessibilityRole="link" className="self-end -mt-2">
-          <Text className="text-sm font-semibold text-[#1F5C41]">Forgot password?</Text>
+        <Pressable onPress={() => router.push('/(auth)/forgot-password' as never)} accessibilityRole="link" style={{ alignSelf: 'flex-end', marginTop: -8 }}>
+          <Text style={{ ...Type.label, color: TextColour.secondary }}>Forgot password?</Text>
         </Pressable>
         {error ? (
-          <View className="rounded-xl border border-[#E0BDC4] bg-[#F5E8EB] px-4 py-3" accessibilityRole="alert">
-            <Text className="text-sm text-[#8F2E3B]">{error.message}</Text>
+          <View style={{ borderRadius: 12, backgroundColor: ERROR_BG, paddingHorizontal: 16, paddingVertical: 12 }} accessibilityRole="alert">
+            <Text style={{ ...Type.body, color: ERROR_TEXT }}>{error.message}</Text>
           </View>
         ) : null}
         <Button label="Sign in" variant="primary" size="lg" isFullWidth
