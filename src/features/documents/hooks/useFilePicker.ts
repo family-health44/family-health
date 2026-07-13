@@ -43,18 +43,29 @@ export async function pickFromPhotos(): Promise<PickedFile | null> {
     return null;
   }
 
+  // iOS hands back HEIC by default. Nothing outside Apple reads it — it cannot be
+  // embedded in a PDF, previewed reliably, or opened by a clinic. `Compatible` tells
+  // iOS to transcode to JPEG on export, so HEIC never enters storage.
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ['images'],
-    quality: 1,
+    quality: 0.9,
     allowsEditing: false,
+    preferredAssetRepresentationMode:
+      ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Compatible,
   });
   if (result.canceled || !result.assets?.[0]) return null;
-
   const a = result.assets[0];
+
+  // Never trust the picker's mimeType — it has reported image/jpeg for HEIC files.
+  // Derive it from the filename, and normalise any .heic name to .jpg.
+  const rawName = a.fileName ?? nameFromUri(a.uri, 'jpg');
+  const name = rawName.replace(/\.(heic|heif)$/i, '.jpg');
+  const isPng = /\.png$/i.test(name);
+
   return {
     uri: a.uri,
-    name: a.fileName ?? nameFromUri(a.uri, 'jpg'),
-    mimeType: a.mimeType ?? 'image/jpeg',
+    name,
+    mimeType: isPng ? 'image/png' : 'image/jpeg',
     size: a.fileSize ?? null,
   };
 }
