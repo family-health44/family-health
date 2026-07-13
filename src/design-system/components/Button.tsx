@@ -64,6 +64,7 @@ export const Button = ({
       accessibilityLabel={label}
       accessibilityState={{ disabled: isDisabled, busy: isLoading }}
       disabled={isDisabled}
+      {...pressableProps}
       style={({ pressed }) => ([{
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
         ...sizeContainer[size],
@@ -71,7 +72,6 @@ export const Button = ({
         width: isFullWidth ? '100%' : undefined,
         opacity: isDisabled ? 0.5 : 1,
       }, container(variant, pressed)])}
-      {...pressableProps}
     >
       {isLoading ? (
         <ActivityIndicator size="small" color={spinnerColours[variant]} accessibilityLabel="Loading" />
