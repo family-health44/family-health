@@ -64,14 +64,13 @@ export const Button = ({
       accessibilityLabel={label}
       accessibilityState={{ disabled: isDisabled, busy: isLoading }}
       disabled={isDisabled}
-      style={({ pressed }) => ({
+      style={({ pressed }) => ([{
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-        ...container(variant, pressed),
         ...sizeContainer[size],
         alignSelf: isFullWidth ? 'stretch' : 'flex-start',
         width: isFullWidth ? '100%' : undefined,
         opacity: isDisabled ? 0.5 : 1,
-      })}
+      }, container(variant, pressed)])}
       {...pressableProps}
     >
       {isLoading ? (
