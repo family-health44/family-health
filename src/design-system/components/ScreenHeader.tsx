@@ -32,6 +32,7 @@ export const ScreenHeader = ({ title, subtitle, right, children, bgColour, title
   const isFocused = useIsFocused();
   return (
     <View
+      onLayout={(e) => console.warn('[HDR]', title, 'h=' + e.nativeEvent.layout.height)}
       style={{
         backgroundColor: bgColour ?? t.colours.headerBg,
         paddingTop: insets.top + 6,
