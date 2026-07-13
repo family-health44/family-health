@@ -68,55 +68,59 @@ export const PersonNotesScreen = ({ personId, personName }: PersonNotesScreenPro
     return sortByDate(filtered, sortOrder);
   }, [notes, filter, sortOrder]);
 
+  const HiddenToggle = (
+    <PressableBase
+      onPress={() => setShowHidden(!showHidden)}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: showHidden }}
+      accessibilityLabel="Show hidden"
+      style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 6, opacity: pressed ? 0.7 : 1 })}
+    >
+      <Text style={{ fontSize: 11, fontWeight: '500', color: 'rgba(255,255,255,0.85)' }}>Hidden</Text>
+      <View style={{ width: 14, height: 14, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.8)', borderRadius: 3, backgroundColor: showHidden ? '#FFFFFF' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+        {showHidden && <Text style={{ color: '#1F5C41', fontSize: 9, lineHeight: 12, fontWeight: '700' }}>✓</Text>}
+      </View>
+    </PressableBase>
+  );
+
   if (isLoading) return <LoadingState message="Loading notes..." />;
   if (error) return <ErrorState message={error.message} />;
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
-      <SubScreenHeader title="Notes" subtitle={personName || undefined} />
-      <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <PressableBase
-              onPress={() => setShowHidden((s) => !s)}
-              accessibilityRole="button"
-              accessibilityLabel={showHidden ? 'Hide hidden notes' : 'Show hidden notes'}
-              style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: showHidden ? '#1F5C41' : (pressed ? '#F0EFEA' : 'white'), borderWidth: 1, borderColor: showHidden ? '#1F5C41' : '#E3E2DB', borderRadius: 8, paddingHorizontal: 11, paddingVertical: 6 })}
-            >
-              <Text style={{ fontSize: 13 }}>{showHidden ? '🙉' : '🙈'}</Text>
-              <Text style={{ fontSize: 12, fontWeight: '600', color: showHidden ? 'white' : 'rgba(23,33,28,0.65)' }}>Hidden</Text>
-            </PressableBase>
-            <PressableBase
-              onPress={() => setSortOrder((o) => (o === 'newest' ? 'oldest' : 'newest'))}
-              accessibilityRole="button"
-              accessibilityLabel={`Sort ${sortOrder === 'newest' ? 'newest' : 'oldest'} first`}
-              style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: pressed ? '#F0EFEA' : 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 8, paddingHorizontal: 11, paddingVertical: 6 })}
-            >
-              <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.65)' }}>{sortOrder === 'newest' ? '↓' : '↑'}</Text>
-              <Text style={{ fontSize: 12, fontWeight: '600', color: 'rgba(23,33,28,0.65)' }}>{sortOrder === 'newest' ? 'Newest' : 'Oldest'}</Text>
-            </PressableBase>
-          </View>
+      <SubScreenHeader title="Notes" subtitle={personName || undefined} right={HiddenToggle} />
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 6 }}>
+        <View>
+          <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginBottom: 6 }}>Sort</Text>
+          <PressableBase
+            onPress={() => setSortOrder((o) => (o === 'newest' ? 'oldest' : 'newest'))}
+            accessibilityRole="button"
+            accessibilityLabel={`Sort ${sortOrder === 'newest' ? 'newest' : 'oldest'} first`}
+            style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: pressed ? '#F0EFEA' : 'white', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6 })}
+          >
+            <Text style={{ fontSize: 12, color: 'rgba(23,33,28,0.65)' }}>{sortOrder === 'newest' ? '↓' : '↑'}</Text>
+            <Text style={{ fontSize: 12, fontWeight: '600', color: 'rgba(23,33,28,0.65)' }}>{sortOrder === 'newest' ? 'Newest' : 'Oldest'}</Text>
+          </PressableBase>
         </View>
-      </View>
-
-      <View style={{ paddingHorizontal: 16, paddingBottom: 6 }}>
-        <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginBottom: 6 }}>Filter</Text>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          {FILTER_CHIPS.map((chip) => {
-            const active = filter === chip.key;
-            return (
-              <PressableBase
-                key={chip.key}
-                onPress={() => setFilter((f) => (f === chip.key ? null : chip.key))}
-                accessibilityRole="button"
-                accessibilityLabel={`Filter by ${chip.label}`}
-                style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: active ? '#1F5C41' : 'white', borderWidth: 1, borderColor: active ? '#1F5C41' : '#E3E2DB', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6, opacity: pressed ? 0.7 : 1 })}
-              >
-                <Text style={{ fontSize: 12 }}>{chip.emoji}</Text>
-                <Text style={{ fontSize: 12, fontWeight: '600', color: active ? 'white' : 'rgba(23,33,28,0.65)' }}>{chip.label}</Text>
-              </PressableBase>
-            );
-          })}
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginBottom: 6 }}>Filter</Text>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            {FILTER_CHIPS.map((chip) => {
+              const active = filter === chip.key;
+              return (
+                <PressableBase
+                  key={chip.key}
+                  onPress={() => setFilter((f) => (f === chip.key ? null : chip.key))}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Filter by ${chip.label}`}
+                  style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: active ? '#1F5C41' : 'white', borderWidth: 1, borderColor: active ? '#1F5C41' : '#E3E2DB', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6, opacity: pressed ? 0.7 : 1 })}
+                >
+                  <Text style={{ fontSize: 12 }}>{chip.emoji}</Text>
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: active ? 'white' : 'rgba(23,33,28,0.65)' }}>{chip.label}</Text>
+                </PressableBase>
+              );
+            })}
+          </View>
         </View>
       </View>
 
