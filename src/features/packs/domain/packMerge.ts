@@ -5,7 +5,7 @@
 // and the whole thing lives in the JS heap. Anything skipped is reported back so
 // the UI can say so. Nothing ever vanishes silently.
 
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, degrees } from 'pdf-lib';
 import { File, Paths } from 'expo-file-system';
 import { decode, encode } from 'base64-arraybuffer';
 
@@ -56,26 +56,135 @@ async function downloadBase64(doc: Document): Promise<string> {
   return encode(buf);
 }
 
-// Draws an embedded image on its own page, scaled to fit A4 with a margin.
+// ── EXIF orientation ─────────────────────────────────────────────────────────
+// pdf-lib draws the raw pixel grid and ignores EXIF. Photo viewers honour the
+// orientation tag, so a photo can look upright everywhere EXCEPT in the merged
+// PDF. We read the tag ourselves and bake the rotation into the draw call.
+//
+// Values 1-8 per the EXIF spec. 5-8 transpose the image (width/height swap).
+function readJpegOrientation(bytes: ArrayBuffer): number {
+  const view = new DataView(bytes);
+  if (view.byteLength < 4 || view.getUint16(0) !== 0xffd8) return 1; // not a JPEG
+
+  let offset = 2;
+  while (offset + 4 <= view.byteLength) {
+    const marker = view.getUint16(offset);
+    const size = view.getUint16(offset + 2);
+    if (size < 2) return 1;
+
+    // APP1 — the EXIF segment
+    if (marker === 0xffe1) {
+      const exifStart = offset + 4;
+      // 'Exif\0\0'
+      if (exifStart + 6 > view.byteLength || view.getUint32(exifStart) !== 0x45786966) return 1;
+
+      const tiff = exifStart + 6;
+      if (tiff + 8 > view.byteLength) return 1;
+
+      // Byte order: 'II' little-endian, 'MM' big-endian
+      const le = view.getUint16(tiff) === 0x4949;
+      const ifdOffset = view.getUint32(tiff + 4, le);
+      const ifd = tiff + ifdOffset;
+      if (ifd + 2 > view.byteLength) return 1;
+
+      const count = view.getUint16(ifd, le);
+      for (let i = 0; i < count; i++) {
+        const entry = ifd + 2 + i * 12;
+        if (entry + 12 > view.byteLength) return 1;
+        if (view.getUint16(entry, le) === 0x0112) {
+          const value = view.getUint16(entry + 8, le);
+          return value >= 1 && value <= 8 ? value : 1;
+        }
+      }
+      return 1;
+    }
+
+    if (marker === 0xffda) break; // start of scan — no EXIF found
+    offset += 2 + size;
+  }
+  return 1;
+}
+
+// Draws an embedded image on its own page, scaled to fit A4, honouring EXIF.
 function addImagePage(
   pdf: PDFDocument,
   img: { width: number; height: number },
   embed: unknown,
+  orientation = 1,
 ): void {
   const margin = 36;
   const maxW = A4.width - margin * 2;
   const maxH = A4.height - margin * 2;
-  const scale = Math.min(maxW / img.width, maxH / img.height, 1);
-  const w = img.width * scale;
-  const h = img.height * scale;
+
+  // 5-8 rotate by 90 degrees, so the visible box is the image transposed.
+  const transposed = orientation >= 5;
+  const boxW = transposed ? img.height : img.width;
+  const boxH = transposed ? img.width : img.height;
+
+  const scale = Math.min(maxW / boxW, maxH / boxH, 1);
+  const w = img.width * scale;   // drawn width, pre-rotation
+  const h = img.height * scale;  // drawn height, pre-rotation
+  const finalW = boxW * scale;   // on-page footprint
+  const finalH = boxH * scale;
 
   const page = pdf.addPage([A4.width, A4.height]);
-  page.drawImage(embed as never, {
-    x: (A4.width - w) / 2,
-    y: (A4.height - h) / 2,
-    width: w,
-    height: h,
-  });
+
+  // Centre of the on-page footprint.
+  const cx = A4.width / 2;
+  const cy = A4.height / 2;
+
+  // pdf-lib rotates about the image's own origin (bottom-left), so each case
+  // needs its origin placed such that the rotated result lands centred.
+  // Mirrored orientations (2,4,5,7) are handled by negating a dimension.
+  let x = cx - finalW / 2;
+  let y = cy - finalH / 2;
+  let width = w;
+  let height = h;
+  let rotate = degrees(0);
+
+  switch (orientation) {
+    case 2: // mirror horizontal
+      x = cx + finalW / 2;
+      width = -w;
+      break;
+    case 3: // 180
+      x = cx + finalW / 2;
+      y = cy + finalH / 2;
+      width = -w;
+      height = -h;
+      break;
+    case 4: // mirror vertical
+      y = cy + finalH / 2;
+      height = -h;
+      break;
+    case 5: // mirror horizontal + rotate 270 CW
+      x = cx - finalW / 2;
+      y = cy - finalH / 2;
+      rotate = degrees(90);
+      width = w;
+      height = -h;
+      break;
+    case 6: // rotate 90 CW
+      x = cx + finalW / 2;
+      y = cy - finalH / 2;
+      rotate = degrees(90);
+      break;
+    case 7: // mirror horizontal + rotate 90 CW
+      x = cx + finalW / 2;
+      y = cy + finalH / 2;
+      rotate = degrees(90);
+      width = -w;
+      break;
+    case 8: // rotate 270 CW
+      x = cx - finalW / 2;
+      y = cy + finalH / 2;
+      rotate = degrees(270);
+      break;
+    default: // 1 — no transform
+      break;
+  }
+
+  page.drawImage(embed as never, { x, y, width, height, rotate });
 }
 
 export interface MergeOptions {
@@ -147,10 +256,11 @@ export async function mergeDocumentsIntoPack(
         pages.forEach((p) => merged.addPage(p));
       } else if (isJpg(doc)) {
         const img = await merged.embedJpg(bytes);
-        addImagePage(merged, img, img);
+        addImagePage(merged, img, img, readJpegOrientation(bytes));
       } else {
+        // PNG has no EXIF orientation.
         const img = await merged.embedPng(bytes);
-        addImagePage(merged, img, img);
+        addImagePage(merged, img, img, 1);
       }
 
       totalBytes += bytes.byteLength;
