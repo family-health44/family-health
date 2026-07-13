@@ -57,7 +57,9 @@ export const ScreenHeader = ({ title, subtitle, right, children, bgColour, title
         {right}
       </View>
       {children ?? <View style={{ height: 33, marginTop: 12 }} />}
-      <Text style={{ position: 'absolute', right: 8, bottom: 2, fontSize: 10, color: '#FFD400' }}>{dbgH?.toFixed(1)}</Text>
+      <Text style={{ position: 'absolute', right: 8, bottom: 2, fontSize: 10, color: '#FFD400' }}>
+        {`h=${dbgH?.toFixed(1)} top=${insets.top} kids=${children ? 'Y' : 'N'}`}
+      </Text>
     </View>
   );
 };
