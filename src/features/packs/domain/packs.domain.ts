@@ -143,15 +143,23 @@ export function buildQuestionsSection(text: string): PdfSection {
   return { kind: 'list', heading: 'Notes & questions', items };
 }
 
-// v1 LISTS attached documents by name. It does NOT merge the file bytes into
-// the PDF — that needs a merge library and is deliberately out of scope.
-export function buildDocumentsSection(documents: Document[]): PdfSection {
-  const items: PdfListItem[] = documents.map((d) => ({
-    primary: d.name,
-    secondary: d.uploadedAt ? `Added ${isoToDisplayDate(d.uploadedAt.slice(0, 10))}` : null,
-  }));
+// An index of the documents attached to this visit. The files themselves are
+// merged onto the end of the PDF (see packMerge.ts). Anything that could not be
+// merged is marked here, so nothing disappears silently.
+export function buildDocumentsSection(
+  documents: Document[],
+  skippedNames: ReadonlyMap<string, string> = new Map(),
+): PdfSection {
+  const items: PdfListItem[] = documents.map((d) => {
+    const skipNote = skippedNames.get(d.name);
+    const added = d.uploadedAt ? `Added ${isoToDisplayDate(d.uploadedAt.slice(0, 10))}` : null;
+    return {
+      primary: d.name,
+      secondary: [added, skipNote ?? 'Attached'].filter(Boolean).join(' · '),
+    };
+  });
 
-  return { kind: 'list', heading: 'Attached documents', items };
+  return { kind: 'list', heading: 'Documents attached', items };
 }
 
 // ── Assembly ─────────────────────────────────────────────────────────────────
@@ -167,6 +175,8 @@ export interface PackInput {
   documents: Document[];
   questions: string;
   todayIso: string;
+  // name -> reason, for documents that could not be merged. Empty on the first pass.
+  skippedDocuments?: ReadonlyMap<string, string>;
 }
 
 // A section is only included if selected AND it has content — a Pack full of
@@ -191,7 +201,7 @@ export function buildPackSections(
       buildVisitsSection(input.allVisits, input.person.id, input.todayIso, input.visit.id),
     todos: () => buildTodosSection(input.todos, input.person.id),
     questions: () => buildQuestionsSection(input.questions),
-    documents: () => buildDocumentsSection(input.documents),
+    documents: () => buildDocumentsSection(input.documents, input.skippedDocuments ?? new Map()),
   };
 
   return (Object.keys(builders) as PackSectionKey[])

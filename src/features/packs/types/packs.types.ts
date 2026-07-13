@@ -31,7 +31,7 @@ export const PACK_SECTIONS: PackSectionConfig[] = [
   { key: 'visits', label: 'Recent visits', hint: 'Last 5 past appointments' },
   { key: 'todos', label: 'Open to dos', hint: 'Outstanding follow-ups' },
   { key: 'questions', label: 'Notes & questions', hint: 'Typed now, not saved' },
-  { key: 'documents', label: 'Attached documents', hint: 'Listed by name — files not merged' },
+  { key: 'documents', label: 'Attached documents', hint: 'Visit files, added to the end of the pack' },
 ];
 
 export type PackSelection = Record<PackSectionKey, boolean>;
@@ -45,5 +45,5 @@ export const DEFAULT_PACK_SELECTION: PackSelection = {
   visits: true,
   todos: true,
   questions: true,
-  documents: false,
+  documents: true,
 };

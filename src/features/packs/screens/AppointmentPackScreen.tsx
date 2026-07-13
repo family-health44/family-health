@@ -12,7 +12,9 @@ import { PressableBase } from '@/design-system/components/PressableBase';
 import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
-import { sharePdfDocument } from '@/shared/utils/pdfShare';
+import { renderPdfDocument, sharePdfFile } from '@/shared/utils/pdfShare';
+import { mergeDocumentsIntoPack } from '../domain/packMerge';
+import type { SkipReason } from '../domain/packMerge';
 import { todayISO, formatDate, formatTime } from '@/shared/utils/dates';
 
 import { usePackData } from '../hooks/usePackData';
@@ -55,6 +57,7 @@ export const AppointmentPackScreen = () => {
   const [selection, setSelection] = useState<PackSelection>(DEFAULT_PACK_SELECTION);
   const [questions, setQuestions] = useState('');
   const [isSharing, setIsSharing] = useState(false);
+  const [progress, setProgress] = useState<string | null>(null);
 
   const today = todayISO();
 
@@ -69,22 +72,63 @@ export const AppointmentPackScreen = () => {
   const toggle = (key: PackSectionKey) =>
     setSelection((s) => ({ ...s, [key]: !s[key] }));
 
+  const SKIP_LABEL: Record<SkipReason, string> = {
+    'too-large': 'Too large to attach',
+    'total-limit': 'Not attached — size limit reached',
+    'page-limit': 'Not attached — page limit reached',
+    unsupported: 'Not attached — file type unsupported',
+    failed: 'Could not be attached',
+  };
+
   const handleGenerate = async () => {
     if (!input) return;
     setIsSharing(true);
+    setProgress(null);
     try {
-      const doc = buildPackDocument({ ...input, questions, todayIso: today }, selection);
+      const wantsDocs = selection.documents && input.documents.length > 0;
+
+      // First pass: render without knowing what will fail to merge.
+      let doc = buildPackDocument({ ...input, questions, todayIso: today }, selection);
       if (doc.sections.length === 0) {
         Alert.alert('Nothing to include', 'Select at least one section that has content.');
         return;
       }
-      await sharePdfDocument(doc, buildPackPlainText(doc), PACK_FOOTER);
+
+      let uri = await renderPdfDocument(doc, PACK_FOOTER);
+
+      if (wantsDocs) {
+        setProgress('Attaching documents…');
+        const result = await mergeDocumentsIntoPack(uri, input.documents, {
+          onProgress: (n, total) => setProgress(`Attaching document ${n} of ${total}…`),
+        });
+
+        // If anything was skipped, re-render so the index tells the truth.
+        if (result.skipped.length > 0) {
+          const skipMap = new Map(
+            result.skipped.map((sk) => [sk.name, SKIP_LABEL[sk.reason]] as const),
+          );
+          doc = buildPackDocument(
+            { ...input, questions, todayIso: today, skippedDocuments: skipMap },
+            selection,
+          );
+          setProgress('Finalising…');
+          const rerendered = await renderPdfDocument(doc, PACK_FOOTER);
+          const redone = await mergeDocumentsIntoPack(rerendered, input.documents);
+          uri = redone.uri;
+        } else {
+          uri = result.uri;
+        }
+      }
+
+      setProgress(null);
+      await sharePdfFile(uri, buildPackPlainText(doc));
       // Share sheet has closed (sent, saved, or dismissed) — the pack is done.
       goBack();
     } catch {
       Alert.alert('Could not create pack', 'Please try again.');
     } finally {
       setIsSharing(false);
+      setProgress(null);
     }
   };
 
@@ -255,7 +299,7 @@ export const AppointmentPackScreen = () => {
         >
           <Text style={{ ...Type.heading, color: 'white' }}>
             {isSharing
-              ? 'Preparing…'
+              ? (progress ?? 'Preparing…')
               : includedCount === 0
                 ? 'Nothing to include'
                 : `Create Pack · ${includedCount} section${includedCount === 1 ? '' : 's'}`}

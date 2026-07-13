@@ -25,4 +25,12 @@ export interface PickedFile {
   size: number | null;
 }
 
-export const FAMILY_STORAGE_CAP_BYTES = 52_428_800; // 50 MB — keep in sync with SQL trigger
+// KEEP IN SYNC WITH THE SQL CAP TRIGGER. Changing this alone does not change
+// the enforced limit — the trigger is the real cap. All user-facing copy derives
+// from these two exports, so update here and nothing goes stale.
+export const FAMILY_STORAGE_CAP_BYTES = 52_428_800; // 50 MB
+
+export const FAMILY_STORAGE_CAP_LABEL = `${Math.round(FAMILY_STORAGE_CAP_BYTES / 1_048_576)} MB`;
+
+export const STORAGE_FULL_MESSAGE =
+  `This family has reached the ${FAMILY_STORAGE_CAP_LABEL} limit. Delete a file to add more.`;

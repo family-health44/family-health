@@ -49,6 +49,7 @@
     "expo-system-ui": "~55.0.18",
     "expo-updates": "~55.0.25",
     "nativewind": "~4.2.0",
+    "pdf-lib": "^1.17.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.52.2",

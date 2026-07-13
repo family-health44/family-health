@@ -17,6 +17,7 @@ import { useAddDocumentMutation, isStorageCapError } from '@/features/documents/
 import { pickFromFiles, pickFromPhotos } from '@/features/documents/hooks/useFilePicker';
 import { createSignedUrl } from '@/features/documents/repository/documents.repository';
 import { formatFileSize } from '@/features/documents/domain/documents.domain';
+import { STORAGE_FULL_MESSAGE } from '@/features/documents/types/documents.types';
 import type { Document } from '@/features/documents/types/documents.types';
 import { EditVisitModal } from '../components/EditVisitModal';
 import { formatDate, formatTime, todayISO } from '@/shared/utils/dates';
@@ -138,7 +139,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
       if (!file) return;
       await addDoc.mutateAsync({ file, personId: v.personId ?? null, visitId: v.id });
     } catch (e) {
-      if (isStorageCapError(e)) Alert.alert('Storage full', 'This family has reached the 50 MB limit. Delete a file to add more.');
+      if (isStorageCapError(e)) Alert.alert('Storage full', STORAGE_FULL_MESSAGE);
       else Alert.alert('Upload failed', 'Could not add the document. Please try again.');
     }
   };

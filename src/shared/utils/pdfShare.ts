@@ -154,6 +154,33 @@ export async function sharePdfDocument(
   await renderAndShare(buildDocumentHtml(doc, footer), plainText);
 }
 
+// Renders to a temp PDF and returns its uri WITHOUT sharing. Used by Packs so
+// attachments can be merged in before the share sheet opens.
+export async function renderPdfDocument(
+  doc: PdfDocument,
+  footer: string,
+): Promise<string> {
+  const { uri } = await Print.printToFileAsync({ html: buildDocumentHtml(doc, footer) });
+  return uri;
+}
+
+// Shares an already-rendered PDF file.
+export async function sharePdfFile(uri: string, plainText: string): Promise<void> {
+  try {
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(uri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf' });
+    } else {
+      await Share.share({ message: plainText });
+    }
+  } catch {
+    try {
+      await Share.share({ message: plainText });
+    } catch {
+      /* dismissed — no-op */
+    }
+  }
+}
+
 // Legacy single-table info card — unchanged output.
 export async function shareInfoCardPdf(
   title: string,

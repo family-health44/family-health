@@ -23,7 +23,7 @@ import {
   totalBytes,
   kindLabel,
 } from '@/features/documents/domain/documents.domain';
-import { FAMILY_STORAGE_CAP_BYTES } from '@/features/documents/types/documents.types';
+import { FAMILY_STORAGE_CAP_BYTES, FAMILY_STORAGE_CAP_LABEL, STORAGE_FULL_MESSAGE } from '@/features/documents/types/documents.types';
 import type { Document, DocumentKind } from '@/features/documents/types/documents.types';
 import { isoToDisplayDate } from '@/shared/utils/dates';
 
@@ -56,7 +56,7 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
         await addDoc.mutateAsync({ file, personId });
       } catch (error) {
         if (isStorageCapError(error)) {
-          Alert.alert('Storage full', 'This family has reached the 50 MB limit. Delete a file to add more.');
+          Alert.alert('Storage full', STORAGE_FULL_MESSAGE);
         } else {
           Alert.alert('Upload failed', 'Could not add the document. Please try again.');
         }
@@ -122,7 +122,7 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
             <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>
               {(documents?.length ?? 0)} file{(documents?.length ?? 0) === 1 ? '' : 's'} · {formatFileSize(used)} used
             </Text>
-            <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>50 MB limit</Text>
+            <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>{FAMILY_STORAGE_CAP_LABEL} limit</Text>
           </View>
           <View style={{ height: 5, backgroundColor: 'rgba(255,255,255,0.25)', borderRadius: 3, marginTop: 5, overflow: 'hidden' }}>
             <View style={{ width: `${pct}%`, height: '100%', backgroundColor: pct >= 90 ? '#E58080' : '#FFFFFF' }} />
