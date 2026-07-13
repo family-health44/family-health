@@ -58,6 +58,7 @@ export const Button = ({
   label, variant = 'primary', size = 'md', isLoading = false, isFullWidth = false, disabled, ...pressableProps
 }: ButtonProps) => {
   const isDisabled = disabled === true || isLoading;
+  console.warn('[BTN]', label, variant, JSON.stringify(container(variant, false)), JSON.stringify(Object.keys(pressableProps)));
   return (
     <Pressable
       accessibilityRole="button"
