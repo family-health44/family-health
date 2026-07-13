@@ -4,7 +4,7 @@
 // - Serif white title, optional subtitle, optional right slot
 // - children render inside the block (e.g. Visits segmented control)
 // - bgColour overrides the block colour (person-colour detail headers)
-import { useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { View, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useIsFocused } from '@react-navigation/native';
@@ -30,10 +30,8 @@ export const ScreenHeader = ({ title, subtitle, right, children, bgColour, title
   const t = useTheme();
   const { openDrawer } = useDrawer();
   const isFocused = useIsFocused();
-  const [dbgH, setDbgH] = useState<number | null>(null);
   return (
     <View
-      onLayout={(e) => setDbgH(e.nativeEvent.layout.height)}
       style={{
         backgroundColor: bgColour ?? t.colours.headerBg,
         paddingTop: insets.top + 6,
@@ -56,10 +54,7 @@ export const ScreenHeader = ({ title, subtitle, right, children, bgColour, title
         </View>
         {right}
       </View>
-      {children ?? <View style={{ height: 33, marginTop: 12 }} />}
-      <Text style={{ position: 'absolute', right: 8, bottom: 2, fontSize: 10, color: '#FFD400' }}>
-        {`h=${dbgH?.toFixed(1)} top=${insets.top} kids=${children ? 'Y' : 'N'}`}
-      </Text>
+      {children ?? <View style={{ height: 27.3, marginTop: 12 }} />}
     </View>
   );
 };
