@@ -35,11 +35,16 @@ export interface MergeResult {
 const isPdf = (d: Document): boolean =>
   d.fileType === 'application/pdf' || d.name.toLowerCase().endsWith('.pdf');
 
+// Filename wins over the stored mimeType — the photo picker has reported
+// image/jpeg for HEIC files, so the mime cannot be trusted on its own.
+const isHeic = (d: Document): boolean =>
+  /\.(heic|heif)$/i.test(d.name) || d.fileType === 'image/heic' || d.fileType === 'image/heif';
+
 const isJpg = (d: Document): boolean =>
-  d.fileType === 'image/jpeg' || /\.(jpe?g)$/i.test(d.name);
+  !isHeic(d) && (/\.(jpe?g)$/i.test(d.name) || d.fileType === 'image/jpeg');
 
 const isPng = (d: Document): boolean =>
-  d.fileType === 'image/png' || /\.png$/i.test(d.name);
+  /\.png$/i.test(d.name) || d.fileType === 'image/png';
 
 // Downloads a signed-URL object to base64. Kept small and isolated so a single
 // bad file can be caught and skipped without killing the whole merge.

@@ -1,7 +1,7 @@
 // src/features/family/screens/DocumentsScreen.tsx
 // Documents — list, upload (Files/Photos), view/share, delete for a person.
 
-import { useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { View, Text, ScrollView, Alert, ActivityIndicator, Linking } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -26,6 +26,11 @@ import {
 import { FAMILY_STORAGE_CAP_BYTES, FAMILY_STORAGE_CAP_LABEL, STORAGE_FULL_MESSAGE } from '@/features/documents/types/documents.types';
 import type { Document, DocumentKind } from '@/features/documents/types/documents.types';
 import { isoToDisplayDate } from '@/shared/utils/dates';
+import { LinkDocumentModal } from '@/features/documents/components/LinkDocumentModal';
+import type { DocumentLink } from '@/features/documents/components/LinkDocumentModal';
+import { useVisitsForCalendarQuery } from '@/features/visits/queries/visits.queries';
+import { usePersonDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
+import type { PickedFile } from '@/features/documents/types/documents.types';
 
 interface DocumentsScreenProps {
   personId: string;
@@ -45,16 +50,48 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
   const addDoc = useAddDocumentMutation(personId);
   const deleteDoc = useDeleteDocumentMutation(personId);
 
+  const { data: allVisits } = useVisitsForCalendarQuery();
+  const { data: personDoctors } = usePersonDoctorsQuery(personId);
+
+  // Pending file — picked, but not uploaded until the link step is confirmed.
+  const [pending, setPending] = useState<PickedFile | null>(null);
+
   const used = totalBytes(documents ?? []);
   const pct = Math.min(100, Math.round((used / FAMILY_STORAGE_CAP_BYTES) * 100));
 
-  const runUpload = useCallback(
-    async (source: 'files' | 'photos') => {
+  // This person's visits, newest first.
+  const personVisits = useMemo(
+    () =>
+      (allVisits ?? [])
+        .filter((v) => v.personId === personId)
+        .sort((a, b) => b.visitDate.localeCompare(a.visitDate)),
+    [allVisits, personId],
+  );
+
+  const runPick = useCallback(async (source: 'files' | 'photos') => {
+    try {
+      const file = source === 'files' ? await pickFromFiles() : await pickFromPhotos();
+      if (!file) return;
+      setPending(file);
+    } catch {
+      Alert.alert('Could not add file', 'Please try again.');
+    }
+  }, []);
+
+  // Upload happens here, after the user has chosen a link (or chosen not to).
+  const onConfirmLink = useCallback(
+    async (link: DocumentLink) => {
+      if (!pending) return;
       try {
-        const file = source === 'files' ? await pickFromFiles() : await pickFromPhotos();
-        if (!file) return;
-        await addDoc.mutateAsync({ file, personId });
+        await addDoc.mutateAsync({
+          file: pending,
+          personId,
+          visitId: link.visitId,
+          doctorId: link.doctorId,
+        });
+        setPending(null);
       } catch (error) {
+        setPending(null);
         if (isStorageCapError(error)) {
           Alert.alert('Storage full', STORAGE_FULL_MESSAGE);
         } else {
@@ -62,16 +99,16 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
         }
       }
     },
-    [addDoc, personId],
+    [addDoc, personId, pending],
   );
 
   const onAdd = useCallback(() => {
     Alert.alert('Add document', 'Choose a source', [
-      { text: 'Files', onPress: () => void runUpload('files') },
-      { text: 'Photos', onPress: () => void runUpload('photos') },
+      { text: 'Files', onPress: () => void runPick('files') },
+      { text: 'Photos', onPress: () => void runPick('photos') },
       { text: 'Cancel', style: 'cancel' },
     ]);
-  }, [runUpload]);
+  }, [runPick]);
 
   const onOpen = useCallback(async (doc: Document) => {
     try {
@@ -200,6 +237,16 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
           )}
         </PressableBase>
       </View>
+
+      <LinkDocumentModal
+        visible={pending !== null}
+        fileName={pending?.name ?? ''}
+        visits={personVisits}
+        doctors={personDoctors ?? []}
+        isSaving={addDoc.isPending}
+        onConfirm={(link) => void onConfirmLink(link)}
+        onDismiss={() => setPending(null)}
+      />
     </View>
   );
 };
