@@ -2,6 +2,7 @@
 // Button primitive — the only button component used across the entire app.
 // Variants: primary, secondary, ghost, danger. Sizes: sm, md, lg.
 // Inline token styles (runtime-themable); no NativeWind classes.
+import { useState } from 'react';
 import { ActivityIndicator, Pressable, Text, type PressableProps, type ViewStyle, type TextStyle } from 'react-native';
 import { Type } from '@/design-system/tokens/typography';
 
@@ -58,7 +59,7 @@ export const Button = ({
   label, variant = 'primary', size = 'md', isLoading = false, isFullWidth = false, disabled, ...pressableProps
 }: ButtonProps) => {
   const isDisabled = disabled === true || isLoading;
-  console.warn('[BTN]', label, variant, JSON.stringify(container(variant, false)), JSON.stringify(Object.keys(pressableProps)));
+  const [pressed, setPressed] = useState(false);
   return (
     <Pressable
       accessibilityRole="button"
@@ -66,13 +67,16 @@ export const Button = ({
       accessibilityState={{ disabled: isDisabled, busy: isLoading }}
       disabled={isDisabled}
       {...pressableProps}
-      style={({ pressed }) => ([{
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      style={{
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
         ...sizeContainer[size],
+        ...container(variant, pressed),
         alignSelf: isFullWidth ? 'stretch' : 'flex-start',
         width: isFullWidth ? '100%' : undefined,
         opacity: isDisabled ? 0.5 : 1,
-      }, container(variant, pressed)])}
+      }}
     >
       {isLoading ? (
         <ActivityIndicator size="small" color={spinnerColours[variant]} accessibilityLabel="Loading" />
