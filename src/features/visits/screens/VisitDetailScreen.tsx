@@ -8,6 +8,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
+import { usePlus } from '@/core/entitlements/useEntitlement';
 import { useVisitsListQuery } from '../queries/visits.queries';
 import { useUpdateVisitMutation, useDeleteVisitMutation } from '../mutations/visits.mutations';
 import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
@@ -58,6 +59,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
   const addDoc = useAddDocumentMutation(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const doctors = (doctorGroups ?? []).flatMap((g) => g.doctors);
+  const isPlus = usePlus();
 
   const visit = groups?.flatMap((g) => g.visits).find((v) => v.id === visitId);
 
@@ -177,7 +179,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
         }
       />
 
-      <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 16, paddingBottom: 100 }} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 16, paddingBottom: 170 }} keyboardShouldPersistTaps="handled">
         <SectionLabel text="Details" />
         <View style={{ backgroundColor: 'white', borderRadius: 14, overflow: 'hidden', marginBottom: 18, ...Shadow.resting }}>
           <View style={detailRow}>
@@ -245,14 +247,30 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
         </PressableBase>
       </ScrollView>
 
-      {isUpcoming && (
-        <View style={{ position: 'absolute', bottom: 24, left: 16, right: 16 }}>
-          <PressableBase onPress={() => router.push(`/(app)/appointments?visitId=${v.id}&personId=${v.personId ?? ''}&personName=${encodeURIComponent(v.personName ?? '')}&doctorName=${encodeURIComponent(v.doctorName ?? '')}&visitDate=${v.visitDate}&preNotes=${encodeURIComponent(v.preNotes ?? '')}` as never)} accessibilityRole="button" style={(pressed) => ({ backgroundColor: pressed ? '#17452F' : GREEN, borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, ...Shadow.raised })}>
+      <View style={{ position: 'absolute', bottom: 24, left: 16, right: 16, gap: 10 }}>
+        {isPlus && (
+          <PressableBase
+            onPress={() => router.push(`/(app)/appointment-pack?visitId=${v.id}` as never)}
+            accessibilityRole="button"
+            accessibilityLabel="Create appointment pack"
+            style={(pressed) => ({ backgroundColor: pressed ? '#F0EEE7' : '#FFFFFF', borderRadius: 24, padding: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, ...Shadow.resting })}
+          >
+            <Text style={{ fontSize: 15 }}>📄</Text>
+            <Text style={{ ...Type.heading, color: GREEN }}>Appointment Pack</Text>
+          </PressableBase>
+        )}
+
+        {isUpcoming && (
+          <PressableBase
+            onPress={() => router.push(`/(app)/appointments?visitId=${v.id}&personId=${v.personId ?? ''}&personName=${encodeURIComponent(v.personName ?? '')}&doctorName=${encodeURIComponent(v.doctorName ?? '')}&visitDate=${v.visitDate}&preNotes=${encodeURIComponent(v.preNotes ?? '')}` as never)}
+            accessibilityRole="button"
+            style={(pressed) => ({ backgroundColor: pressed ? '#17452F' : GREEN, borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, ...Shadow.raised })}
+          >
             <Text style={{ fontSize: 16, color: 'white' }}>▶</Text>
             <Text style={{ ...Type.heading, color: 'white' }}>Start Appointment</Text>
           </PressableBase>
-        </View>
-      )}
+        )}
+      </View>
 
       <EditVisitModal visible={showEditModal} isLoading={updateVisit.isPending} visit={v} doctors={doctors} onSave={handleSaveEdit} onDismiss={() => setShowEditModal(false)} onDelete={handleDelete} isDeleting={deleteVisit.isPending} />
     </View>

@@ -83,6 +83,7 @@ export default function AppLayout() {
       <Tabs.Screen name="settings/disclaimer" options={{ href: null }} />
       <Tabs.Screen name="appointments/index" options={{ href: null }} />
       <Tabs.Screen name="visits/[visitId]" options={{ href: null }} />
+      <Tabs.Screen name="appointment-pack" options={{ href: null }} />
     </Tabs>
   );
 }
