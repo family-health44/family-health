@@ -89,7 +89,7 @@ export const PersonNotesScreen = ({ personId, personName }: PersonNotesScreenPro
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
       <SubScreenHeader title="Notes" subtitle={personName || undefined} right={HiddenToggle} />
-      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 6 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 6 }}>
         <View>
           <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginBottom: 6 }}>Sort</Text>
           <PressableBase
@@ -104,7 +104,7 @@ export const PersonNotesScreen = ({ personId, personName }: PersonNotesScreenPro
         </View>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginBottom: 6 }}>Filter</Text>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View style={{ flexDirection: 'row', gap: 6 }}>
             {FILTER_CHIPS.map((chip) => {
               const active = filter === chip.key;
               return (
@@ -113,7 +113,7 @@ export const PersonNotesScreen = ({ personId, personName }: PersonNotesScreenPro
                   onPress={() => setFilter((f) => (f === chip.key ? null : chip.key))}
                   accessibilityRole="button"
                   accessibilityLabel={`Filter by ${chip.label}`}
-                  style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: active ? '#1F5C41' : 'white', borderWidth: 1, borderColor: active ? '#1F5C41' : '#E3E2DB', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6, opacity: pressed ? 0.7 : 1 })}
+                  style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: active ? '#1F5C41' : 'white', borderWidth: 1, borderColor: active ? '#1F5C41' : '#E3E2DB', borderRadius: 16, paddingHorizontal: 10, paddingVertical: 6, opacity: pressed ? 0.7 : 1 })}
                 >
                   <Text style={{ fontSize: 12 }}>{chip.emoji}</Text>
                   <Text style={{ fontSize: 12, fontWeight: '600', color: active ? 'white' : 'rgba(23,33,28,0.65)' }}>{chip.label}</Text>
