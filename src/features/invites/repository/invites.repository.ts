@@ -46,6 +46,18 @@ export async function fetchInvitesForGroup(familyGroupId: string): Promise<DbInv
   } catch (error) { handleNetworkError(error); }
 }
 
+// Count accepted members in a group. RLS scopes this to the caller's own group.
+export async function countGroupMembers(familyGroupId: string): Promise<number> {
+  try {
+    const { count, error } = await db
+      .from('family_group_members')
+      .select('id', { count: 'exact', head: true })
+      .eq('family_group_id', familyGroupId);
+    if (error) throw error;
+    return count ?? 0;
+  } catch (error) { handleNetworkError(error); }
+}
+
 // Create an invite for a given email + group, attributed to the inviter.
 export async function insertInvite(
   invitedEmail: string,

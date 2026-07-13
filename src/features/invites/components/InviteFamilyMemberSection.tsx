@@ -1,12 +1,21 @@
 // src/features/invites/components/InviteFamilyMemberSection.tsx
 // Settings section: invite someone to this family group by email, and manage
 // (revoke) pending invites. Self-contained — drop into SettingsScreen.
+//
+// ORGANISER CAP: 2 per family group (account holder + 1). The DB is the real
+// enforcement (trg_enforce_organiser_cap / trg_enforce_invite_cap). This UI only
+// hides the CTA and explains the limit. Pending invites hold a seat.
 import { useState } from 'react';
 import { View, Text, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
-import { useGroupInvitesQuery } from '../queries/invites.queries';
-import { useCreateInviteMutation, useRevokeInviteMutation } from '../mutations/invites.mutations';
+import { useGroupInvitesQuery, useGroupSeatsQuery } from '../queries/invites.queries';
+import {
+  useCreateInviteMutation,
+  useRevokeInviteMutation,
+  isOrganiserCapError,
+} from '../mutations/invites.mutations';
+import { MAX_ORGANISERS } from '../types/invites.types';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -22,10 +31,14 @@ const Divider = () => <View style={{ height: 1, backgroundColor: DIVIDER, margin
 
 export const InviteFamilyMemberSection = () => {
   const { data: invites, isLoading } = useGroupInvitesQuery();
+  const { data: seats } = useGroupSeatsQuery();
   const createInvite = useCreateInviteMutation();
   const revokeInvite = useRevokeInviteMutation();
   const [email, setEmail] = useState('');
   const [adding, setAdding] = useState(false);
+
+  const seatsUsed = seats ?? MAX_ORGANISERS; // fail closed while loading
+  const atCap = seatsUsed >= MAX_ORGANISERS;
 
   const handleSend = async () => {
     const trimmed = email.trim().toLowerCase();
@@ -41,8 +54,16 @@ export const InviteFamilyMemberSection = () => {
         'Invite created',
         `${trimmed} can now join your family. Ask them to download the app and sign up with this email — they'll see the invite on launch.`,
       );
-    } catch {
-      Alert.alert('Could not create invite', 'Please try again.');
+    } catch (error) {
+      setAdding(false);
+      if (isOrganiserCapError(error)) {
+        Alert.alert(
+          'Organiser limit reached',
+          `A family can have ${MAX_ORGANISERS} organisers. Revoke the pending invite or remove an organiser first.`,
+        );
+      } else {
+        Alert.alert('Could not create invite', 'Please try again.');
+      }
     }
   };
 
@@ -63,7 +84,16 @@ export const InviteFamilyMemberSection = () => {
       </Text>
 
       <Card>
-        {adding ? (
+        {atCap ? (
+          <View style={{ paddingVertical: 15, paddingHorizontal: 16 }}>
+            <Text style={{ ...Type.body, color: TextColour.secondary }}>
+              {seatsUsed} of {MAX_ORGANISERS} organisers
+            </Text>
+            <Text style={{ ...Type.caption, color: TextColour.muted, marginTop: 4, lineHeight: 17 }}>
+              A family can have {MAX_ORGANISERS} organisers. Shared access for carers is coming to Family Plus.
+            </Text>
+          </View>
+        ) : adding ? (
           <View style={{ padding: 16, gap: 12 }}>
             <Text style={{ ...Type.caption, color: TextColour.muted }}>Invite by email</Text>
             <TextInput
@@ -99,6 +129,7 @@ export const InviteFamilyMemberSection = () => {
             style={(pressed) => ({ paddingVertical: 15, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}
           >
             <Text style={{ ...Type.body, fontWeight: '600', color: GREEN, flex: 1 }}>+ Invite a family member</Text>
+            <Text style={{ ...Type.caption, color: TextColour.faint }}>{seatsUsed}/{MAX_ORGANISERS}</Text>
           </PressableBase>
         )}
       </Card>

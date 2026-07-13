@@ -194,6 +194,7 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          storage_cap_bytes: number
           name: string
           owner_id: string | null
         }
@@ -202,12 +203,14 @@ export type Database = {
           id?: string
           name: string
           owner_id?: string | null
+          storage_cap_bytes?: number
         }
         Update: {
           created_at?: string | null
           id?: string
           name?: string
           owner_id?: string | null
+          storage_cap_bytes?: number
         }
         Relationships: []
       }

@@ -4,7 +4,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/queryClient';
-import { fetchDocumentsByPerson, fetchDocumentsByVisit } from '../repository/documents.repository';
+import { fetchDocumentsByPerson, fetchDocumentsByVisit, fetchAllFamilyDocuments } from '../repository/documents.repository';
 import { mapDbDocumentToDocument, sortDocuments } from '../domain/documents.domain';
 
 import type { Document } from '../types/documents.types';
@@ -28,5 +28,17 @@ export function useVisitDocumentsQuery(visitId: string) {
       return sortDocuments(rows.map(mapDbDocumentToDocument));
     },
     enabled: Boolean(visitId),
+  });
+}
+
+// Family-wide storage usage in bytes. The cap is per family group, so the meter
+// must not be person-scoped.
+export function useFamilyStorageUsedQuery() {
+  return useQuery<number, Error>({
+    queryKey: queryKeys.documents.familyUsage(),
+    queryFn: async () => {
+      const rows = await fetchAllFamilyDocuments();
+      return rows.reduce((sum, r) => sum + (r.file_size ?? 0), 0);
+    },
   });
 }

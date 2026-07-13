@@ -10,7 +10,7 @@ export async function fetchFamilyGroup(): Promise<DbFamilyGroup | null> {
   try {
     const { data, error } = await db
       .from('family_groups')
-      .select('id, name')
+      .select('id, name, storage_cap_bytes')
       .limit(1)
       .maybeSingle();
     if (error) throw error;

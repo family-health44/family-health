@@ -41,6 +41,8 @@ export function useAddDocumentMutation(personId: string | null) {
       if (input.visitId) {
         queryClient.invalidateQueries({ queryKey: queryKeys.documents.byVisit(input.visitId) });
       }
+      // The storage meter is family-wide — refresh it on every upload.
+      queryClient.invalidateQueries({ queryKey: queryKeys.documents.familyUsage() });
     },
   });
 }
@@ -54,11 +56,13 @@ export function useDeleteDocumentMutation(personId: string | null) {
       if (personId) {
         queryClient.invalidateQueries({ queryKey: queryKeys.documents.byPerson(personId) });
       }
+      queryClient.invalidateQueries({ queryKey: queryKeys.documents.familyUsage() });
     },
   });
 }
 
-// True when an error is the 50 MB per-family cap trigger firing.
+// True when an error is the per-family storage cap trigger firing.
+// The cap itself lives in family_groups.storage_cap_bytes — do not hardcode it here.
 export function isStorageCapError(error: unknown): boolean {
   const msg = error instanceof Error ? error.message : String(error ?? '');
   return msg.includes('STORAGE_CAP_EXCEEDED');

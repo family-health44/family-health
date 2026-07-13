@@ -113,5 +113,6 @@ export const queryKeys = {
     all: ['documents'] as const,
     byPerson: (personId: string) => [...queryKeys.documents.all, 'byPerson', personId] as const,
     byVisit: (visitId: string) => [...queryKeys.documents.all, 'byVisit', visitId] as const,
+    familyUsage: () => [...queryKeys.documents.all, 'familyUsage'] as const,
   },
 } as const;

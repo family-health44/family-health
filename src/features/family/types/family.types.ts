@@ -32,6 +32,7 @@ export interface Person {
 export interface FamilyGroup {
   id: string;
   name: string;
+  storageCapBytes: number;
 }
 
 export interface FamilyHomeData {

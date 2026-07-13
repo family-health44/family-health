@@ -41,6 +41,7 @@ export function mapDbFamilyGroupToFamilyGroup(dbGroup: DbFamilyGroup): FamilyGro
   return {
     id: dbGroup.id,
     name: dbGroup.name,
+    storageCapBytes: dbGroup.storage_cap_bytes,
   };
 }
 

@@ -27,6 +27,7 @@ export function useAcceptInviteMutation() {
       await markInviteAccepted(invite.id);
     },
     onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: inviteKeys.seats() });
       await queryClient.invalidateQueries({ queryKey: inviteKeys.all });
       await queryClient.invalidateQueries({ queryKey: queryKeys.family.all });
     },
@@ -48,6 +49,7 @@ export function useCreateInviteMutation() {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: inviteKeys.forGroup() });
+      await queryClient.invalidateQueries({ queryKey: inviteKeys.seats() });
     },
   });
 }
@@ -61,6 +63,13 @@ export function useRevokeInviteMutation() {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: inviteKeys.forGroup() });
+      await queryClient.invalidateQueries({ queryKey: inviteKeys.seats() });
     },
   });
+}
+
+// True when the DB organiser-cap trigger rejected the write.
+export function isOrganiserCapError(error: unknown): boolean {
+  const msg = error instanceof Error ? error.message : String(error ?? '');
+  return msg.includes('ORGANISER_CAP');
 }

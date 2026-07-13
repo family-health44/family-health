@@ -31,6 +31,7 @@ const makeDbPerson = (overrides: Partial<DbPerson> = {}): DbPerson => ({
 const makeDbGroup = (overrides: Partial<DbFamilyGroup> = {}): DbFamilyGroup => ({
   id: 'group-1',
   name: 'The Smiths',
+  storage_cap_bytes: 104_857_600,
   ...overrides,
 });
 

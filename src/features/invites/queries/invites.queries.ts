@@ -5,6 +5,7 @@ import {
   fetchPendingInviteForEmail,
   fetchGroupName,
   fetchInvitesForGroup,
+  countGroupMembers,
 } from '../repository/invites.repository';
 import { fetchFamilyGroup } from '@/features/family/repository/family.repository';
 import type { PendingInvite, DbInvite } from '../types/invites.types';
@@ -13,6 +14,7 @@ export const inviteKeys = {
   all: ['invites'] as const,
   pendingForMe: () => [...inviteKeys.all, 'pendingForMe'] as const,
   forGroup: () => [...inviteKeys.all, 'forGroup'] as const,
+  seats: () => [...inviteKeys.all, 'seats'] as const,
 };
 
 // Resolves the current user's pending invite (if any), with group name attached.
@@ -47,6 +49,23 @@ export function useGroupInvitesQuery() {
       const group = await fetchFamilyGroup();
       if (!group) return [];
       return fetchInvitesForGroup(group.id);
+    },
+  });
+}
+
+// Seats used = accepted members + pending invites. Mirrors the DB cap function.
+export function useGroupSeatsQuery() {
+  return useQuery<number, Error>({
+    queryKey: inviteKeys.seats(),
+    queryFn: async () => {
+      const group = await fetchFamilyGroup();
+      if (!group) return 0;
+      const [members, invites] = await Promise.all([
+        countGroupMembers(group.id),
+        fetchInvitesForGroup(group.id),
+      ]);
+      const pending = invites.filter((i) => !i.accepted).length;
+      return members + pending;
     },
   });
 }

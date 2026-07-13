@@ -17,3 +17,9 @@ export interface PendingInvite {
   familyGroupName: string;
   invitedEmail: string;
 }
+
+// Hard cap: 2 organisers per family group (account holder + 1).
+// ENFORCED IN THE DB (trg_enforce_organiser_cap / trg_enforce_invite_cap).
+// This constant is for UI only — changing it does not change what is enforced.
+// Additional carers are a post-launch Plus feature (an add, never a removal).
+export const MAX_ORGANISERS = 2;

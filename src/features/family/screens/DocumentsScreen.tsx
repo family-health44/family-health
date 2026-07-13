@@ -10,7 +10,7 @@ import { PressableBase } from '@/design-system/components/PressableBase';
 import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { EmptyState, ErrorState } from '@/design-system/components/EmptyState';
 
-import { usePersonDocumentsQuery } from '@/features/documents/queries/documents.queries';
+import { usePersonDocumentsQuery, useFamilyStorageUsedQuery } from '@/features/documents/queries/documents.queries';
 import {
   useAddDocumentMutation,
   useDeleteDocumentMutation,
@@ -23,7 +23,12 @@ import {
   totalBytes,
   kindLabel,
 } from '@/features/documents/domain/documents.domain';
-import { FAMILY_STORAGE_CAP_BYTES, FAMILY_STORAGE_CAP_LABEL, STORAGE_FULL_MESSAGE } from '@/features/documents/types/documents.types';
+import {
+  FALLBACK_STORAGE_CAP_BYTES,
+  formatCapLabel,
+  storageFullMessage,
+} from '@/features/documents/types/documents.types';
+import { useFamilyHomeQuery } from '@/features/family/queries/family.queries';
 import type { Document, DocumentKind } from '@/features/documents/types/documents.types';
 import { isoToDisplayDate } from '@/shared/utils/dates';
 import { LinkDocumentModal } from '@/features/documents/components/LinkDocumentModal';
@@ -56,8 +61,15 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
   // Pending file — picked, but not uploaded until the link step is confirmed.
   const [pending, setPending] = useState<PickedFile | null>(null);
 
-  const used = totalBytes(documents ?? []);
-  const pct = Math.min(100, Math.round((used / FAMILY_STORAGE_CAP_BYTES) * 100));
+  // The real cap lives on the family group (DB-enforced). Fall back until loaded.
+  const { data: familyHome } = useFamilyHomeQuery();
+  const capBytes = familyHome?.familyGroup.storageCapBytes ?? FALLBACK_STORAGE_CAP_BYTES;
+  const capLabel = formatCapLabel(capBytes);
+
+  // Family-wide, not person-scoped — the cap is per family group.
+  const { data: familyUsed } = useFamilyStorageUsedQuery();
+  const used = familyUsed ?? 0;
+  const pct = Math.min(100, Math.round((used / capBytes) * 100));
 
   // This person's visits, newest first.
   const personVisits = useMemo(
@@ -93,7 +105,7 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
       } catch (error) {
         setPending(null);
         if (isStorageCapError(error)) {
-          Alert.alert('Storage full', STORAGE_FULL_MESSAGE);
+          Alert.alert('Storage full', storageFullMessage(capBytes));
         } else {
           Alert.alert('Upload failed', 'Could not add the document. Please try again.');
         }
@@ -157,9 +169,9 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
         <View style={{ marginTop: 10 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>
-              {(documents?.length ?? 0)} file{(documents?.length ?? 0) === 1 ? '' : 's'} · {formatFileSize(used)} used
+              {(documents?.length ?? 0)} file{(documents?.length ?? 0) === 1 ? '' : 's'} · {formatFileSize(used)} used by family
             </Text>
-            <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>{FAMILY_STORAGE_CAP_LABEL} limit</Text>
+            <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>{capLabel} limit</Text>
           </View>
           <View style={{ height: 5, backgroundColor: 'rgba(255,255,255,0.25)', borderRadius: 3, marginTop: 5, overflow: 'hidden' }}>
             <View style={{ width: `${pct}%`, height: '100%', backgroundColor: pct >= 90 ? '#E58080' : '#FFFFFF' }} />

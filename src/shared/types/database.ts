@@ -13,6 +13,7 @@ export type MedicationStatus = 'active' | 'as_needed' | 'inactive';
 export interface DbFamilyGroup {
   id: string;
   name: string;
+  storage_cap_bytes: number;
 }
 
 export interface DbFamilyGroupMember {

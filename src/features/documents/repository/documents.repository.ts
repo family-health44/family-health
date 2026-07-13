@@ -36,6 +36,21 @@ export async function fetchDocumentsByPerson(personId: string): Promise<DbDocume
   }
 }
 
+// Every document in the caller's family group (RLS scopes this). Used for the
+// family-wide storage total — the cap is per family, not per person.
+export async function fetchAllFamilyDocuments(): Promise<DbDocument[]> {
+  try {
+    const { data, error } = await db
+      .from('documents')
+      .select(COLS)
+      .eq('hidden', false);
+    if (error) throw error;
+    return (data ?? []) as DbDocument[];
+  } catch (error) {
+    handleNetworkError(error);
+  }
+}
+
 export async function fetchDocumentsByVisit(visitId: string): Promise<DbDocument[]> {
   try {
     const { data, error } = await db
