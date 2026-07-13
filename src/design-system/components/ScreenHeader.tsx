@@ -17,13 +17,15 @@ import { useDrawer } from './DrawerContext';
 
 interface ScreenHeaderProps {
   title: string;
+  /** Multiplier on the display title size (1 = default). */
+  titleScale?: number;
   subtitle?: string;
   right?: ReactNode;
   children?: ReactNode;
   bgColour?: string;
 }
 
-export const ScreenHeader = ({ title, subtitle, right, children, bgColour }: ScreenHeaderProps) => {
+export const ScreenHeader = ({ title, subtitle, right, children, bgColour, titleScale = 1 }: ScreenHeaderProps) => {
   const insets = useSafeAreaInsets();
   const t = useTheme();
   const { openDrawer } = useDrawer();
@@ -43,7 +45,7 @@ export const ScreenHeader = ({ title, subtitle, right, children, bgColour }: Scr
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         <HamburgerButton onPress={openDrawer} variant="onColour" />
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'baseline', gap: 8 }}>
-          <Text style={{ fontFamily: Fonts.serif, ...Type.display, lineHeight: 34, color: t.colours.headerText }}>
+          <Text style={{ fontFamily: Fonts.serif, ...Type.display, fontSize: Type.display.fontSize * titleScale, lineHeight: 34 * titleScale, color: t.colours.headerText }}>
             {title}
           </Text>
           {subtitle ? (
@@ -52,7 +54,7 @@ export const ScreenHeader = ({ title, subtitle, right, children, bgColour }: Scr
         </View>
         {right}
       </View>
-      {children ?? <View style={{ height: 36, marginTop: 12 }} />}
+      {children ?? <View style={{ height: 33, marginTop: 12 }} />}
     </View>
   );
 };

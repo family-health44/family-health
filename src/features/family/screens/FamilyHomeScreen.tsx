@@ -26,7 +26,7 @@ export const FamilyHomeScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
-      <ScreenHeader title={data?.familyGroup.name ?? 'Family'} />
+      <ScreenHeader title={data?.familyGroup.name ?? 'Family'} titleScale={1.2} />
       <FlatList<Person>
           data={data?.people ?? []}
           keyExtractor={(item) => item.id}
