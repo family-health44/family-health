@@ -2,7 +2,7 @@
 // Month calendar — full grid Mon–Sun, today highlighted.
 // Two layouts (toggle in the nav row):
 //   compact  — dot markers + tap-a-day to reveal its visits below
-//   detailed — each cell shows visit chips inline (cap 4 + "+N")
+//   detailed — each cell shows 3-line visit chips (person / doctor / time), cap 2 + "+N"
 //
 // Accent discipline: green marks ONE thing — the selected day. Today is a
 // neutral ring; chevrons and the layout toggle are neutral chrome.
@@ -18,13 +18,25 @@ import { getPersonColour } from '@/shared/utils/avatar';
 
 import type { Visit, CalendarDay } from '../types/visits.types';
 
-const MAX_CHIPS = 4;
+const MAX_CHIPS = 2;
 
 const GREEN = '#1F5C41';
 const DIVIDER = 'rgba(23,33,28,0.07)';
 const TRACK = '#ECEBE5';
 const OUT_OF_MONTH = 'rgba(23,33,28,0.28)';
 const DOT = '#2F80ED';
+const TODAY_RING = 'rgba(23,33,28,0.22)';
+
+/** '14:30' -> '2:30pm' ; '09:00' -> '9am' */
+const formatTime = (t: string | null): string | null => {
+  if (!t) return null;
+  const [hRaw, mRaw] = t.split(':');
+  const h = Number(hRaw);
+  if (Number.isNaN(h)) return null;
+  const suffix = h < 12 ? 'am' : 'pm';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return mRaw && mRaw !== '00' ? `${h12}:${mRaw}${suffix}` : `${h12}${suffix}`;
+};
 
 interface MonthCalendarViewProps {
   visits: Visit[];
@@ -128,7 +140,7 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
       </View>
 
       {detailed ? (
-        /* ── Detailed grid: inline chips ── */
+        /* ── Detailed grid: 3-line chips (person / doctor / time) ── */
         <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 8 }}>
           {days.map((day) => {
             const isToday = day.date === todayStr;
@@ -147,40 +159,52 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
                   overflow: 'hidden',
                 }}
               >
-                <Text style={{
-                  ...Type.micro,
-                  letterSpacing: 0,
-                  textAlign: 'right',
-                  fontWeight: isToday ? '700' : '500',
-                  color: isToday ? TextColour.ink : !day.isCurrentMonth ? OUT_OF_MONTH : TextColour.secondary,
-                }}>
-                  {day.dayNumber}
-                </Text>
+                <View style={{ alignSelf: 'flex-end', width: 16, height: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center', borderWidth: isToday ? 1.5 : 0, borderColor: TODAY_RING }}>
+                  <Text style={{
+                    fontSize: 10,
+                    lineHeight: 12,
+                    fontWeight: isToday ? '700' : '500',
+                    color: isToday ? TextColour.ink : !day.isCurrentMonth ? OUT_OF_MONTH : TextColour.secondary,
+                  }}>
+                    {day.dayNumber}
+                  </Text>
+                </View>
+
                 {day.visits.slice(0, MAX_CHIPS).map((visit) => {
                   const c = getPersonColour(visit.personColourIndex);
+                  const time = formatTime(visit.visitTime);
                   return (
                     <PressableBase
                       key={visit.id}
                       onPress={() => onVisitPress(visit.id)}
                       accessibilityRole="button"
-                      accessibilityLabel={visit.title}
+                      accessibilityLabel={`${visit.personName}, ${visit.doctorName ?? visit.title}${time ? `, ${time}` : ''}`}
                       style={(pressed) => ({
                         backgroundColor: c.bg,
                         borderRadius: 3,
                         paddingHorizontal: 3,
-                        paddingVertical: 1,
-                        marginTop: 1,
+                        paddingVertical: 2,
+                        marginTop: 2,
                         opacity: pressed ? 0.7 : 1,
                       })}
                     >
-                      <Text numberOfLines={1} style={{ fontSize: 8, fontWeight: '600', color: c.text }}>
-                        {visit.title}
+                      <Text numberOfLines={1} style={{ fontSize: 8, lineHeight: 10, fontWeight: '700', color: c.text }}>
+                        {visit.personName}
                       </Text>
+                      <Text numberOfLines={1} style={{ fontSize: 8, lineHeight: 10, fontWeight: '500', color: c.text, opacity: 0.85 }}>
+                        {visit.doctorName ?? visit.title}
+                      </Text>
+                      {time ? (
+                        <Text numberOfLines={1} style={{ fontSize: 8, lineHeight: 10, fontWeight: '500', color: c.text, opacity: 0.7 }}>
+                          {time}
+                        </Text>
+                      ) : null}
                     </PressableBase>
                   );
                 })}
+
                 {extra > 0 && (
-                  <Text style={{ fontSize: 8, fontWeight: '700', color: TextColour.faint, marginTop: 1, paddingHorizontal: 3 }}>
+                  <Text style={{ fontSize: 8, lineHeight: 10, fontWeight: '700', color: TextColour.faint, marginTop: 1, paddingHorizontal: 3 }}>
                     +{extra}
                   </Text>
                 )}
@@ -210,7 +234,7 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
                     alignItems: 'center', justifyContent: 'center',
                     backgroundColor: isSelected ? GREEN : 'transparent',
                     borderWidth: isToday && !isSelected ? 1.5 : 0,
-                    borderColor: 'rgba(23,33,28,0.22)',
+                    borderColor: TODAY_RING,
                   }}>
                     <Text style={{
                       ...Type.label,
