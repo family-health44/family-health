@@ -10,6 +10,8 @@ import { FAB } from '@/design-system/components/FAB';
 import { useVisits } from '../hooks/useVisits';
 import { useFamilyHome } from '@/features/family/hooks/useFamilyHome';
 import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
+import { PressableBase } from '@/design-system/components/PressableBase';
+import { Icon } from '@/design-system/components/Icon';
 import { VisitsViewToggle } from '../components/VisitsViewToggle';
 import { VisitCard } from '../components/VisitCard';
 import { WeekCalendarView } from '../components/WeekCalendarView';
@@ -20,6 +22,7 @@ import type { Visit } from '../types/visits.types';
 export const VisitsScreen = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [jumpDate, setJumpDate] = useState<string | null>(null);
+  const [pastExpanded, setPastExpanded] = useState(false);
 
   const { add } = useLocalSearchParams<{ add?: string }>();
   const handledAddToken = useRef<string | null>(null);
@@ -86,23 +89,43 @@ export const VisitsScreen = () => {
               onAction={() => setShowAddModal(true)}
             />
           }
-          renderItem={({ item: group }) => (
-            <View style={{ marginBottom: 16 }}>
-              <Text style={{
-                fontSize: 10,
-                fontWeight: '700',
-                color: 'rgba(23,33,28,0.55)',
-                textTransform: 'uppercase',
-                letterSpacing: 0.8,
-                marginBottom: 8,
-              }}>
-                {group.label}
-              </Text>
-              {group.visits.map((visit: Visit) => (
-                <VisitCard key={visit.id} visit={visit} onPress={handleVisitPress} />
-              ))}
-            </View>
-          )}
+          renderItem={({ item: group }) => {
+            const isPast = group.label === 'Past';
+            const isCollapsed = isPast && !pastExpanded;
+            const labelStyle = {
+              fontSize: 10,
+              fontWeight: '700' as const,
+              color: 'rgba(23,33,28,0.55)',
+              textTransform: 'uppercase' as const,
+              letterSpacing: 0.8,
+            };
+            return (
+              <View style={{ marginBottom: 16 }}>
+                {isPast ? (
+                  <PressableBase
+                    onPress={() => setPastExpanded((v) => !v)}
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: pastExpanded }}
+                    accessibilityLabel={`Past visits, ${group.visits.length}`}
+                    style={() => ({ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 })}
+                  >
+                    <Text style={labelStyle}>{group.label}</Text>
+                    <Text style={{ ...labelStyle, color: 'rgba(23,33,28,0.40)' }}>{group.visits.length}</Text>
+                    <Icon
+                      name={pastExpanded ? 'chevron.up' : 'chevron.down'}
+                      size={11}
+                      color="rgba(23,33,28,0.55)"
+                    />
+                  </PressableBase>
+                ) : (
+                  <Text style={{ ...labelStyle, marginBottom: 8 }}>{group.label}</Text>
+                )}
+                {!isCollapsed && group.visits.map((visit: Visit) => (
+                  <VisitCard key={visit.id} visit={visit} onPress={handleVisitPress} />
+                ))}
+              </View>
+            );
+          }}
         />
       )}
 
