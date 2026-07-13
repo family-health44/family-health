@@ -25,7 +25,7 @@ const DIVIDER = 'rgba(23,33,28,0.07)';
 const TRACK = '#ECEBE5';
 const OUT_OF_MONTH = 'rgba(23,33,28,0.28)';
 const DOT = '#2F80ED';
-const TODAY_RING = 'rgba(23,33,28,0.22)';
+const TODAY_BG = '#E4EFE9';
 
 /** '14:30' -> '2:30pm' ; '09:00' -> '9am' */
 const formatTime = (t: string | null): string | null => {
@@ -157,18 +157,18 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
                   paddingHorizontal: 2,
                   paddingTop: 2,
                   overflow: 'hidden',
+                  backgroundColor: isToday ? TODAY_BG : 'transparent',
                 }}
               >
-                <View style={{ alignSelf: 'flex-end', width: 16, height: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center', borderWidth: isToday ? 1.5 : 0, borderColor: TODAY_RING }}>
-                  <Text style={{
-                    fontSize: 10,
-                    lineHeight: 12,
-                    fontWeight: isToday ? '700' : '500',
-                    color: isToday ? TextColour.ink : !day.isCurrentMonth ? OUT_OF_MONTH : TextColour.secondary,
-                  }}>
-                    {day.dayNumber}
-                  </Text>
-                </View>
+                <Text style={{
+                  fontSize: 10,
+                  lineHeight: 12,
+                  textAlign: 'right',
+                  fontWeight: isToday ? '700' : '500',
+                  color: isToday ? GREEN : !day.isCurrentMonth ? OUT_OF_MONTH : TextColour.secondary,
+                }}>
+                  {day.dayNumber}
+                </Text>
 
                 {day.visits.slice(0, MAX_CHIPS).map((visit) => {
                   const c = getPersonColour(visit.personColourIndex);
@@ -232,9 +232,9 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
                   <View style={{
                     width: 32, height: 32, borderRadius: 16,
                     alignItems: 'center', justifyContent: 'center',
-                    backgroundColor: isSelected ? GREEN : 'transparent',
-                    borderWidth: isToday && !isSelected ? 1.5 : 0,
-                    borderColor: TODAY_RING,
+                    backgroundColor: isSelected ? GREEN : isToday ? TODAY_BG : 'transparent',
+                    borderWidth: isToday && !isSelected ? 1 : 0,
+                    borderColor: GREEN,
                   }}>
                     <Text style={{
                       ...Type.label,
