@@ -104,17 +104,19 @@ export const TodoFormModal = ({
   };
 
   const setReminder = async (iso: string | null) => {
+    // Always store the reminder. Permission governs DELIVERY, not the record —
+    // discarding the value on a denied prompt leaves the user with a silently
+    // empty field and no way back (iOS only ever allows one permission ask).
+    setValue('reminderAt', iso);
     if (iso) {
       const granted = await requestNotificationPermission();
       if (!granted) {
         Alert.alert(
           'Notifications are off',
-          'Turn on notifications for FamFiles in iOS Settings to receive reminders.',
+          'Your reminder is saved, but FamFiles cannot alert you until notifications are turned on in iOS Settings.',
         );
-        return;
       }
     }
-    setValue('reminderAt', iso);
   };
 
   const submit = async (values: TodoFormValues) => {

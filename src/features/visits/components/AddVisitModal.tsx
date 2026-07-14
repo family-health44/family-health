@@ -56,14 +56,17 @@ export const AddVisitModal = ({ visible, isLoading, people = [], doctors = [], d
   const askPermission = async (): Promise<boolean> => {
     const granted = await requestNotificationPermission();
     if (!granted) {
-      Alert.alert('Notifications are off', 'Turn on notifications for FamFiles in iOS Settings to receive reminders.');
+      Alert.alert('Notifications are off', 'Your reminder is saved, but FamFiles cannot alert you until notifications are turned on in iOS Settings.');
     }
     return granted;
   };
 
   const setAt = async (iso: string | null) => {
-    if (iso && !(await askPermission())) return;
+    // Always store the reminder. Permission governs DELIVERY, not the record —
+    // discarding the value on a denied prompt leaves the user with a silently
+    // empty field and no way back (iOS only ever allows one permission ask).
     setValue('reminderAt', iso);
+    if (iso) void askPermission();
   };
 
   // A reminder is an absolute instant — it does not follow a date change.
