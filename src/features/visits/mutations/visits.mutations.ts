@@ -4,6 +4,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/queryClient';
+import { invalidateReminderQueries } from '@/core/notifications/invalidateReminders';
 import { fetchFamilyGroup } from '@/features/family/repository/family.repository';
 import { insertVisit, updateVisit, deleteVisit } from '../repository/visits.repository';
 
@@ -22,6 +23,7 @@ export function useAddVisitMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.visits.all });
+      invalidateReminderQueries(queryClient);
     },
   });
 }
@@ -45,6 +47,7 @@ export function useDeleteVisitMutation() {
     mutationFn: (visitId: string) => deleteVisit(visitId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.visits.all });
+      invalidateReminderQueries(queryClient);
     },
   });
 }

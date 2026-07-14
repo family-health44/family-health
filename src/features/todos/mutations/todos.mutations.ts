@@ -5,6 +5,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { queryKeys } from '@/lib/queryClient';
+import { invalidateReminderQueries } from '@/core/notifications/invalidateReminders';
 import { fetchFamilyGroup } from '@/features/family/repository/family.repository';
 import {
   insertTodo,
@@ -33,6 +34,7 @@ export function useAddTodoMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.todos.list() });
+      invalidateReminderQueries(queryClient);
     },
   });
 }
@@ -48,6 +50,7 @@ export function useUpdateTodoMutation() {
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.todos.list() });
+      invalidateReminderQueries(queryClient);
     },
   });
 }
@@ -68,6 +71,7 @@ export function useToggleTodoMutation() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.todos.list() });
+      invalidateReminderQueries(queryClient);
     },
   });
 }
@@ -83,6 +87,7 @@ export function useDeleteTodoMutation() {
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.todos.list() });
+      invalidateReminderQueries(queryClient);
     },
   });
 }

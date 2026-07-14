@@ -11,19 +11,20 @@ import { fetchVisits } from '@/features/visits/repository/visits.repository';
 import { fetchTodos } from '@/features/todos/repository/todos.repository';
 import { rebuildSchedule, type ScheduledReminder } from './notifications';
 import { resolveVisitReminder, resolveTodoReminder } from './reminders.domain';
+import { reminderKeys } from './invalidateReminders';
 
 export function useReminderSync(enabled: boolean) {
   // Own cache keys — must NOT collide with the feature queries, which store a
   // different shape (grouped domain objects) under queryKeys.todos.list() /
   // queryKeys.visits.all. Sharing the key corrupts their cache.
   const { data: visits } = useQuery({
-    queryKey: ['reminders', 'visits'],
+    queryKey: reminderKeys.visits,
     queryFn: fetchVisits,
     enabled,
   });
 
   const { data: todos } = useQuery({
-    queryKey: ['reminders', 'todos'],
+    queryKey: reminderKeys.todos,
     queryFn: fetchTodos,
     enabled,
   });
