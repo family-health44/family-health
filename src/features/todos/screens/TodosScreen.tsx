@@ -66,7 +66,7 @@ export const TodosScreen = () => {
     >
       <Text style={{ fontSize: 11, fontWeight: '500', color: 'rgba(255,255,255,0.85)' }}>Show completed</Text>
       <View style={{ width: 14, height: 14, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.8)', borderRadius: 3, backgroundColor: showCompleted ? '#FFFFFF' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-        {showCompleted && <Icon name="checkmark" size={9} color="#1F5C41" />}
+        {showCompleted && <Text style={{ color: '#1F5C41', fontSize: 9, lineHeight: 12, fontWeight: '700' }}>✓</Text>}
       </View>
     </PressableBase>
   );

@@ -7,21 +7,23 @@ import { useEffect, useRef } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 
-import { queryKeys } from '@/lib/queryClient';
 import { fetchVisits } from '@/features/visits/repository/visits.repository';
 import { fetchTodos } from '@/features/todos/repository/todos.repository';
 import { rebuildSchedule, type ScheduledReminder } from './notifications';
 import { resolveVisitReminder, resolveTodoReminder } from './reminders.domain';
 
 export function useReminderSync(enabled: boolean) {
+  // Own cache keys — must NOT collide with the feature queries, which store a
+  // different shape (grouped domain objects) under queryKeys.todos.list() /
+  // queryKeys.visits.all. Sharing the key corrupts their cache.
   const { data: visits } = useQuery({
-    queryKey: queryKeys.visits.all,
+    queryKey: ['reminders', 'visits'],
     queryFn: fetchVisits,
     enabled,
   });
 
   const { data: todos } = useQuery({
-    queryKey: queryKeys.todos.list(),
+    queryKey: ['reminders', 'todos'],
     queryFn: fetchTodos,
     enabled,
   });

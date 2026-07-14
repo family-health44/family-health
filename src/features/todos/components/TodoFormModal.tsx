@@ -158,7 +158,13 @@ export const TodoFormModal = ({
                 <Controller control={control} name="dueDate" render={({ field: { onChange, value } }) => (
                   <DateField label="Due date" placeholder="Select a date (optional)" value={value || null} onChange={(v) => handleDueDateChange(v, onChange)} onClear={() => onChange('')} />
                 )} />
-                {/* TEMP: bisecting native crash */}
+                <ReminderField
+                  mode="absolute"
+                  offsetMinutes={null}
+                  reminderAt={reminderAt ?? null}
+                  onChangeOffset={() => {}}
+                  onChangeAt={setReminder}
+                />
                 {doctors.length > 0 && (
                   <InlinePicker label="Link to doctor (optional)" options={doctorOptions} value={doctorId} onChange={(id) => setValue('doctorId', id)} />
                 )}
