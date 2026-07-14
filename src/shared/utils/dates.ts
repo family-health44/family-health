@@ -107,3 +107,13 @@ export function displayToIsoDate(input: string | null | undefined): string | nul
   if (month < 1 || month > 12 || day < 1 || day > 31) return null;
   return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
 }
+
+// Full timestamptz -> local display date. Converts the absolute instant to the
+// DEVICE's local calendar date first (never .slice(0,10), which is the UTC date
+// and shifts a day for any non-UTC user). '' on bad input.
+export function formatTimestampLocalDate(ts: string | null | undefined): string {
+  if (!ts) return '';
+  const d = new Date(ts);
+  if (Number.isNaN(d.getTime())) return '';
+  return isoToDisplayDate(toISODateString(d));
+}

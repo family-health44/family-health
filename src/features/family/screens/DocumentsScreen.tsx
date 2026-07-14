@@ -30,7 +30,7 @@ import {
 } from '@/features/documents/types/documents.types';
 import { useFamilyHomeQuery } from '@/features/family/queries/family.queries';
 import type { Document, DocumentKind } from '@/features/documents/types/documents.types';
-import { isoToDisplayDate } from '@/shared/utils/dates';
+import { isoToDisplayDate, formatTimestampLocalDate } from '@/shared/utils/dates';
 import { LinkDocumentModal } from '@/features/documents/components/LinkDocumentModal';
 import type { DocumentLink } from '@/features/documents/components/LinkDocumentModal';
 import { useVisitsForCalendarQuery } from '@/features/visits/queries/visits.queries';
@@ -216,7 +216,7 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
                 <Text numberOfLines={1} style={{ fontSize: 14, color: '#17211C' }}>{doc.name}</Text>
                 <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginTop: 2 }}>
                   {kindLabel(doc.kind)} · {formatFileSize(doc.fileSize)}
-                  {doc.uploadedAt ? ` · ${isoToDisplayDate(doc.uploadedAt.slice(0, 10))}` : ''}
+                  {doc.uploadedAt ? ` · ${formatTimestampLocalDate(doc.uploadedAt)}` : ''}
                 </Text>
               </View>
               <Text style={{ fontSize: 18, color: 'rgba(23,33,28,0.55)' }}>⋯</Text>

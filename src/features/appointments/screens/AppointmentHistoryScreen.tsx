@@ -5,7 +5,7 @@
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { useLocalSearchParams } from 'expo-router';
-import { isoToDisplayDate } from '@/shared/utils/dates';
+import { isoToDisplayDate, todayISO } from '@/shared/utils/dates';
 import { useVisitsForCalendarQuery } from '@/features/visits/queries/visits.queries';
 import { usePersonNotes } from '@/features/notes/hooks/usePersonNotes';
 import { parseNoteContent } from '@/features/notes/domain/notes.domain';
@@ -61,7 +61,7 @@ export const AppointmentHistoryScreen = () => {
 
   const isLoading = visitsQuery.isLoading || notesLoading || eventsLoading || medsLoading || todosLoading;
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayISO();
 
   // Active meds for this person (active + as_needed). All doctors — a full current med list matters at any visit.
   const activeMeds = medGroups

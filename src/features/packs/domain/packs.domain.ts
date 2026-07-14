@@ -4,7 +4,7 @@
 // GUARDRAIL: pass-through of user-entered records only. Do not add derived
 // insight, scoring, trends, or clinical language here.
 
-import { isoToDisplayDate, formatDate, formatTime } from '@/shared/utils/dates';
+import { isoToDisplayDate, formatTimestampLocalDate, formatDate, formatTime } from '@/shared/utils/dates';
 import { MEDICAL_EVENT_CONFIG } from '@/features/medical-events/types/medical-events.types';
 
 import type { PdfSection, PdfListItem, PdfRow, PdfDocument } from '@/shared/utils/pdfShare';
@@ -152,7 +152,7 @@ export function buildDocumentsSection(
 ): PdfSection {
   const items: PdfListItem[] = documents.map((d) => {
     const skipNote = skippedNames.get(d.name);
-    const added = d.uploadedAt ? `Added ${isoToDisplayDate(d.uploadedAt.slice(0, 10))}` : null;
+    const added = d.uploadedAt ? `Added ${formatTimestampLocalDate(d.uploadedAt)}` : null;
     return {
       primary: d.name,
       secondary: [added, skipNote ?? 'Attached'].filter(Boolean).join(' · '),
