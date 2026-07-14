@@ -104,6 +104,7 @@ export const TodoFormModal = ({
   };
 
   const setReminder = async (iso: string | null) => {
+    Alert.alert('REM 2 setReminder', `iso=${iso ?? 'null'}`);
     if (iso) {
       const granted = await requestNotificationPermission();
       if (!granted) {
@@ -115,9 +116,11 @@ export const TodoFormModal = ({
       }
     }
     setValue('reminderAt', iso);
+    Alert.alert('REM 3 setValue done', `iso=${iso ?? 'null'}`);
   };
 
   const submit = async (values: TodoFormValues) => {
+    Alert.alert('REM 4 submit', `reminderAt=${values.reminderAt ?? 'null'}`);
     try {
       await onSubmit(values);
       if (!isEdit) reset();

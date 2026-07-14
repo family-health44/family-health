@@ -5,7 +5,7 @@
 // The caller decides the mode based on whether the record has a time anchor.
 
 import { useState } from 'react';
-import { View, Text, Platform } from 'react-native';
+import { View, Text, Platform, Alert } from 'react-native';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 import { PressableBase } from './PressableBase';
@@ -52,6 +52,7 @@ export function ReminderField({
   const display = reminderAt ? formatAt(reminderAt) : '';
 
   const handleChange = (event: DateTimePickerEvent, selected?: Date) => {
+    Alert.alert('REM 1 picker', `type=${event.type} sel=${selected?.toISOString() ?? 'none'}`);
     if (Platform.OS === 'android') setOpen(false);
     if (event.type === 'dismissed' || !selected) return;
     onChangeAt(selected.toISOString());
