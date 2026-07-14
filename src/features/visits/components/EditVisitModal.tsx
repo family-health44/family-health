@@ -106,7 +106,7 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
       postNotes: visit.postNotes,
       totalCost: visit.totalCost,
       outOfPocket: visit.outOfPocket,
-      reminderAt: values.visitTime?.trim() ? null : (values.reminderAt ?? null),
+      reminderAt: values.reminderAt ?? null,
     });
     onDismiss();
     } catch (e) {
