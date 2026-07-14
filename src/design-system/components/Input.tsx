@@ -17,7 +17,7 @@ const RED = '#B33A4A';
 const BORDER = '#C8C4BC';
 
 export const Input = forwardRef<TextInput, InputProps>(
-  ({ label, error, helperText, isRequired = false, onFocus, onBlur, ...textInputProps }, ref) => {
+  ({ label, error, helperText, isRequired = false, onFocus, onBlur, style, ...textInputProps }, ref) => {
     const hasError = Boolean(error);
     const [focused, setFocused] = useState(false);
     const borderColor = hasError ? RED : focused ? GREEN : BORDER;
@@ -33,12 +33,16 @@ export const Input = forwardRef<TextInput, InputProps>(
           ref={ref}
           accessibilityLabel={label}
           accessibilityHint={helperText}
-          style={{
-            borderRadius: 12, borderWidth: 1, borderColor,
-            paddingHorizontal: 16, backgroundColor: '#FFFFFF',
-            color: TextColour.ink,
-            minHeight: 48, paddingTop: 12, paddingBottom: 12, fontSize: 16, lineHeight: 22,
-          }}
+          style={[
+            {
+              borderRadius: 12, borderWidth: 1, borderColor,
+              paddingHorizontal: 16, backgroundColor: '#FFFFFF',
+              color: TextColour.ink,
+              minHeight: 48, paddingTop: 12, paddingBottom: 12, fontSize: 16, lineHeight: 22,
+            },
+            // Caller style merges on top — never replaces the container styling.
+            style,
+          ]}
           placeholderTextColor="#8B928E"
           autoCapitalize="none"
           autoCorrect={false}
