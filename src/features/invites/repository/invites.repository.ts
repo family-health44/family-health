@@ -2,7 +2,7 @@
 // Raw Supabase access for invites. No domain mapping here beyond shaping rows.
 import { db } from '@/lib/supabase';
 import { handleNetworkError } from '@/core/network/errorHandler';
-import type { DbInvite } from '../types/invites.types';
+import type { DbInvite, Organiser } from '../types/invites.types';
 
 // Fetch the first pending (not accepted) invite addressed to the given email.
 export async function fetchPendingInviteForEmail(email: string): Promise<DbInvite | null> {
@@ -106,6 +106,30 @@ export async function markInviteAccepted(inviteId: string): Promise<void> {
 export async function deleteInvite(inviteId: string): Promise<void> {
   try {
     const { error } = await db.from('invites').delete().eq('id', inviteId);
+    if (error) throw error;
+  } catch (error) { handleNetworkError(error); }
+}
+
+// List accepted organisers with emails. SECURITY DEFINER RPC — auth.users is not
+// client-readable, and family_group_members has no email column.
+export async function fetchOrganisers(): Promise<Organiser[]> {
+  try {
+    const { data, error } = await db.rpc('list_organisers');
+    if (error) throw error;
+    return (data ?? []).map((r: { member_id: string; email: string; role: string; created_at: string | null }) => ({
+      memberId: r.member_id,
+      email: r.email,
+      role: r.role === 'owner' ? 'owner' : 'member',
+      createdAt: r.created_at,
+    }));
+  } catch (error) { handleNetworkError(error); }
+}
+
+// Remove an organiser. Owner-only; the RPC refuses to remove the owner or self,
+// and clears the matching invite row so the seat is actually freed.
+export async function removeOrganiser(memberId: string): Promise<void> {
+  try {
+    const { error } = await db.rpc('remove_organiser', { target_member_id: memberId });
     if (error) throw error;
   } catch (error) { handleNetworkError(error); }
 }

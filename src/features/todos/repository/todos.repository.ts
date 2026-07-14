@@ -5,7 +5,7 @@ import type { DbTodo } from '@/shared/types/database';
 import type { Todo } from '../types/todos.types';
 
 // Column list shared by every query — one source of truth (prevents silent field-drop).
-const COLS = 'id, title, notes, due_date, completed, person_id, doctor_id, visit_id, family_group_id';
+const COLS = 'id, title, notes, due_date, completed, person_id, doctor_id, visit_id, family_group_id, reminder_at';
 
 export interface InsertTodoParams {
   title: string;
@@ -15,6 +15,7 @@ export interface InsertTodoParams {
   doctorId?: string | null;
   visitId?: string | null;
   familyGroupId: string;
+  reminderAt: string | null;
 }
 
 export interface UpdateTodoParams {
@@ -25,6 +26,7 @@ export interface UpdateTodoParams {
   personId: string | null;
   doctorId?: string | null;
   visitId?: string | null;
+  reminderAt: string | null;
 }
 
 export function mapDbTodoToTodo(row: DbTodo, personName: string | null = null): Todo {
@@ -40,6 +42,7 @@ export function mapDbTodoToTodo(row: DbTodo, personName: string | null = null): 
     doctorId: row.doctor_id,
     visitId: row.visit_id,
     familyGroupId: row.family_group_id,
+    reminderAt: row.reminder_at,
   };
 }
 
@@ -67,6 +70,7 @@ export async function insertTodo(params: InsertTodoParams): Promise<DbTodo> {
         doctor_id: params.doctorId ?? null,
         visit_id: params.visitId ?? null,
         family_group_id: params.familyGroupId,
+        reminder_at: params.reminderAt,
       })
       .select(COLS)
       .single();
@@ -87,6 +91,7 @@ export async function updateTodo(params: UpdateTodoParams): Promise<DbTodo> {
         person_id: params.personId,
         doctor_id: params.doctorId ?? null,
         visit_id: params.visitId ?? null,
+        reminder_at: params.reminderAt,
       })
       .eq('id', params.todoId)
       .select(COLS)

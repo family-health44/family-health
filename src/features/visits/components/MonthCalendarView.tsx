@@ -17,6 +17,7 @@ import { VisitCard } from './VisitCard';
 import { getPersonColour } from '@/shared/utils/avatar';
 
 import type { Visit, CalendarDay } from '../types/visits.types';
+import { Icon } from '@/design-system/components/Icon';
 
 const MAX_CHIPS = 2;
 
@@ -86,7 +87,7 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
       {/* Month navigation + layout toggle */}
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingBottom: 12 }}>
         <PressableBase onPress={goToPrevMonth} accessibilityLabel="Previous month" style={(pressed) => ({ paddingHorizontal: 10, paddingVertical: 6, opacity: pressed ? 0.5 : 1 })}>
-          <Text style={{ fontSize: 20, lineHeight: 22, color: TextColour.secondary }}>‹</Text>
+          <Icon name="chevron.left" size={17} color={TextColour.secondary} weight="semibold" />
         </PressableBase>
 
         <Text style={{ flex: 1, textAlign: 'center', ...Type.heading, color: TextColour.ink }}>
@@ -94,7 +95,7 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
         </Text>
 
         <PressableBase onPress={goToNextMonth} accessibilityLabel="Next month" style={(pressed) => ({ paddingHorizontal: 10, paddingVertical: 6, opacity: pressed ? 0.5 : 1 })}>
-          <Text style={{ fontSize: 20, lineHeight: 22, color: TextColour.secondary }}>›</Text>
+          <Icon name="chevron.right" size={17} color={TextColour.secondary} weight="semibold" />
         </PressableBase>
 
         {/* Segmented pill — matches VisitsViewToggle */}

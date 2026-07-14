@@ -6,16 +6,26 @@ import {
   fetchGroupName,
   fetchInvitesForGroup,
   countGroupMembers,
+  fetchOrganisers,
 } from '../repository/invites.repository';
 import { fetchFamilyGroup } from '@/features/family/repository/family.repository';
-import type { PendingInvite, DbInvite } from '../types/invites.types';
+import type { PendingInvite, DbInvite, Organiser } from '../types/invites.types';
 
 export const inviteKeys = {
   all: ['invites'] as const,
   pendingForMe: () => [...inviteKeys.all, 'pendingForMe'] as const,
   forGroup: () => [...inviteKeys.all, 'forGroup'] as const,
   seats: () => [...inviteKeys.all, 'seats'] as const,
+  organisers: () => [...inviteKeys.all, 'organisers'] as const,
 };
+
+// Accepted organisers (with emails), resolved server-side.
+export function useOrganisersQuery() {
+  return useQuery<Organiser[], Error>({
+    queryKey: inviteKeys.organisers(),
+    queryFn: fetchOrganisers,
+  });
+}
 
 // Resolves the current user's pending invite (if any), with group name attached.
 export function usePendingInviteQuery(enabled: boolean) {

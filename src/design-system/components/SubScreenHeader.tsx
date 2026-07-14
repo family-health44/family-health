@@ -11,6 +11,7 @@ import { useTheme } from '@/design-system/theme/ThemeProvider';
 import { Fonts } from '@/design-system/tokens/fonts';
 import { Type } from '@/design-system/tokens/typography';
 import { PressableBase } from './PressableBase';
+import { Icon } from '@/design-system/components/Icon';
 
 interface SubScreenHeaderProps {
   title: string;
@@ -44,7 +45,7 @@ export const SubScreenHeader = ({ title, subtitle, right, children, bgColour, on
           accessibilityLabel="Back"
           style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4 })}
         >
-          <Text style={{ ...Type.body, color: '#FFFFFF' }}>‹</Text>
+          <Icon name="chevron.left" size={16} color="#FFFFFF" weight="semibold" />
           <Text style={{ ...Type.caption, fontWeight: '500', color: '#FFFFFF' }}>Back</Text>
         </PressableBase>
         {right}

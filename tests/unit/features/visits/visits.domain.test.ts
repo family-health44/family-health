@@ -13,6 +13,8 @@ import {
 import type { Visit } from '@/features/visits/types/visits.types';
 
 const makeVisit = (overrides: Partial<Visit> = {}): Visit => ({
+  reminderOffsetMinutes: null,
+  reminderAt: null,
   id: 'visit-1',
   title: 'Checkup',
   visitDate: '2024-06-15',

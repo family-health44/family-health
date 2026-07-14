@@ -18,6 +18,8 @@ export interface Visit {
   postNotes: string | null;
   totalCost: number | null;
   outOfPocket: number | null;
+  reminderOffsetMinutes: number | null;
+  reminderAt: string | null;
 }
 
 // A day cell in the calendar — may have visits

@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { getPersonColour } from '@/shared/utils/avatar';
 import { formatDate, formatTime } from '@/shared/utils/dates';
 import type { Visit } from '../types/visits.types';
+import { Icon } from '@/design-system/components/Icon';
 
 interface VisitCardProps {
   visit: Visit;
@@ -71,7 +72,7 @@ export const VisitCard = ({ visit, onPress, compact = false, isPast = false }: V
           <Text style={{ fontSize: 11.5, color: '#1F5C41', fontWeight: '600' }}>{dateTime}</Text>
           <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)' }}>{visit.personName}</Text>
         </View>
-        <Text style={{ color: 'rgba(23,33,28,0.4)', fontSize: 13 }}>›</Text>
+        <Icon name="chevron.right" size={13} color="rgba(23,33,28,0.4)" weight="semibold" />
       </View>
     </PressableBase>
   );

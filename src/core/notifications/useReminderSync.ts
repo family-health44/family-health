@@ -1,0 +1,81 @@
+// src/core/notifications/useReminderSync.ts
+// Rebuilds the entire local notification schedule from current data.
+// Runs on mount and whenever the app returns to the foreground.
+// No notification IDs are persisted — the schedule is always derived.
+
+import { useEffect, useRef } from 'react';
+import { AppState, type AppStateStatus } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
+
+import { queryKeys } from '@/lib/queryClient';
+import { fetchVisits } from '@/features/visits/repository/visits.repository';
+import { fetchTodos } from '@/features/todos/repository/todos.repository';
+import { rebuildSchedule, type ScheduledReminder } from './notifications';
+import { resolveVisitReminder, resolveTodoReminder } from './reminders.domain';
+
+export function useReminderSync(enabled: boolean) {
+  const { data: visits } = useQuery({
+    queryKey: queryKeys.visits.all,
+    queryFn: fetchVisits,
+    enabled,
+  });
+
+  const { data: todos } = useQuery({
+    queryKey: queryKeys.todos.list(),
+    queryFn: fetchTodos,
+    enabled,
+  });
+
+  const appState = useRef(AppState.currentState);
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    const build = () => {
+      const reminders: ScheduledReminder[] = [];
+
+      for (const v of visits ?? []) {
+        const fireAt = resolveVisitReminder({
+          visitDate: v.visit_date,
+          visitTime: v.visit_time,
+          reminderOffsetMinutes: v.reminder_offset_minutes,
+          reminderAt: v.reminder_at,
+        });
+        if (!fireAt) continue;
+        reminders.push({
+          key: `visit:${v.id}`,
+          title: v.title,
+          body: v.visit_time
+            ? `Appointment at ${v.visit_time}`
+            : 'Upcoming appointment',
+          fireAt,
+        });
+      }
+
+      for (const t of todos ?? []) {
+        if (t.completed) continue;
+        const fireAt = resolveTodoReminder({ reminderAt: t.reminder_at });
+        if (!fireAt) continue;
+        reminders.push({
+          key: `todo:${t.id}`,
+          title: t.title,
+          body: 'To do',
+          fireAt,
+        });
+      }
+
+      void rebuildSchedule(reminders);
+    };
+
+    build();
+
+    const sub = AppState.addEventListener('change', (next: AppStateStatus) => {
+      if (appState.current.match(/inactive|background/) && next === 'active') {
+        build();
+      }
+      appState.current = next;
+    });
+
+    return () => sub.remove();
+  }, [enabled, visits, todos]);
+}

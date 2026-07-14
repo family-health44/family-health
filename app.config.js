@@ -16,7 +16,7 @@ module.exports = ({ config }) => ({
     supportsTablet: false,
     bundleIdentifier: 'app.famfiles.ios',
     developmentTeam: 'U63S68M7JJ',
-    buildNumber: '6',
+    buildNumber: '7',
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
     },
@@ -80,6 +80,10 @@ module.exports = ({ config }) => ({
         photosPermission:
           'FamFiles needs access to your photos so you can attach them to a person\\u2019s records.',
       },
+    ],
+    [
+      'expo-notifications',
+      { color: '#1F5C41' },
     ],
   ],
   experiments: {

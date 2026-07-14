@@ -6,6 +6,7 @@ import { View, Text, Alert } from 'react-native';
 import { PERSON_COLOURS } from '@/design-system/tokens/colours';
 import type { PersonColourSet } from '@/design-system/tokens/colours';
 import type { Doctor } from '../types/doctors.types';
+import { Icon } from '@/design-system/components/Icon';
 
 interface DoctorCardProps {
   doctor: Doctor;
@@ -73,7 +74,7 @@ export const DoctorCard = ({ doctor, colourSet: colourSetProp, colourIndex = 0, 
           <Text style={{ fontSize: 18, color: '#B33A4A' }}>×</Text>
         </PressableBase>
       ) : (
-        <Text style={{ color: 'rgba(23,33,28,0.3)', fontSize: 16 }}>›</Text>
+        <Icon name="chevron.right" size={14} color="rgba(23,33,28,0.3)" weight="semibold" />
       )}
     </PressableBase>
   );

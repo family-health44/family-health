@@ -10,6 +10,8 @@ import { z } from 'zod';
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
 import { DateField, TimeField } from '@/design-system/components/DateField';
+import { ReminderField } from '@/design-system/components/ReminderField';
+import { requestNotificationPermission } from '@/core/notifications/notifications';
 import type { UpdateVisitParams } from '../repository/visits.repository';
 import type { Visit } from '../types/visits.types';
 import type { Doctor } from '@/features/doctors/types/doctors.types';
@@ -19,6 +21,8 @@ const schema = z.object({
   visitDate: z.string().min(1, 'Date is required').regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD format'),
   visitTime: z.string().optional(),
   doctorId: z.string().nullable().optional(),
+  reminderOffsetMinutes: z.number().nullable().optional(),
+  reminderAt: z.string().nullable().optional(),
 });
 type FormValues = z.infer<typeof schema>;
 type EditVisitInput = Omit<UpdateVisitParams, 'visitId'>;
@@ -43,9 +47,57 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
       visitDate: visit.visitDate,
       visitTime: visit.visitTime ?? '',
       doctorId: visit.doctorId,
+      reminderOffsetMinutes: visit.reminderOffsetMinutes,
+      reminderAt: visit.reminderAt,
     },
   });
   const doctorId = watch('doctorId');
+  const visitTime = watch('visitTime');
+  const reminderOffsetMinutes = watch('reminderOffsetMinutes');
+  const reminderAt = watch('reminderAt');
+  const hasTime = !!visitTime?.trim();
+
+  const askPermission = async (): Promise<boolean> => {
+    const granted = await requestNotificationPermission();
+    if (!granted) {
+      Alert.alert('Notifications are off', 'Turn on notifications for FamFiles in iOS Settings to receive reminders.');
+    }
+    return granted;
+  };
+
+  const setOffset = async (minutes: number | null) => {
+    if (minutes != null && !(await askPermission())) return;
+    setValue('reminderOffsetMinutes', minutes);
+    setValue('reminderAt', null);
+  };
+
+  const setAt = async (iso: string | null) => {
+    if (iso && !(await askPermission())) return;
+    setValue('reminderAt', iso);
+    setValue('reminderOffsetMinutes', null);
+  };
+
+  const handleTimeChange = (next: string, onChange: (v: string) => void) => {
+    onChange(next);
+    if (next.trim() && reminderAt) setValue('reminderAt', null);
+    if (!next.trim() && reminderOffsetMinutes != null) setValue('reminderOffsetMinutes', null);
+  };
+
+  // An absolute reminder does not follow a date change — offer to review it. (c)
+  const handleDateChange = (next: string, onChange: (v: string) => void) => {
+    const prev = watch('visitDate');
+    onChange(next);
+    if (reminderAt && prev && next && prev !== next) {
+      Alert.alert(
+        'Update reminder?',
+        'The visit date changed. Your reminder is still set for its original time.',
+        [
+          { text: 'Keep it', style: 'cancel' },
+          { text: 'Clear reminder', style: 'destructive', onPress: () => setValue('reminderAt', null) },
+        ],
+      );
+    }
+  };
 
   // Re-seed the form whenever a different visit is opened or the modal re-opens.
   useEffect(() => {
@@ -55,6 +107,8 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
         visitDate: visit.visitDate,
         visitTime: visit.visitTime ?? '',
         doctorId: visit.doctorId,
+        reminderOffsetMinutes: visit.reminderOffsetMinutes,
+        reminderAt: visit.reminderAt,
       });
     }
   }, [visible, visit, reset]);
@@ -70,6 +124,8 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
       postNotes: visit.postNotes,
       totalCost: visit.totalCost,
       outOfPocket: visit.outOfPocket,
+      reminderOffsetMinutes: values.visitTime?.trim() ? (values.reminderOffsetMinutes ?? null) : null,
+      reminderAt: values.visitTime?.trim() ? null : (values.reminderAt ?? null),
     });
     onDismiss();
     } catch (e) {
@@ -98,11 +154,18 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
                   <Input label="Title" isRequired placeholder="e.g. Annual checkup" autoCapitalize="sentences" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.title?.message} />
                 )} />
                 <Controller control={control} name="visitDate" render={({ field: { onChange, value } }) => (
-                  <DateField label="Date" isRequired value={value} onChange={onChange} error={errors.visitDate?.message} />
+                  <DateField label="Date" isRequired value={value} onChange={(v) => handleDateChange(v, onChange)} error={errors.visitDate?.message} />
                 )} />
                 <Controller control={control} name="visitTime" render={({ field: { onChange, value } }) => (
-                  <TimeField label="Time (optional)" value={value} onChange={onChange} />
+                  <TimeField label="Time (optional)" value={value} onChange={(v) => handleTimeChange(v, onChange)} />
                 )} />
+                <ReminderField
+                  mode={hasTime ? 'offset' : 'absolute'}
+                  offsetMinutes={reminderOffsetMinutes ?? null}
+                  reminderAt={reminderAt ?? null}
+                  onChangeOffset={setOffset}
+                  onChangeAt={setAt}
+                />
                 {doctors.length > 0 && (
                   <InlinePicker label="Doctor (optional)" options={doctorOptions} value={doctorId} onChange={(id) => setValue('doctorId', id)} />
                 )}

@@ -194,9 +194,9 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
-          storage_cap_bytes: number
           name: string
           owner_id: string | null
+          storage_cap_bytes: number
         }
         Insert: {
           created_at?: string | null
@@ -606,6 +606,7 @@ export type Database = {
           id: string
           notes: string | null
           person_id: string | null
+          reminder_at: string | null
           title: string
           visit_id: string | null
         }
@@ -619,6 +620,7 @@ export type Database = {
           id?: string
           notes?: string | null
           person_id?: string | null
+          reminder_at?: string | null
           title: string
           visit_id?: string | null
         }
@@ -632,6 +634,7 @@ export type Database = {
           id?: string
           notes?: string | null
           person_id?: string | null
+          reminder_at?: string | null
           title?: string
           visit_id?: string | null
         }
@@ -678,6 +681,8 @@ export type Database = {
           person_id: string
           post_notes: string | null
           pre_notes: string | null
+          reminder_at: string | null
+          reminder_offset_minutes: number | null
           title: string
           total_cost: number | null
           visit_date: string
@@ -694,6 +699,8 @@ export type Database = {
           person_id: string
           post_notes?: string | null
           pre_notes?: string | null
+          reminder_at?: string | null
+          reminder_offset_minutes?: number | null
           title: string
           total_cost?: number | null
           visit_date: string
@@ -710,6 +717,8 @@ export type Database = {
           person_id?: string
           post_notes?: string | null
           pre_notes?: string | null
+          reminder_at?: string | null
+          reminder_offset_minutes?: number | null
           title?: string
           total_cost?: number | null
           visit_date?: string
@@ -745,7 +754,21 @@ export type Database = {
     }
     Functions: {
       create_family_group: { Args: { group_name: string }; Returns: string }
+      family_seat_count: { Args: { p_group_id: string }; Returns: number }
+      list_organisers: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          member_id: string
+          role: string
+        }[]
+      }
       my_family_group_ids: { Args: never; Returns: string[] }
+      remove_organiser: {
+        Args: { target_member_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

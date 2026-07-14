@@ -39,6 +39,7 @@
     "expo-font": "~55.0.8",
     "expo-image-picker": "~55.0.21",
     "expo-linking": "~55.0.15",
+    "expo-notifications": "~55.0.24",
     "expo-print": "~55.0.16",
     "expo-router": "~55.0.16",
     "expo-secure-store": "~55.0.14",
@@ -88,6 +89,7 @@
     "patch-package": "^8.0.1",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.5",
+    "supabase": "^2.109.1",
     "tailwindcss": "^3.4.19",
     "ts-jest": "^29.2.3",
     "typescript": "^5.3.3"

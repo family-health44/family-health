@@ -11,6 +11,7 @@ import { queryClient } from '@/lib/queryClient';
 import { useAuth } from '@/core/auth/useAuth';
 import { useSyncManager } from '@/core/sync/useSyncManager';
 import { useRecoveryDeepLink } from '@/core/auth/useRecoveryDeepLink';
+import { useReminderSync } from '@/core/notifications/useReminderSync';
 import { OfflineBanner } from '@/design-system/components/OfflineBanner';
 import { DrawerProvider } from '@/design-system/components/DrawerContext';
 import { ThemeProvider } from '@/design-system/theme/ThemeProvider';
@@ -23,6 +24,7 @@ function RootLayoutNav() {
   const { status } = useAuth();
   const { isOnline, isSyncing, pendingCount } = useSyncManager();
   useRecoveryDeepLink();
+  useReminderSync(status === 'authenticated');
   const [fontsLoaded] = useFonts({
     'Fraunces': require('../assets/fonts/Fraunces-Variable.ttf'),
   });

@@ -5,6 +5,8 @@
 // - multicolor: uses the symbol's natural colours where one exists.
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 
+export type SFSymbol = SymbolViewProps['name'];
+
 interface IconProps {
   name: SymbolViewProps['name'];
   size?: number;

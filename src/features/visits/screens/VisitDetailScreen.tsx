@@ -99,6 +99,8 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
         postNotes: patch.postNotes !== undefined ? patch.postNotes : v.postNotes,
         totalCost: patch.totalCost !== undefined ? patch.totalCost : v.totalCost,
         outOfPocket: patch.outOfPocket !== undefined ? patch.outOfPocket : v.outOfPocket,
+        reminderOffsetMinutes: v.reminderOffsetMinutes,
+        reminderAt: v.reminderAt,
       });
     } catch {
       Alert.alert('Error', 'Could not save changes.');
@@ -114,6 +116,8 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
     postNotes: string | null;
     totalCost: number | null;
     outOfPocket: number | null;
+    reminderOffsetMinutes: number | null;
+    reminderAt: string | null;
   }) => {
     try {
       await updateVisit.mutateAsync({ visitId: v.id, ...input });

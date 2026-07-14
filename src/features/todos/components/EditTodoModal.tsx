@@ -29,6 +29,7 @@ export const EditTodoModal = ({ visible, isLoading, todo, people = [], doctors =
       personId: values.personId,
       doctorId: values.doctorId ?? null,
       visitId: values.visitId ?? null,
+      reminderAt: values.reminderAt ?? null,
     });
   };
 

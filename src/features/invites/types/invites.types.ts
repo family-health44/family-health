@@ -18,6 +18,14 @@ export interface PendingInvite {
   invitedEmail: string;
 }
 
+// A member of the family group, resolved with their email via list_organisers().
+export interface Organiser {
+  memberId: string;
+  email: string;
+  role: 'owner' | 'member';
+  createdAt: string | null;
+}
+
 // Hard cap: 2 organisers per family group (account holder + 1).
 // ENFORCED IN THE DB (trg_enforce_organiser_cap / trg_enforce_invite_cap).
 // This constant is for UI only — changing it does not change what is enforced.

@@ -10,6 +10,8 @@ import { z } from 'zod';
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
 import { DateField, TimeField } from '@/design-system/components/DateField';
+import { ReminderField } from '@/design-system/components/ReminderField';
+import { requestNotificationPermission } from '@/core/notifications/notifications';
 import type { InsertVisitParams } from '../repository/visits.repository';
 import type { Person } from '@/features/family/types/family.types';
 import type { Doctor } from '@/features/doctors/types/doctors.types';
@@ -23,6 +25,8 @@ const schema = z.object({
   preNotes: z.string().optional(),
   totalCost: z.string().optional(),
   outOfPocketCost: z.string().optional(),
+  reminderOffsetMinutes: z.number().nullable().optional(),
+  reminderAt: z.string().nullable().optional(),
 });
 type FormValues = z.infer<typeof schema>;
 type AddVisitInput = Omit<InsertVisitParams, 'familyGroupId'>;
@@ -42,10 +46,41 @@ interface AddVisitModalProps {
 export const AddVisitModal = ({ visible, isLoading, people = [], doctors = [], defaultPersonId = '', personName, onAdd, onDismiss }: AddVisitModalProps) => {
   const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { title: '', visitDate: '', visitTime: '', personId: defaultPersonId, doctorId: null, preNotes: '', totalCost: '', outOfPocketCost: '' },
+    defaultValues: { title: '', visitDate: '', visitTime: '', personId: defaultPersonId, doctorId: null, preNotes: '', totalCost: '', outOfPocketCost: '', reminderOffsetMinutes: null, reminderAt: null },
   });
   const personId = watch('personId');
   const doctorId = watch('doctorId');
+  const visitTime = watch('visitTime');
+  const reminderOffsetMinutes = watch('reminderOffsetMinutes');
+  const reminderAt = watch('reminderAt');
+  const hasTime = !!visitTime?.trim();
+
+  const askPermission = async (): Promise<boolean> => {
+    const granted = await requestNotificationPermission();
+    if (!granted) {
+      Alert.alert('Notifications are off', 'Turn on notifications for FamFiles in iOS Settings to receive reminders.');
+    }
+    return granted;
+  };
+
+  const setOffset = async (minutes: number | null) => {
+    if (minutes != null && !(await askPermission())) return;
+    setValue('reminderOffsetMinutes', minutes);
+    setValue('reminderAt', null);
+  };
+
+  const setAt = async (iso: string | null) => {
+    if (iso && !(await askPermission())) return;
+    setValue('reminderAt', iso);
+    setValue('reminderOffsetMinutes', null);
+  };
+
+  // Adding a time switches the reminder mode — drop the now-invalid absolute value.
+  const handleTimeChange = (next: string, onChange: (v: string) => void) => {
+    onChange(next);
+    if (next.trim() && reminderAt) setValue('reminderAt', null);
+    if (!next.trim() && reminderOffsetMinutes != null) setValue('reminderOffsetMinutes', null);
+  };
 
   const parseCost = (raw?: string): number | null => {
     const t = raw?.trim();
@@ -66,6 +101,8 @@ export const AddVisitModal = ({ visible, isLoading, people = [], doctors = [], d
       postNotes: null,
       totalCost: parseCost(values.totalCost),
       outOfPocket: parseCost(values.outOfPocketCost),
+      reminderOffsetMinutes: values.visitTime?.trim() ? (values.reminderOffsetMinutes ?? null) : null,
+      reminderAt: values.visitTime?.trim() ? null : (values.reminderAt ?? null),
     });
     reset();
     onDismiss();
@@ -105,8 +142,15 @@ export const AddVisitModal = ({ visible, isLoading, people = [], doctors = [], d
                   <DateField label="Date" isRequired value={value} onChange={onChange} error={errors.visitDate?.message} />
                 )} />
                 <Controller control={control} name="visitTime" render={({ field: { onChange, value } }) => (
-                  <TimeField label="Time (optional)" value={value} onChange={onChange} />
+                  <TimeField label="Time (optional)" value={value} onChange={(v) => handleTimeChange(v, onChange)} />
                 )} />
+                <ReminderField
+                  mode={hasTime ? 'offset' : 'absolute'}
+                  offsetMinutes={reminderOffsetMinutes ?? null}
+                  reminderAt={reminderAt ?? null}
+                  onChangeOffset={setOffset}
+                  onChangeAt={setAt}
+                />
                 {doctors.length > 0 && (
                   <InlinePicker label="Doctor (optional)" options={doctorOptions} value={doctorId} onChange={(id) => setValue('doctorId', id)} />
                 )}

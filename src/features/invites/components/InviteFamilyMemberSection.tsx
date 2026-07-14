@@ -9,10 +9,12 @@ import { useState } from 'react';
 import { View, Text, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
-import { useGroupInvitesQuery, useGroupSeatsQuery } from '../queries/invites.queries';
+import { useAuth } from '@/core/auth/useAuth';
+import { useGroupInvitesQuery, useGroupSeatsQuery, useOrganisersQuery } from '../queries/invites.queries';
 import {
   useCreateInviteMutation,
   useRevokeInviteMutation,
+  useRemoveOrganiserMutation,
   isOrganiserCapError,
 } from '../mutations/invites.mutations';
 import { MAX_ORGANISERS } from '../types/invites.types';
@@ -30,10 +32,13 @@ const Card = ({ children }: { children: React.ReactNode }) => (
 const Divider = () => <View style={{ height: 1, backgroundColor: DIVIDER, marginHorizontal: 15 }} />;
 
 export const InviteFamilyMemberSection = () => {
+  const { session } = useAuth();
   const { data: invites, isLoading } = useGroupInvitesQuery();
   const { data: seats } = useGroupSeatsQuery();
+  const { data: organisers } = useOrganisersQuery();
   const createInvite = useCreateInviteMutation();
   const revokeInvite = useRevokeInviteMutation();
+  const removeOrganiser = useRemoveOrganiserMutation();
   const [email, setEmail] = useState('');
   const [adding, setAdding] = useState(false);
 
@@ -74,8 +79,34 @@ export const InviteFamilyMemberSection = () => {
     ]);
   };
 
+  const handleRemoveOrganiser = (memberId: string, addr: string) => {
+    Alert.alert(
+      'Remove organiser',
+      `Remove ${addr} from this family? They will lose access to all records. This frees a seat.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await removeOrganiser.mutateAsync(memberId);
+            } catch {
+              Alert.alert('Could not remove', 'Please try again.');
+            }
+          },
+        },
+      ],
+    );
+  };
+
   const pending = (invites ?? []).filter((i) => !i.accepted);
-  const accepted = (invites ?? []).filter((i) => i.accepted);
+  const members = organisers ?? [];
+  const myEmail = session?.user?.email?.toLowerCase() ?? null;
+  // Only the account holder may remove an organiser (also enforced in the RPC).
+  const viewerIsOwner = members.some(
+    (m) => m.role === 'owner' && m.email.toLowerCase() === myEmail,
+  );
 
   return (
     <>
@@ -160,16 +191,26 @@ export const InviteFamilyMemberSection = () => {
         </Card>
       ) : null}
 
-      {accepted.length > 0 ? (
+      {members.length > 0 ? (
         <Card>
-          {accepted.map((inv, idx) => (
-            <View key={inv.id}>
+          {members.map((m, idx) => (
+            <View key={m.memberId}>
               {idx > 0 ? <Divider /> : null}
               <View style={{ paddingVertical: 13, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center' }}>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ ...Type.body, color: TextColour.ink }}>{inv.invited_email}</Text>
-                  <Text style={{ ...Type.caption, color: GREEN, marginTop: 2 }}>Joined</Text>
+                  <Text style={{ ...Type.body, color: TextColour.ink }}>{m.email}</Text>
+                  <Text style={{ ...Type.caption, color: GREEN, marginTop: 2 }}>
+                    {m.role === 'owner' ? 'Account holder' : 'Organiser'}
+                  </Text>
                 </View>
+                {m.role === 'member' && viewerIsOwner ? (
+                  <PressableBase
+                    onPress={() => handleRemoveOrganiser(m.memberId, m.email)}
+                    style={(pressed) => ({ opacity: pressed ? 0.6 : 1, paddingHorizontal: 4, paddingVertical: 4 })}
+                  >
+                    <Text style={{ ...Type.label, color: RED }}>Remove</Text>
+                  </PressableBase>
+                ) : null}
               </View>
             </View>
           ))}

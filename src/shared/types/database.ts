@@ -94,6 +94,8 @@ export interface DbVisit {
   post_notes: string | null;
   total_cost: number | null;
   out_of_pocket: number | null;
+  reminder_offset_minutes: number | null;
+  reminder_at: string | null;
 }
 
 export interface DbNote {
@@ -119,6 +121,7 @@ export interface DbTodo {
   doctor_id: string | null;
   visit_id: string | null;
   family_group_id: string;
+  reminder_at: string | null;
 }
 
 export interface DbDocument {

@@ -11,6 +11,7 @@ import { formatDate } from '@/shared/utils/dates';
 
 import type { Visit } from '@/features/visits/types/visits.types';
 import type { Doctor } from '@/features/doctors/types/doctors.types';
+import { Icon } from '@/design-system/components/Icon';
 
 const GREEN = '#1F5C41';
 const DIVIDER = 'rgba(23,33,28,0.07)';
@@ -132,7 +133,7 @@ export const LinkDocumentModal = ({
           </Text>
         ) : null}
       </View>
-      {selected ? <Text style={{ fontSize: 15, color: GREEN, fontWeight: '700' }}>✓</Text> : null}
+      {selected ? <Icon name="checkmark" size={14} color={GREEN} weight="bold" /> : null}
     </PressableBase>
   );
 

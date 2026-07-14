@@ -7,6 +7,7 @@ import { formatRelativeDate } from '@/shared/utils/dates';
 import { isTodoOverdue } from '../domain/todos.domain';
 import type { Todo } from '../types/todos.types';
 import type { PersonColourSet } from '@/design-system/tokens/colours';
+import { Icon } from '@/design-system/components/Icon';
 
 interface TodoItemProps {
   todo: Todo;
@@ -72,7 +73,7 @@ export const TodoItem = ({ todo, colourSet, onToggle, onEdit, onDelete }: TodoIt
           justifyContent: 'center',
         }}>
           {todo.completed && (
-            <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '700', lineHeight: 13 }}>✓</Text>
+            <Icon name="checkmark" size={10} color="#FFFFFF" weight="bold" />
           )}
         </View>
       </PressableBase>

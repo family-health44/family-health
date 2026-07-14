@@ -131,6 +131,7 @@ export function useActiveAppointment(): UseActiveAppointmentReturn {
             dueDate: null,
             personId: appointment.personId,
             familyGroupId: group.id,
+            reminderAt: null,
           }),
         ),
         // Medical events (stored as notes)
@@ -157,6 +158,8 @@ export function useActiveAppointment(): UseActiveAppointmentReturn {
               postNotes: appointment.postNotes.trim(),
               totalCost: null,
               outOfPocket: null,
+              reminderOffsetMinutes: null,
+              reminderAt: null,
             })]
           : []),
       ]);

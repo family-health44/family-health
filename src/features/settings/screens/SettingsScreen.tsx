@@ -12,6 +12,7 @@ import { db } from '@/lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/queryClient';
 import { InviteFamilyMemberSection } from '@/features/invites/components/InviteFamilyMemberSection';
+import { Icon } from '@/design-system/components/Icon';
 
 const PAGE = '#F4F2EC';
 const DIVIDER = 'rgba(23,33,28,0.07)';
@@ -109,7 +110,7 @@ export const SettingsScreen = () => {
       )}
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
-          <Text style={{ ...Type.body, color: GREEN }}>‹</Text>
+          <Icon name="chevron.left" size={16} color={GREEN} weight="semibold" />
           <Text style={{ ...Type.caption, color: GREEN, fontWeight: '500' }}>Back</Text>
         </PressableBase>
       </View>
@@ -165,7 +166,7 @@ export const SettingsScreen = () => {
         <Card>
           <PressableBase onPress={() => router.push('/(app)/settings/disclaimer' as never)} accessibilityRole="button" style={(pressed) => ({ padding: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: pressed ? 0.6 : 1 })}>
             <Text style={{ ...Type.body, color: TextColour.ink }}>Medical disclaimer</Text>
-            <Text style={{ color: TextColour.muted, fontSize: 14 }}>›</Text>
+            <Icon name="chevron.right" size={13} color={TextColour.muted} weight="semibold" />
           </PressableBase>
         </Card>
 
@@ -173,7 +174,7 @@ export const SettingsScreen = () => {
         <Card>
           <PressableBase onPress={handleDeleteAccount} accessibilityRole="button" style={(pressed) => ({ padding: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: pressed ? 0.6 : 1 })}>
             <Text style={{ ...Type.body, fontWeight: '500', color: RED }}>Delete account</Text>
-            <Text style={{ color: TextColour.muted, fontSize: 14 }}>›</Text>
+            <Icon name="chevron.right" size={13} color={TextColour.muted} weight="semibold" />
           </PressableBase>
         </Card>
 

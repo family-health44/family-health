@@ -21,6 +21,7 @@ import { useVisitsForCalendarQuery } from '@/features/visits/queries/visits.quer
 import { usePersonNotesQuery } from '@/features/notes/queries/notes.queries';
 import { parseNoteContent } from '@/features/notes/domain/notes.domain';
 import { usePersonMedicationsQuery } from '@/features/medications/queries/medications.queries';
+import { Icon } from '@/design-system/components/Icon';
 
 interface DoctorDetailScreenProps { doctorId: string; personId: string; }
 
@@ -154,7 +155,7 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
                     <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.ink }}>{v.title || 'Visit'}</Text>
                     <Text style={{ ...Type.caption, fontWeight: '400', color: TextColour.muted, marginTop: 2 }}>{isoToDisplayDate(v.visitDate)}</Text>
                   </View>
-                  <Text style={{ fontSize: 14, color: TextColour.faint }}>›</Text>
+                  <Icon name="chevron.right" size={13} color={TextColour.faint} weight="semibold" />
                 </PressableBase>
               </View>
             ))

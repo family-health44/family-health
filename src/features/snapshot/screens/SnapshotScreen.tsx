@@ -17,6 +17,7 @@ import { usePersonMedicationsQuery } from '@/features/medications/queries/medica
 import { EditTodoModal } from '@/features/todos/components/EditTodoModal';
 import type { Todo } from '@/features/todos/types/todos.types';
 import { buildSnapshot, type SnapshotWindow } from '../domain/snapshot.domain';
+import { Icon } from '@/design-system/components/Icon';
 
 const RED = '#A63D2F';
 const GREEN = '#1F5C41';
@@ -75,7 +76,7 @@ export const SnapshotScreen = () => {
       {isFocused ? <StatusBar style="light" /> : null}
       <View style={{ backgroundColor: dot, paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 18, borderBottomLeftRadius: 26, borderBottomRightRadius: 26 }}>
         <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(p) => ({ opacity: p ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
-          <Text style={{ ...Type.body, color: '#FFFFFF' }}>‹</Text>
+          <Icon name="chevron.left" size={16} color="#FFFFFF" weight="semibold" />
           <Text style={{ ...Type.caption, fontWeight: '500', color: '#FFFFFF' }}>Back</Text>
         </PressableBase>
         <Text style={{ ...Type.display, color: '#FFFFFF', marginTop: 6 }}>{person.name} — Snapshot</Text>
@@ -174,7 +175,7 @@ const TodoRow = ({ title, sub, subColor, last, done, onToggle, onPress }: { titl
     <View style={{ flexDirection: 'row', alignItems: 'center', padding: 15, gap: 11 }}>
       <PressableBase onPress={onToggle} accessibilityRole="checkbox" accessibilityState={{ checked: done }} hitSlop={8}
         style={() => ({ width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: done ? GREEN : '#C9C8C0', backgroundColor: done ? GREEN : 'transparent', alignItems: 'center', justifyContent: 'center' })}>
-        {done ? <Text style={{ color: '#fff', fontSize: 13, fontWeight: '700' }}>✓</Text> : null}
+        {done ? <Icon name="checkmark" size={12} color="#FFFFFF" weight="bold" /> : null}
       </PressableBase>
       <PressableBase onPress={onPress} accessibilityRole="button" style={() => ({ flex: 1 })}>
         <Text style={{ ...Type.body, fontWeight: '500', color: TextColour.ink, textDecorationLine: done ? 'line-through' : 'none', opacity: done ? 0.55 : 1 }}>{title}</Text>

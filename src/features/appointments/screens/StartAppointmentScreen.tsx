@@ -12,6 +12,7 @@ import { AiTeaser } from '@/design-system/components/AiTeaser';
 import { MEDICAL_EVENT_CONFIG, MEDICAL_EVENT_TYPES } from '@/features/medical-events/types/medical-events.types';
 import { useActiveAppointment } from '../hooks/useActiveAppointment';
 import type { MedicalEventType } from '@/features/medical-events/types/medical-events.types';
+import { Icon, type SFSymbol } from '@/design-system/components/Icon';
 
 type CaptureKind = 'note' | 'todo' | 'event';
 
@@ -151,10 +152,10 @@ export const StartAppointmentScreen = () => {
 
   const total = stream.length;
 
-  const ROW_STYLE: Record<CaptureKind, { border: string; icon: string; iconColour: string }> = {
-    note: { border: '#E3E2DB', icon: '⊙', iconColour: '#888780' },
-    todo: { border: '#1F5C41', icon: '☐', iconColour: '#1F5C41' },
-    event: { border: '#185FA5', icon: '✚', iconColour: '#185FA5' },
+  const ROW_STYLE: Record<CaptureKind, { border: string; icon: SFSymbol; iconColour: string }> = {
+    note: { border: '#E3E2DB', icon: 'circle', iconColour: '#888780' },
+    todo: { border: '#1F5C41', icon: 'square', iconColour: '#1F5C41' },
+    event: { border: '#185FA5', icon: 'plus', iconColour: '#185FA5' },
   };
 
   return (
@@ -187,7 +188,10 @@ export const StartAppointmentScreen = () => {
       >
         <Text style={{ fontSize: 14, color: '#185FA5' }}>ⓘ</Text>
         <Text style={{ fontSize: 12, color: '#0C447C', flex: 1 }}>History</Text>
-        <Text style={{ fontSize: 12, color: '#185FA5' }}>View ›</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+          <Text style={{ fontSize: 12, color: '#185FA5' }}>View</Text>
+          <Icon name="chevron.right" size={10} color="#185FA5" weight="semibold" />
+        </View>
       </PressableBase>
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
@@ -248,13 +252,22 @@ export const StartAppointmentScreen = () => {
           ) : (
             <View style={{ flexDirection: 'row', gap: 6, marginTop: 6 }}>
               <PressableBase onPress={() => handleTag('note')} style={{ flex: 1, paddingVertical: 7, borderRadius: 8, backgroundColor: '#F1EFE8', alignItems: 'center' }}>
-                <Text style={{ fontSize: 11, fontWeight: '700', color: '#5F5E5A' }}>⊙ Note</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <Icon name="circle" size={10} color="#5F5E5A" weight="semibold" />
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: '#5F5E5A' }}>Note</Text>
+                </View>
               </PressableBase>
               <PressableBase onPress={() => handleTag('todo')} style={{ flex: 1, paddingVertical: 7, borderRadius: 8, backgroundColor: '#EAF3DE', alignItems: 'center' }}>
-                <Text style={{ fontSize: 11, fontWeight: '700', color: '#3B6D11' }}>☐ To do</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <Icon name="square" size={10} color="#3B6D11" weight="semibold" />
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: '#3B6D11' }}>To do</Text>
+                </View>
               </PressableBase>
               <PressableBase onPress={() => handleTag('event')} style={{ flex: 1, paddingVertical: 7, borderRadius: 8, backgroundColor: '#E6F1FB', alignItems: 'center' }}>
-                <Text style={{ fontSize: 11, fontWeight: '700', color: '#185FA5' }}>✚ Event</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <Icon name="plus" size={10} color="#185FA5" weight="semibold" />
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: '#185FA5' }}>Event</Text>
+                </View>
               </PressableBase>
             </View>
           )}
@@ -275,7 +288,7 @@ export const StartAppointmentScreen = () => {
             const accent = row.kind !== 'note';
             return (
               <View key={row.id} style={{ backgroundColor: '#FFFFFF', borderWidth: 0.5, borderColor: s.border, borderLeftWidth: accent ? 3 : 0.5, borderLeftColor: s.border, borderRadius: accent ? 0 : 10, borderTopRightRadius: 10, borderBottomRightRadius: 10, padding: 10, paddingHorizontal: 12, marginBottom: 6, flexDirection: 'row', gap: 8, alignItems: 'flex-start' }}>
-                <Text style={{ fontSize: 14, color: s.iconColour, marginTop: 1 }}>{s.icon}</Text>
+                <View style={{ marginTop: 2 }}><Icon name={s.icon} size={13} color={s.iconColour} weight="semibold" /></View>
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontSize: 13, color: '#17211C', lineHeight: 18 }}>{row.primary}</Text>
                   <Text style={{ fontSize: 10, color: row.kind === 'note' ? 'rgba(23,33,28,0.55)' : s.iconColour, marginTop: 3 }}>{row.meta}</Text>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import type { Person } from '../types/family.types';
+import { Icon } from '@/design-system/components/Icon';
 interface PersonCardProps {
   person: Person;
   onPress: (personId: string) => void;
@@ -36,7 +37,7 @@ export const PersonCard = ({ person, onPress }: PersonCardProps) => {
             {person.name}
           </Text>
         </View>
-        <Text style={{ color: 'rgba(23,33,28,0.4)', fontSize: 18 }}>›</Text>
+        <Icon name="chevron.right" size={15} color="rgba(23,33,28,0.4)" weight="semibold" />
       </View>
     </Pressable>
   );

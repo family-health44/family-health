@@ -7,6 +7,7 @@ import {
   insertMembership,
   markInviteAccepted,
   deleteInvite,
+  removeOrganiser,
 } from '../repository/invites.repository';
 import { inviteKeys } from '../queries/invites.queries';
 import { queryKeys } from '@/lib/queryClient';
@@ -64,6 +65,20 @@ export function useRevokeInviteMutation() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: inviteKeys.forGroup() });
       await queryClient.invalidateQueries({ queryKey: inviteKeys.seats() });
+    },
+  });
+}
+
+// Remove an accepted organiser (Settings UI). Owner-only, enforced in the RPC.
+export function useRemoveOrganiserMutation() {
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, string>({
+    mutationFn: async (memberId: string) => {
+      await removeOrganiser(memberId);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: inviteKeys.all });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.family.all });
     },
   });
 }

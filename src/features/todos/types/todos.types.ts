@@ -13,6 +13,7 @@ export interface Todo {
   doctorId: string | null;
   visitId: string | null;
   familyGroupId: string;
+  reminderAt: string | null;
 }
 
 // Todos grouped by person — each section is colour-coded

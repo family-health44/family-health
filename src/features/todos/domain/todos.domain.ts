@@ -20,6 +20,7 @@ export function mapDbTodoToTodo(
     doctorId: db.doctor_id,
     visitId: db.visit_id,
     familyGroupId: db.family_group_id,
+    reminderAt: db.reminder_at,
   };
 }
 

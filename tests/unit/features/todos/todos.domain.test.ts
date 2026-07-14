@@ -19,10 +19,12 @@ const makeDbTodo = (overrides: Partial<DbTodo> = {}): DbTodo => ({
   doctor_id: null,
   visit_id: null,
   family_group_id: 'group-1',
+  reminder_at: null,
   ...overrides,
 });
 
 const makeTodo = (overrides: Partial<Todo> = {}): Todo => ({
+  reminderAt: null,
   id: 'todo-1',
   title: 'Book appointment',
   notes: null,

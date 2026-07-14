@@ -11,6 +11,8 @@ import { z } from 'zod';
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
 import { DateField } from '@/design-system/components/DateField';
+import { ReminderField } from '@/design-system/components/ReminderField';
+import { requestNotificationPermission } from '@/core/notifications/notifications';
 import type { Todo } from '../types/todos.types';
 import type { Doctor } from '@/features/doctors/types/doctors.types';
 import type { Visit } from '@/features/visits/types/visits.types';
@@ -24,6 +26,7 @@ const schema = z.object({
   dueDate: z.string().optional(),
   doctorId: z.string().nullable().optional(),
   visitId: z.string().nullable().optional(),
+  reminderAt: z.string().nullable().optional(),
 });
 export type TodoFormValues = z.infer<typeof schema>;
 
@@ -57,7 +60,7 @@ export const TodoFormModal = ({
   const isEdit = !!initialTodo;
   const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<TodoFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { title: '', notes: '', dueDate: '', personId: defaultPersonId ?? '', doctorId: null, visitId: null },
+    defaultValues: { title: '', notes: '', dueDate: '', personId: defaultPersonId ?? '', doctorId: null, visitId: null, reminderAt: null },
   });
 
   // Populate/clear whenever the modal opens or its target changes.
@@ -71,15 +74,48 @@ export const TodoFormModal = ({
         personId: initialTodo.personId ?? '',
         doctorId: initialTodo.doctorId,
         visitId: initialTodo.visitId,
+        reminderAt: initialTodo.reminderAt,
       });
     } else {
-      reset({ title: '', notes: '', dueDate: '', personId: defaultPersonId ?? '', doctorId: null, visitId: null });
+      reset({ title: '', notes: '', dueDate: '', personId: defaultPersonId ?? '', doctorId: null, visitId: null, reminderAt: null });
     }
   }, [visible, initialTodo, defaultPersonId, reset]);
 
   const personId = watch('personId');
   const doctorId = watch('doctorId');
   const visitId = watch('visitId');
+  const reminderAt = watch('reminderAt');
+  const dueDate = watch('dueDate');
+
+  // Absolute reminders do not follow a due-date change — offer to review it. (c)
+  const handleDueDateChange = (next: string, onChange: (v: string) => void) => {
+    const prev = dueDate;
+    onChange(next);
+    if (reminderAt && prev && next && prev !== next) {
+      Alert.alert(
+        'Update reminder?',
+        'The due date changed. Your reminder is still set for its original time.',
+        [
+          { text: 'Keep it', style: 'cancel' },
+          { text: 'Clear reminder', style: 'destructive', onPress: () => setValue('reminderAt', null) },
+        ],
+      );
+    }
+  };
+
+  const setReminder = async (iso: string | null) => {
+    if (iso) {
+      const granted = await requestNotificationPermission();
+      if (!granted) {
+        Alert.alert(
+          'Notifications are off',
+          'Turn on notifications for FamFiles in iOS Settings to receive reminders.',
+        );
+        return;
+      }
+    }
+    setValue('reminderAt', iso);
+  };
 
   const submit = async (values: TodoFormValues) => {
     try {
@@ -120,8 +156,15 @@ export const TodoFormModal = ({
                   <Input label="Notes" placeholder="Additional details (optional)" autoCapitalize="sentences" multiline numberOfLines={2} value={value} onChangeText={onChange} onBlur={onBlur} />
                 )} />
                 <Controller control={control} name="dueDate" render={({ field: { onChange, value } }) => (
-                  <DateField label="Due date" placeholder="Select a date (optional)" value={value || null} onChange={onChange} onClear={() => onChange('')} />
+                  <DateField label="Due date" placeholder="Select a date (optional)" value={value || null} onChange={(v) => handleDueDateChange(v, onChange)} onClear={() => onChange('')} />
                 )} />
+                <ReminderField
+                  mode="absolute"
+                  offsetMinutes={null}
+                  reminderAt={reminderAt ?? null}
+                  onChangeOffset={() => {}}
+                  onChangeAt={setReminder}
+                />
                 {doctors.length > 0 && (
                   <InlinePicker label="Link to doctor (optional)" options={doctorOptions} value={doctorId} onChange={(id) => setValue('doctorId', id)} />
                 )}

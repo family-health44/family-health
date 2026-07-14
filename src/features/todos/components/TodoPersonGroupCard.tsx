@@ -9,6 +9,7 @@ import { PERSON_COLOURS } from '@/design-system/tokens/colours';
 import { formatRelativeDate } from '@/shared/utils/dates';
 import { isTodoOverdue } from '../domain/todos.domain';
 import type { Todo, TodoPersonGroup } from '../types/todos.types';
+import { Icon } from '@/design-system/components/Icon';
 
 const OVERDUE_RED = '#A63D2F';
 const DIVIDER = 'rgba(23,33,28,0.07)';
@@ -56,7 +57,7 @@ const Row = ({ todo, accent, last, onToggle, onEdit, onDelete }: RowProps) => {
           style={(p) => ({ opacity: p ? 0.6 : 1, flexShrink: 0 })}
         >
           <View style={{ width: 21, height: 21, borderRadius: 6, borderWidth: 1.5, borderColor: done ? accent : CHECK_BORDER, backgroundColor: done ? accent : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-            {done ? <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700' }}>✓</Text> : null}
+            {done ? <Icon name="checkmark" size={11} color="#FFFFFF" weight="bold" /> : null}
           </View>
         </PressableBase>
         <View style={{ flex: 1, minWidth: 0 }}>

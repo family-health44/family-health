@@ -28,6 +28,7 @@ export const AddTodoModal = ({ visible, isLoading, people = [], defaultPersonId,
       personId: values.personId,
       doctorId: values.doctorId ?? null,
       visitId: values.visitId ?? null,
+      reminderAt: values.reminderAt ?? null,
     });
   };
 

@@ -18,6 +18,7 @@ import { toAppError } from '@/shared/types/errors';
 
 import type { Medication, MedicationStatus } from '../types/medications.types';
 import type { UpdateMedicationParams } from '../repository/medications.repository';
+import { Icon } from '@/design-system/components/Icon';
 
 // ── Status picker config ────────────────────────────────────────────────────
 type PickerStatus = MedicationStatus;
@@ -279,7 +280,7 @@ export const EditMedicationModal = ({
                             {opt.label}
                           </Text>
                           {selectedStatus === opt.value && (
-                            <Text style={{ color: '#1F5C41', fontSize: 14 }}>✓</Text>
+                            <Icon name="checkmark" size={13} color="#1F5C41" weight="semibold" />
                           )}
                         </Pressable>
                       ))}

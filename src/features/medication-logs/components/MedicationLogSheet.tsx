@@ -11,6 +11,7 @@ import { Button } from '@/design-system/components/Button';
 import { toISODateString } from '@/shared/utils/dates';
 import { FEELING_CONFIG, FEELINGS } from '../domain/medication-logs.domain';
 
+import { Icon } from '@/design-system/components/Icon';
 import type {
   MedicationLog,
   MedicationLogFormValues,
@@ -184,7 +185,7 @@ export const MedicationLogSheet = ({
                       <PressableBase key={opt.value} onPress={() => setDoseStatus(active ? null : opt.value)} accessibilityRole="button" accessibilityState={{ selected: active }}
                         style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 13, paddingHorizontal: 14, borderBottomWidth: i < DOSE_OPTIONS.length - 1 ? 1 : 0, borderBottomColor: '#F0EFEA', backgroundColor: active ? '#E4EFE9' : '#FFFFFF' }}>
                         <Text style={{ fontSize: 14, color: active ? '#17452F' : '#17211C', fontWeight: active ? '600' : '400' }}>{opt.label}</Text>
-                        {active ? <Text style={{ fontSize: 14, color: '#1F5C41' }}>✓</Text> : null}
+                        {active ? <Icon name="checkmark" size={13} color="#1F5C41" weight="semibold" /> : null}
                       </PressableBase>
                     );
                   })}

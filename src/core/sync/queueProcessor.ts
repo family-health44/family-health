@@ -26,9 +26,9 @@ interface AddDoctorPayload { name: string; type: string | null; address: string 
 interface LinkDoctorPayload { doctorId: string; personId: string }
 interface AddMedicationPayload { name: string; dosage: string | null; frequency: string | null; reason: string | null; status: 'active' | 'as_needed' | 'inactive'; startDate: string | null; endDate: string | null; personId: string; prescribedBy: string | null; familyGroupId: string; form: string | null; timeOfDay: string | null; withFood: string | null; repeatsLeft: number | null; nextRefill: string | null; pharmacy: string | null }
 interface UpdateMedicationStatusPayload { medicationId: string; status: 'active' | 'as_needed' | 'inactive' }
-interface AddVisitPayload { title: string; visitDate: string; visitTime: string | null; doctorId: string | null; personId: string; familyGroupId: string; preNotes: string | null; postNotes: string | null; totalCost: number | null; outOfPocket: number | null }
-interface AddTodoPayload { title: string; notes: string | null; dueDate: string | null; personId: string | null; familyGroupId: string }
-interface UpdateTodoPayload { todoId: string; title: string; notes: string | null; dueDate: string | null; personId: string | null; doctorId: string | null; visitId: string | null }
+interface AddVisitPayload { title: string; visitDate: string; visitTime: string | null; doctorId: string | null; personId: string; familyGroupId: string; preNotes: string | null; postNotes: string | null; totalCost: number | null; outOfPocket: number | null; reminderOffsetMinutes: number | null; reminderAt: string | null }
+interface AddTodoPayload { title: string; notes: string | null; dueDate: string | null; personId: string | null; familyGroupId: string; reminderAt: string | null }
+interface UpdateTodoPayload { todoId: string; title: string; notes: string | null; dueDate: string | null; personId: string | null; doctorId: string | null; visitId: string | null; reminderAt: string | null }
 interface ToggleTodoPayload { todoId: string; completed: boolean }
 interface DeleteTodoPayload { todoId: string }
 interface AddNotePayload { content: string; personId: string | null; doctorId: string | null; medicationId: string | null; visitId: string | null; familyGroupId: string; hidden: boolean }

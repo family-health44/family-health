@@ -26,6 +26,7 @@ import {
 } from '../domain/packs.domain';
 import { PACK_SECTIONS, DEFAULT_PACK_SELECTION } from '../types/packs.types';
 import type { PackSectionKey, PackSelection } from '../types/packs.types';
+import { Icon } from '@/design-system/components/Icon';
 
 const PAGE = '#F4F2EC';
 const GREEN = '#1F5C41';
@@ -221,7 +222,7 @@ export const AppointmentPackScreen = () => {
                     }}
                   >
                     {on ? (
-                      <Text style={{ fontSize: 13, color: '#FFFFFF', fontWeight: '700' }}>✓</Text>
+                      <Icon name="checkmark" size={12} color="#FFFFFF" weight="bold" />
                     ) : null}
                   </View>
                   <View style={{ flex: 1, minWidth: 0 }}>
