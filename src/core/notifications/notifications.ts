@@ -3,7 +3,7 @@
 // No IDs are persisted — the scheduled set is always derived from current data.
 
 import * as Notifications from 'expo-notifications';
-import { Platform, Alert } from 'react-native';
+import { Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -41,9 +41,7 @@ export async function hasNotificationPermission(): Promise<boolean> {
 
 /** Cancels everything and reschedules from the given list. Idempotent. */
 export async function rebuildSchedule(reminders: ScheduledReminder[]): Promise<void> {
-  const perm = await hasNotificationPermission();
-  Alert.alert('SCH 1 rebuild', `perm=${perm} incoming=${reminders.length}`);
-  if (!perm) return;
+  if (!(await hasNotificationPermission())) return;
 
   await Notifications.cancelAllScheduledNotificationsAsync();
 
@@ -53,7 +51,6 @@ export async function rebuildSchedule(reminders: ScheduledReminder[]): Promise<v
     .sort((a, b) => a.fireAt.getTime() - b.fireAt.getTime())
     .slice(0, MAX_SCHEDULED);
 
-  Alert.alert('SCH 2 upcoming', `count=${upcoming.length} first=${upcoming[0]?.fireAt.toISOString() ?? 'none'}`);
   for (const r of upcoming) {
     await Notifications.scheduleNotificationAsync({
       identifier: r.key,
@@ -64,6 +61,4 @@ export async function rebuildSchedule(reminders: ScheduledReminder[]): Promise<v
       },
     });
   }
-  const pending = await Notifications.getAllScheduledNotificationsAsync();
-  Alert.alert('SCH 3 pending', `ios_holds=${pending.length}`);
 }

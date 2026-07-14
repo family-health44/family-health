@@ -158,7 +158,6 @@ export function useActiveAppointment(): UseActiveAppointmentReturn {
               postNotes: appointment.postNotes.trim(),
               totalCost: null,
               outOfPocket: null,
-              reminderOffsetMinutes: null,
               reminderAt: null,
             })]
           : []),

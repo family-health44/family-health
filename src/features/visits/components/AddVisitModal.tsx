@@ -25,7 +25,6 @@ const schema = z.object({
   preNotes: z.string().optional(),
   totalCost: z.string().optional(),
   outOfPocketCost: z.string().optional(),
-  reminderOffsetMinutes: z.number().nullable().optional(),
   reminderAt: z.string().nullable().optional(),
 });
 type FormValues = z.infer<typeof schema>;
@@ -46,14 +45,13 @@ interface AddVisitModalProps {
 export const AddVisitModal = ({ visible, isLoading, people = [], doctors = [], defaultPersonId = '', personName, onAdd, onDismiss }: AddVisitModalProps) => {
   const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { title: '', visitDate: '', visitTime: '', personId: defaultPersonId, doctorId: null, preNotes: '', totalCost: '', outOfPocketCost: '', reminderOffsetMinutes: null, reminderAt: null },
+    defaultValues: { title: '', visitDate: '', visitTime: '', personId: defaultPersonId, doctorId: null, preNotes: '', totalCost: '', outOfPocketCost: '', reminderAt: null },
   });
   const personId = watch('personId');
   const doctorId = watch('doctorId');
   const visitTime = watch('visitTime');
-  const reminderOffsetMinutes = watch('reminderOffsetMinutes');
   const reminderAt = watch('reminderAt');
-  const hasTime = !!visitTime?.trim();
+  const visitDate = watch('visitDate');
 
   const askPermission = async (): Promise<boolean> => {
     const granted = await requestNotificationPermission();
@@ -63,23 +61,25 @@ export const AddVisitModal = ({ visible, isLoading, people = [], doctors = [], d
     return granted;
   };
 
-  const setOffset = async (minutes: number | null) => {
-    if (minutes != null && !(await askPermission())) return;
-    setValue('reminderOffsetMinutes', minutes);
-    setValue('reminderAt', null);
-  };
-
   const setAt = async (iso: string | null) => {
     if (iso && !(await askPermission())) return;
     setValue('reminderAt', iso);
-    setValue('reminderOffsetMinutes', null);
   };
 
-  // Adding a time switches the reminder mode — drop the now-invalid absolute value.
-  const handleTimeChange = (next: string, onChange: (v: string) => void) => {
+  // A reminder is an absolute instant — it does not follow a date change.
+  const handleDateChange = (next: string, onChange: (v: string) => void) => {
+    const prev = visitDate;
     onChange(next);
-    if (next.trim() && reminderAt) setValue('reminderAt', null);
-    if (!next.trim() && reminderOffsetMinutes != null) setValue('reminderOffsetMinutes', null);
+    if (reminderAt && prev && next && prev !== next) {
+      Alert.alert(
+        'Update reminder?',
+        'The visit date changed. Your reminder is still set for its original time.',
+        [
+          { text: 'Keep it', style: 'cancel' },
+          { text: 'Clear reminder', style: 'destructive', onPress: () => setValue('reminderAt', null) },
+        ],
+      );
+    }
   };
 
   const parseCost = (raw?: string): number | null => {
@@ -101,8 +101,7 @@ export const AddVisitModal = ({ visible, isLoading, people = [], doctors = [], d
       postNotes: null,
       totalCost: parseCost(values.totalCost),
       outOfPocket: parseCost(values.outOfPocketCost),
-      reminderOffsetMinutes: values.visitTime?.trim() ? (values.reminderOffsetMinutes ?? null) : null,
-      reminderAt: values.visitTime?.trim() ? null : (values.reminderAt ?? null),
+      reminderAt: values.reminderAt ?? null,
     });
     reset();
     onDismiss();
@@ -139,16 +138,13 @@ export const AddVisitModal = ({ visible, isLoading, people = [], doctors = [], d
                   <Input label="Title" isRequired placeholder="e.g. Annual checkup" autoCapitalize="sentences" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.title?.message} />
                 )} />
                 <Controller control={control} name="visitDate" render={({ field: { onChange, value } }) => (
-                  <DateField label="Date" isRequired value={value} onChange={onChange} error={errors.visitDate?.message} />
+                  <DateField label="Date" isRequired value={value} onChange={(v) => handleDateChange(v, onChange)} error={errors.visitDate?.message} />
                 )} />
                 <Controller control={control} name="visitTime" render={({ field: { onChange, value } }) => (
-                  <TimeField label="Time (optional)" value={value} onChange={(v) => handleTimeChange(v, onChange)} />
+                  <TimeField label="Time (optional)" value={value} onChange={onChange} />
                 )} />
                 <ReminderField
-                  mode={hasTime ? 'offset' : 'absolute'}
-                  offsetMinutes={reminderOffsetMinutes ?? null}
                   reminderAt={reminderAt ?? null}
-                  onChangeOffset={setOffset}
                   onChangeAt={setAt}
                 />
                 {doctors.length > 0 && (

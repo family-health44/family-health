@@ -94,7 +94,6 @@ export interface DbVisit {
   post_notes: string | null;
   total_cost: number | null;
   out_of_pocket: number | null;
-  reminder_offset_minutes: number | null;
   reminder_at: string | null;
 }
 

@@ -159,10 +159,7 @@ export const TodoFormModal = ({
                   <DateField label="Due date" placeholder="Select a date (optional)" value={value || null} onChange={(v) => handleDueDateChange(v, onChange)} onClear={() => onChange('')} />
                 )} />
                 <ReminderField
-                  mode="absolute"
-                  offsetMinutes={null}
                   reminderAt={reminderAt ?? null}
-                  onChangeOffset={() => {}}
                   onChangeAt={setReminder}
                 />
                 {doctors.length > 0 && (

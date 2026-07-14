@@ -1,22 +1,15 @@
 // src/design-system/components/ReminderField.tsx
-// One control, two modes.
-//   mode='offset'   -> pick how long before a timed event (returns minutes)
-//   mode='absolute' -> pick an exact date + time (returns ISO timestamp)
-// The caller decides the mode based on whether the record has a time anchor.
+// One control, one mode: the user picks an exact date + time.
+// Used identically by visits and todos.
 
 import { useState } from 'react';
 import { View, Text, Platform } from 'react-native';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 import { PressableBase } from './PressableBase';
-import { InlinePicker } from './InlinePicker';
-import { OFFSET_OPTIONS } from '@/core/notifications/reminders.domain';
 
 interface ReminderFieldProps {
-  mode: 'offset' | 'absolute';
-  offsetMinutes: number | null;
   reminderAt: string | null;               // ISO timestamp
-  onChangeOffset: (minutes: number | null) => void;
   onChangeAt: (iso: string | null) => void;
 }
 
@@ -29,25 +22,8 @@ function formatAt(iso: string): string {
   });
 }
 
-export function ReminderField({
-  mode, offsetMinutes, reminderAt, onChangeOffset, onChangeAt,
-}: ReminderFieldProps) {
+export function ReminderField({ reminderAt, onChangeAt }: ReminderFieldProps) {
   const [open, setOpen] = useState(false);
-
-  if (mode === 'offset') {
-    const options = [
-      { id: null as string | null, label: 'No reminder' },
-      ...OFFSET_OPTIONS.map((o) => ({ id: String(o.minutes), label: o.label })),
-    ];
-    return (
-      <InlinePicker
-        label="Reminder"
-        options={options}
-        value={offsetMinutes == null ? null : String(offsetMinutes)}
-        onChange={(id) => onChangeOffset(id == null ? null : Number(id))}
-      />
-    );
-  }
 
   const display = reminderAt ? formatAt(reminderAt) : '';
 

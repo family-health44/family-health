@@ -23,6 +23,8 @@ import { EditVisitModal } from '../components/EditVisitModal';
 import { formatDate, formatTime, todayISO } from '@/shared/utils/dates';
 import { toAppError } from '@/shared/types/errors';
 import type { Visit } from '../types/visits.types';
+import { Icon } from '@/design-system/components/Icon';
+import { formatReminderShort } from '@/core/notifications/reminders.domain';
 
 interface VisitDetailScreenProps {
   visitId: string;
@@ -99,7 +101,6 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
         postNotes: patch.postNotes !== undefined ? patch.postNotes : v.postNotes,
         totalCost: patch.totalCost !== undefined ? patch.totalCost : v.totalCost,
         outOfPocket: patch.outOfPocket !== undefined ? patch.outOfPocket : v.outOfPocket,
-        reminderOffsetMinutes: v.reminderOffsetMinutes,
         reminderAt: v.reminderAt,
       });
     } catch {
@@ -116,7 +117,6 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
     postNotes: string | null;
     totalCost: number | null;
     outOfPocket: number | null;
-    reminderOffsetMinutes: number | null;
     reminderAt: string | null;
   }) => {
     try {
@@ -191,6 +191,16 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
             <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.muted, flex: 1 }}>Date</Text>
             <Text style={{ ...Type.label, color: TextColour.ink }}>{formatDate(v.visitDate)}{v.visitTime ? ` at ${formatTime(v.visitTime)}` : ''}</Text>
           </View>
+          {v.reminderAt ? (
+            <>
+              <DividerLine />
+              <View style={detailRow}>
+                <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.muted, flex: 1 }}>Reminder</Text>
+                <Icon name="bell" size={12} color="#7A8B81" />
+                <Text style={{ ...Type.label, color: TextColour.ink, marginLeft: 5 }}>{formatReminderShort(v.reminderAt)}</Text>
+              </View>
+            </>
+          ) : null}
           <DividerLine />
           <View style={detailRow}>
             <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.muted, flex: 1 }}>Person</Text>

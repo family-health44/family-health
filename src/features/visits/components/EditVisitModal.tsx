@@ -21,7 +21,6 @@ const schema = z.object({
   visitDate: z.string().min(1, 'Date is required').regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD format'),
   visitTime: z.string().optional(),
   doctorId: z.string().nullable().optional(),
-  reminderOffsetMinutes: z.number().nullable().optional(),
   reminderAt: z.string().nullable().optional(),
 });
 type FormValues = z.infer<typeof schema>;
@@ -47,15 +46,12 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
       visitDate: visit.visitDate,
       visitTime: visit.visitTime ?? '',
       doctorId: visit.doctorId,
-      reminderOffsetMinutes: visit.reminderOffsetMinutes,
       reminderAt: visit.reminderAt,
     },
   });
   const doctorId = watch('doctorId');
   const visitTime = watch('visitTime');
-  const reminderOffsetMinutes = watch('reminderOffsetMinutes');
   const reminderAt = watch('reminderAt');
-  const hasTime = !!visitTime?.trim();
 
   const askPermission = async (): Promise<boolean> => {
     const granted = await requestNotificationPermission();
@@ -65,22 +61,9 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
     return granted;
   };
 
-  const setOffset = async (minutes: number | null) => {
-    if (minutes != null && !(await askPermission())) return;
-    setValue('reminderOffsetMinutes', minutes);
-    setValue('reminderAt', null);
-  };
-
   const setAt = async (iso: string | null) => {
     if (iso && !(await askPermission())) return;
     setValue('reminderAt', iso);
-    setValue('reminderOffsetMinutes', null);
-  };
-
-  const handleTimeChange = (next: string, onChange: (v: string) => void) => {
-    onChange(next);
-    if (next.trim() && reminderAt) setValue('reminderAt', null);
-    if (!next.trim() && reminderOffsetMinutes != null) setValue('reminderOffsetMinutes', null);
   };
 
   // An absolute reminder does not follow a date change — offer to review it. (c)
@@ -107,8 +90,7 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
         visitDate: visit.visitDate,
         visitTime: visit.visitTime ?? '',
         doctorId: visit.doctorId,
-        reminderOffsetMinutes: visit.reminderOffsetMinutes,
-        reminderAt: visit.reminderAt,
+          reminderAt: visit.reminderAt,
       });
     }
   }, [visible, visit, reset]);
@@ -124,7 +106,6 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
       postNotes: visit.postNotes,
       totalCost: visit.totalCost,
       outOfPocket: visit.outOfPocket,
-      reminderOffsetMinutes: values.visitTime?.trim() ? (values.reminderOffsetMinutes ?? null) : null,
       reminderAt: values.visitTime?.trim() ? null : (values.reminderAt ?? null),
     });
     onDismiss();
@@ -157,13 +138,10 @@ export const EditVisitModal = ({ visible, isLoading, visit, doctors = [], onSave
                   <DateField label="Date" isRequired value={value} onChange={(v) => handleDateChange(v, onChange)} error={errors.visitDate?.message} />
                 )} />
                 <Controller control={control} name="visitTime" render={({ field: { onChange, value } }) => (
-                  <TimeField label="Time (optional)" value={value} onChange={(v) => handleTimeChange(v, onChange)} />
+                  <TimeField label="Time (optional)" value={value} onChange={onChange} />
                 )} />
                 <ReminderField
-                  mode={hasTime ? 'offset' : 'absolute'}
-                  offsetMinutes={reminderOffsetMinutes ?? null}
                   reminderAt={reminderAt ?? null}
-                  onChangeOffset={setOffset}
                   onChangeAt={setAt}
                 />
                 {doctors.length > 0 && (

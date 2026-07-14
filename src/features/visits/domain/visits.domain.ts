@@ -28,7 +28,6 @@ export function mapDbVisitToVisit(
     postNotes: db.post_notes,
     totalCost: db.total_cost,
     outOfPocket: db.out_of_pocket,
-    reminderOffsetMinutes: db.reminder_offset_minutes,
     reminderAt: db.reminder_at,
   };
 }

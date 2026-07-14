@@ -18,7 +18,6 @@ export interface Visit {
   postNotes: string | null;
   totalCost: number | null;
   outOfPocket: number | null;
-  reminderOffsetMinutes: number | null;
   reminderAt: string | null;
 }
 

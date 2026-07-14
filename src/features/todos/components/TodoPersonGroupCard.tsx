@@ -7,6 +7,7 @@ import { PressableBase } from '@/design-system/components/PressableBase';
 import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
 import { PERSON_COLOURS } from '@/design-system/tokens/colours';
 import { formatRelativeDate } from '@/shared/utils/dates';
+import { formatReminderShort } from '@/core/notifications/reminders.domain';
 import { isTodoOverdue } from '../domain/todos.domain';
 import type { Todo, TodoPersonGroup } from '../types/todos.types';
 import { Icon } from '@/design-system/components/Icon';
@@ -63,8 +64,18 @@ const Row = ({ todo, accent, last, onToggle, onEdit, onDelete }: RowProps) => {
         <View style={{ flex: 1, minWidth: 0 }}>
           <Text style={{ ...Type.body, color: done ? TextColour.muted : TextColour.ink, textDecorationLine: done ? 'line-through' : 'none' }}>{todo.title}</Text>
         </View>
-        {todo.dueDate ? (
-          <Text style={{ ...Type.caption, fontWeight: overdue ? '700' : '400', color: overdue ? OVERDUE_RED : TextColour.muted, flexShrink: 0 }}>{formatRelativeDate(todo.dueDate)}</Text>
+        {todo.dueDate || todo.reminderAt ? (
+          <View style={{ alignItems: 'flex-end', flexShrink: 0, gap: 2 }}>
+            {todo.dueDate ? (
+              <Text style={{ ...Type.caption, fontWeight: overdue ? '700' : '400', color: overdue ? OVERDUE_RED : TextColour.muted }}>{formatRelativeDate(todo.dueDate)}</Text>
+            ) : null}
+            {todo.reminderAt ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                <Icon name="bell" size={9} color="#7A8B81" />
+                <Text style={{ ...Type.micro, fontWeight: '500', color: TextColour.faint }}>{formatReminderShort(todo.reminderAt)}</Text>
+              </View>
+            ) : null}
+          </View>
         ) : null}
       </PressableBase>
       {!last && <View style={{ height: 1, backgroundColor: DIVIDER, marginHorizontal: 14 }} />}

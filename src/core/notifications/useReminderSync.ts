@@ -38,12 +38,7 @@ export function useReminderSync(enabled: boolean) {
       const reminders: ScheduledReminder[] = [];
 
       for (const v of visits ?? []) {
-        const fireAt = resolveVisitReminder({
-          visitDate: v.visit_date,
-          visitTime: v.visit_time,
-          reminderOffsetMinutes: v.reminder_offset_minutes,
-          reminderAt: v.reminder_at,
-        });
+        const fireAt = resolveVisitReminder({ reminderAt: v.reminder_at });
         if (!fireAt) continue;
         reminders.push({
           key: `visit:${v.id}`,
