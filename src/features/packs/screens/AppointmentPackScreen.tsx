@@ -222,7 +222,7 @@ export const AppointmentPackScreen = () => {
                     }}
                   >
                     {on ? (
-                      <Icon name="checkmark" size={12} color="#FFFFFF" weight="bold" />
+                      <Icon name="checkmark" size={12} color="#FFFFFF" />
                     ) : null}
                   </View>
                   <View style={{ flex: 1, minWidth: 0 }}>

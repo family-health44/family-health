@@ -259,7 +259,7 @@ export const AddMedicationModal = ({
                             {opt.label}
                           </Text>
                           {selectedStatus === opt.value && (
-                            <Icon name="checkmark" size={13} color="#1F5C41" weight="semibold" />
+                            <Icon name="checkmark" size={13} color="#1F5C41" />
                           )}
                         </Pressable>
                       ))}

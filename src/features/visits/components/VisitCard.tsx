@@ -72,7 +72,7 @@ export const VisitCard = ({ visit, onPress, compact = false, isPast = false }: V
           <Text style={{ fontSize: 11.5, color: '#1F5C41', fontWeight: '600' }}>{dateTime}</Text>
           <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)' }}>{visit.personName}</Text>
         </View>
-        <Icon name="chevron.right" size={13} color="rgba(23,33,28,0.4)" weight="semibold" />
+        <Icon name="chevron.right" size={13} color="rgba(23,33,28,0.4)" />
       </View>
     </PressableBase>
   );

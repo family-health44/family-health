@@ -143,7 +143,7 @@ export const PersonDetailScreen = () => {
       <View style={{ backgroundColor: colourSet.dot, paddingTop: insets.top + 2, paddingHorizontal: 16, paddingBottom: 14, borderBottomLeftRadius: 26, borderBottomRightRadius: 26 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
-            <Icon name="chevron.left" size={16} color="#FFFFFF" weight="semibold" />
+            <Icon name="chevron.left" size={16} color="#FFFFFF" />
             <Text style={{ ...Type.caption, fontWeight: '500', color: '#FFFFFF' }}>Back</Text>
           </PressableBase>
           <PressableBase onPress={handleManagePerson} accessibilityRole="button" accessibilityLabel="Edit person name" style={(pressed) => ({ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
@@ -174,7 +174,7 @@ export const PersonDetailScreen = () => {
             <View style={{ flex: 1 }}>
               <Text style={{ ...Type.heading, color: TextColour.ink }}>Snapshot</Text>
             </View>
-            <Icon name="chevron.right" size={13} color={TextColour.muted} weight="semibold" />
+            <Icon name="chevron.right" size={13} color={TextColour.muted} />
           </View>
           <View style={{ flexDirection: 'row', gap: 12 }}>
             <View style={{ flex: 1 }}>
@@ -216,7 +216,7 @@ export const PersonDetailScreen = () => {
                 <Icon name={item.icon} size={22} color={item.colour} />
               </View>
               <Text style={{ flex: 1, ...Type.body, fontWeight: '500', color: TextColour.ink }}>{item.label}</Text>
-              <Icon name="chevron.right" size={13} color={TextColour.muted} weight="semibold" />
+              <Icon name="chevron.right" size={13} color={TextColour.muted} />
               {index < menuItems.length - 1 && (
                 <View style={{ position: 'absolute', left: 54, right: 0, bottom: 0, height: 1, backgroundColor: DIVIDER }} />
               )}

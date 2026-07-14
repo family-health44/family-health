@@ -57,7 +57,7 @@ const Row = ({ todo, isOverdue, last, onToggle, onEdit, onDelete }: RowProps) =>
           style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexShrink: 0 })}
         >
           <View style={{ width: 21, height: 21, borderRadius: 6, borderWidth: 1.5, borderColor: done ? dot : CHECK_BORDER, backgroundColor: done ? dot : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-            {done ? <Icon name="checkmark" size={11} color="#FFFFFF" weight="bold" /> : null}
+            {done ? <Icon name="checkmark" size={11} color="#FFFFFF" /> : null}
           </View>
         </PressableBase>
 

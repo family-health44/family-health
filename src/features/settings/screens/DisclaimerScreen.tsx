@@ -13,7 +13,7 @@ export const DisclaimerScreen = () => {
     <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
-          <Icon name="chevron.left" size={15} color="#1F5C41" weight="semibold" />
+          <Icon name="chevron.left" size={15} color="#1F5C41" />
           <Text style={{ fontSize: 14, color: '#1F5C41', fontWeight: '500' }}>Back</Text>
         </PressableBase>
       </View>

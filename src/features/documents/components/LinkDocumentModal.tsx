@@ -133,7 +133,7 @@ export const LinkDocumentModal = ({
           </Text>
         ) : null}
       </View>
-      {selected ? <Icon name="checkmark" size={14} color={GREEN} weight="bold" /> : null}
+      {selected ? <Icon name="checkmark" size={14} color={GREEN} /> : null}
     </PressableBase>
   );
 

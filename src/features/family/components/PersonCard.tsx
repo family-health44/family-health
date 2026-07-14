@@ -37,7 +37,7 @@ export const PersonCard = ({ person, onPress }: PersonCardProps) => {
             {person.name}
           </Text>
         </View>
-        <Icon name="chevron.right" size={15} color="rgba(23,33,28,0.4)" weight="semibold" />
+        <Icon name="chevron.right" size={15} color="rgba(23,33,28,0.4)" />
       </View>
     </Pressable>
   );

@@ -87,7 +87,7 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
       {/* Month navigation + layout toggle */}
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingBottom: 12 }}>
         <PressableBase onPress={goToPrevMonth} accessibilityLabel="Previous month" style={(pressed) => ({ paddingHorizontal: 10, paddingVertical: 6, opacity: pressed ? 0.5 : 1 })}>
-          <Icon name="chevron.left" size={17} color={TextColour.secondary} weight="semibold" />
+          <Icon name="chevron.left" size={17} color={TextColour.secondary} />
         </PressableBase>
 
         <Text style={{ flex: 1, textAlign: 'center', ...Type.heading, color: TextColour.ink }}>
@@ -95,7 +95,7 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
         </Text>
 
         <PressableBase onPress={goToNextMonth} accessibilityLabel="Next month" style={(pressed) => ({ paddingHorizontal: 10, paddingVertical: 6, opacity: pressed ? 0.5 : 1 })}>
-          <Icon name="chevron.right" size={17} color={TextColour.secondary} weight="semibold" />
+          <Icon name="chevron.right" size={17} color={TextColour.secondary} />
         </PressableBase>
 
         {/* Segmented pill — matches VisitsViewToggle */}

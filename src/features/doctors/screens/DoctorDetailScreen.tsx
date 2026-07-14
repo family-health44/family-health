@@ -155,7 +155,7 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
                     <Text style={{ ...Type.label, fontWeight: '400', color: TextColour.ink }}>{v.title || 'Visit'}</Text>
                     <Text style={{ ...Type.caption, fontWeight: '400', color: TextColour.muted, marginTop: 2 }}>{isoToDisplayDate(v.visitDate)}</Text>
                   </View>
-                  <Icon name="chevron.right" size={13} color={TextColour.faint} weight="semibold" />
+                  <Icon name="chevron.right" size={13} color={TextColour.faint} />
                 </PressableBase>
               </View>
             ))

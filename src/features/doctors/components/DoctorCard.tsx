@@ -74,7 +74,7 @@ export const DoctorCard = ({ doctor, colourSet: colourSetProp, colourIndex = 0, 
           <Text style={{ fontSize: 18, color: '#B33A4A' }}>×</Text>
         </PressableBase>
       ) : (
-        <Icon name="chevron.right" size={14} color="rgba(23,33,28,0.3)" weight="semibold" />
+        <Icon name="chevron.right" size={14} color="rgba(23,33,28,0.3)" />
       )}
     </PressableBase>
   );

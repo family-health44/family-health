@@ -38,7 +38,7 @@ export const InlinePicker = ({ label, options, value, onChange, isRequired, erro
           {options.map((opt, i) => (
             <Pressable key={opt.id ?? 'none'} onPress={() => { onChange(opt.id); setOpen(false); }} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 11, paddingHorizontal: 14, borderBottomWidth: i < options.length - 1 ? 1 : 0, borderBottomColor: '#F0EFEA', backgroundColor: (value ?? null) === opt.id ? '#E4EFE9' : 'white' }}>
               <Text style={{ flex: 1, fontSize: 14, color: (value ?? null) === opt.id ? '#17452F' : '#17211C', fontWeight: (value ?? null) === opt.id ? '600' : '400' }}>{opt.label}</Text>
-              {(value ?? null) === opt.id && <Icon name="checkmark" size={13} color="#1F5C41" weight="semibold" />}
+              {(value ?? null) === opt.id && <Icon name="checkmark" size={13} color="#1F5C41" />}
             </Pressable>
           ))}
         </View>

@@ -65,10 +65,10 @@ export const WeekCalendarView = ({ visits, onVisitPress }: WeekCalendarViewProps
     <View style={{ flex: 1 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 8, gap: 6 }}>
         <PressableBase onPress={goToPrevWeek} accessibilityLabel="Previous week" style={(pressed) => ({ backgroundColor: '#ECEBE5', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, opacity: pressed ? 0.6 : 1 })}>
-          <Icon name="chevron.left" size={14} color="#17211C" weight="semibold" />
+          <Icon name="chevron.left" size={14} color="#17211C" />
         </PressableBase>
         <PressableBase onPress={goToNextWeek} accessibilityLabel="Next week" style={(pressed) => ({ backgroundColor: '#ECEBE5', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, opacity: pressed ? 0.6 : 1 })}>
-          <Icon name="chevron.right" size={14} color="#17211C" weight="semibold" />
+          <Icon name="chevron.right" size={14} color="#17211C" />
         </PressableBase>
         <Text style={{ flex: 1, fontSize: 13, fontWeight: '700', color: '#17211C', textAlign: 'center' }}>{weekLabel}</Text>
         <PressableBase onPress={goToToday} style={(pressed) => ({ backgroundColor: pressed ? '#BFD4C8' : '#E4EFE9', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4 })}>

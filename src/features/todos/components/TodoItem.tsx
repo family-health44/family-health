@@ -73,7 +73,7 @@ export const TodoItem = ({ todo, colourSet, onToggle, onEdit, onDelete }: TodoIt
           justifyContent: 'center',
         }}>
           {todo.completed && (
-            <Icon name="checkmark" size={10} color="#FFFFFF" weight="bold" />
+            <Icon name="checkmark" size={10} color="#FFFFFF" />
           )}
         </View>
       </PressableBase>

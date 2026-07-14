@@ -110,7 +110,7 @@ export const SettingsScreen = () => {
       )}
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
-          <Icon name="chevron.left" size={16} color={GREEN} weight="semibold" />
+          <Icon name="chevron.left" size={16} color={GREEN} />
           <Text style={{ ...Type.caption, color: GREEN, fontWeight: '500' }}>Back</Text>
         </PressableBase>
       </View>
@@ -166,7 +166,7 @@ export const SettingsScreen = () => {
         <Card>
           <PressableBase onPress={() => router.push('/(app)/settings/disclaimer' as never)} accessibilityRole="button" style={(pressed) => ({ padding: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: pressed ? 0.6 : 1 })}>
             <Text style={{ ...Type.body, color: TextColour.ink }}>Medical disclaimer</Text>
-            <Icon name="chevron.right" size={13} color={TextColour.muted} weight="semibold" />
+            <Icon name="chevron.right" size={13} color={TextColour.muted} />
           </PressableBase>
         </Card>
 
@@ -174,7 +174,7 @@ export const SettingsScreen = () => {
         <Card>
           <PressableBase onPress={handleDeleteAccount} accessibilityRole="button" style={(pressed) => ({ padding: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: pressed ? 0.6 : 1 })}>
             <Text style={{ ...Type.body, fontWeight: '500', color: RED }}>Delete account</Text>
-            <Icon name="chevron.right" size={13} color={TextColour.muted} weight="semibold" />
+            <Icon name="chevron.right" size={13} color={TextColour.muted} />
           </PressableBase>
         </Card>
 
