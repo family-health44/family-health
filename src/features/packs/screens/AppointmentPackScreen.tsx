@@ -5,7 +5,7 @@
 // reordered. No synthesis, no trends, no flags, no recommendations.
 
 import { useMemo, useState } from 'react';
-import { View, Text, ScrollView, TextInput, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, ScrollView, TextInput, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { PressableBase } from '@/design-system/components/PressableBase';
@@ -163,10 +163,10 @@ export const AppointmentPackScreen = () => {
     <View style={{ flex: 1, backgroundColor: PAGE }}>
       <SubScreenHeader title="Appointment Pack" subtitle={subtitle} onBack={goBack} />
 
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView
         contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
         keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets
       >
         <Text
           style={{
@@ -283,7 +283,6 @@ export const AppointmentPackScreen = () => {
           {PACK_FOOTER}
         </Text>
       </ScrollView>
-      </KeyboardAvoidingView>
 
       <View style={{ position: 'absolute', bottom: 24, left: 16, right: 16 }}>
         <PressableBase
