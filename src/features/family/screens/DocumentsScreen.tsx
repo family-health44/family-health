@@ -164,14 +164,14 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
   const isBusy = addDoc.isPending;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+    <View style={{ flex: 1, backgroundColor: '#F4F2EC' }}>
       <SubScreenHeader title="Documents" subtitle={personName}>
         <View style={{ marginTop: 10 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>
+            <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.95)' }}>
               {(documents?.length ?? 0)} file{(documents?.length ?? 0) === 1 ? '' : 's'} · {formatFileSize(used)} used by family
             </Text>
-            <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>{capLabel} limit</Text>
+            <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.95)' }}>{capLabel} limit</Text>
           </View>
           <View style={{ height: 5, backgroundColor: 'rgba(255,255,255,0.25)', borderRadius: 3, marginTop: 5, overflow: 'hidden' }}>
             <View style={{ width: `${pct}%`, height: '100%', backgroundColor: pct >= 90 ? '#E58080' : '#FFFFFF' }} />
@@ -183,7 +183,7 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
         <ErrorState message="Couldn't load documents." onRetry={() => void refetch()} />
       ) : isLoading ? (
         <ScrollView contentContainerStyle={{ padding: 16, flexGrow: 1, justifyContent: 'center' }}>
-          <ActivityIndicator color="#3E7D62" />
+          <ActivityIndicator color="#1F5C41" />
         </ScrollView>
       ) : (documents?.length ?? 0) === 0 ? (
         <ScrollView contentContainerStyle={{ padding: 16, flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -219,7 +219,7 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
                   {doc.uploadedAt ? ` · ${formatTimestampLocalDate(doc.uploadedAt)}` : ''}
                 </Text>
               </View>
-              <Text style={{ fontSize: 18, color: 'rgba(23,33,28,0.55)' }}>⋯</Text>
+              <Text accessibilityLabel="More options" accessibilityRole="button" style={{ fontSize: 18, color: 'rgba(23,33,28,0.55)' }}>⋯</Text>
             </PressableBase>
           ))}
         </ScrollView>
@@ -237,7 +237,7 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
             alignItems: 'center',
             justifyContent: 'center',
             gap: 8,
-            backgroundColor: '#3E7D62',
+            backgroundColor: '#1F5C41',
             borderRadius: 10,
             paddingVertical: 14,
           })}

@@ -50,17 +50,20 @@ export const StartAppointmentScreen = () => {
     saveAppointment, cancelAppointment, clearAppointment,
   } = useActiveAppointment();
 
-  if (!appointment && params.visitId) {
-    startAppointment({
-      visitId: params.visitId,
-      personId: params.personId ?? '',
-      personName: params.personName ?? '',
-      doctorId: params.doctorId ?? null,
-      doctorName: params.doctorName ?? null,
-      visitDate: params.visitDate ?? '',
-      preNotes: params.preNotes ? decodeURIComponent(params.preNotes) : null,
-    });
-  }
+  useEffect(() => {
+    if (!appointment && params.visitId) {
+      startAppointment({
+        visitId: params.visitId,
+        personId: params.personId ?? '',
+        personName: params.personName ?? '',
+        doctorId: params.doctorId ?? null,
+        doctorName: params.doctorName ?? null,
+        visitDate: params.visitDate ?? '',
+        preNotes: params.preNotes ? decodeURIComponent(params.preNotes) : null,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.visitId]);
 
   const [draft, setDraft] = useState('');
   const [pendingKind, setPendingKind] = useState<CaptureKind | null>(null);
@@ -123,7 +126,7 @@ export const StartAppointmentScreen = () => {
 
   if (!appointment) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+      <View style={{ flex: 1, backgroundColor: '#F4F2EC' }}>
         <ErrorState message="Could not start appointment." onRetry={() => router.back()} />
       </View>
     );
@@ -138,7 +141,7 @@ export const StartAppointmentScreen = () => {
     })),
     ...appointment.todos.map((t): StreamRow => ({
       id: t.id, kind: 'todo', primary: t.title,
-      meta: `Follow-up · ${msToClock(t.capturedAt)}`, capturedAt: t.capturedAt,
+      meta: `To do · ${msToClock(t.capturedAt)}`, capturedAt: t.capturedAt,
       onRemove: () => removeTodo(t.id),
     })),
     ...appointment.events.map((e): StreamRow => ({
@@ -158,7 +161,7 @@ export const StartAppointmentScreen = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+    <View style={{ flex: 1, backgroundColor: '#F4F2EC' }}>
       <SubScreenHeader
         title={appointment.doctorName ?? 'Appointment'}
         subtitle={`${appointment.personName} · ${isoToDisplayDate(appointment.visitDate)}`}
@@ -287,7 +290,7 @@ export const StartAppointmentScreen = () => {
                   <Text style={{ fontSize: 13, color: '#17211C', lineHeight: 18 }}>{row.primary}</Text>
                   <Text style={{ fontSize: 10, color: row.kind === 'note' ? 'rgba(23,33,28,0.55)' : s.iconColour, marginTop: 3 }}>{row.meta}</Text>
                 </View>
-                <PressableBase onPress={row.onRemove} hitSlop={8} style={(pressed) => ({ opacity: pressed ? 0.5 : 1 })}>
+                <PressableBase onPress={row.onRemove} hitSlop={16} accessibilityLabel="Remove" accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.5 : 1 })}>
                   <Text style={{ fontSize: 15, color: 'rgba(23,33,28,0.55)' }}>×</Text>
                 </PressableBase>
               </View>

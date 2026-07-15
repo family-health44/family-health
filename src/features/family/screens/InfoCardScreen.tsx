@@ -59,7 +59,7 @@ export const InfoCardScreen = ({ person }: InfoCardScreenProps) => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F7F4' }}>
+    <View style={{ flex: 1, backgroundColor: '#F4F2EC' }}>
       <SubScreenHeader title="Info Card" subtitle={person.name} />
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
