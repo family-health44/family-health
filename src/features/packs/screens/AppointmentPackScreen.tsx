@@ -163,9 +163,9 @@ export const AppointmentPackScreen = () => {
     <View style={{ flex: 1, backgroundColor: PAGE }}>
       <SubScreenHeader title="Appointment Pack" subtitle={subtitle} onBack={goBack} />
 
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView
-        contentContainerStyle={{ padding: 16, paddingBottom: 320 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
         keyboardShouldPersistTaps="handled"
       >
         <Text
