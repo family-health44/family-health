@@ -13,7 +13,7 @@ import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
 import { renderPdfDocument, sharePdfFile } from '@/shared/utils/pdfShare';
-import { mergeDocumentsIntoPack } from '../domain/packMerge';
+import { mergeDocumentsIntoPack, replaceCoverPages, countPdfPages } from '../domain/packMerge';
 import type { SkipReason } from '../domain/packMerge';
 import { todayISO, formatDate, formatTime } from '@/shared/utils/dates';
 
@@ -96,6 +96,7 @@ export const AppointmentPackScreen = () => {
       }
 
       let uri = await renderPdfDocument(doc, PACK_FOOTER);
+      const coverPageCount = wantsDocs ? await countPdfPages(uri) : 0;
 
       if (wantsDocs) {
         setProgress('Attaching documents…');
@@ -113,9 +114,8 @@ export const AppointmentPackScreen = () => {
             selection,
           );
           setProgress('Finalising…');
-          const rerendered = await renderPdfDocument(doc, PACK_FOOTER);
-          const redone = await mergeDocumentsIntoPack(rerendered, input.documents);
-          uri = redone.uri;
+          const newCover = await renderPdfDocument(doc, PACK_FOOTER);
+          uri = await replaceCoverPages(result.uri, newCover, coverPageCount);
         } else {
           uri = result.uri;
         }

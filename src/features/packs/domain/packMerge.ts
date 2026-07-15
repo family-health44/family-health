@@ -282,3 +282,36 @@ export async function mergeDocumentsIntoPack(
 
   return { uri: out.uri, mergedCount, skipped };
 }
+
+// Counts pages in a PDF already on disk. No network. Used to know how many
+// leading pages belong to the cover before attachments are appended.
+export async function countPdfPages(uri: string): Promise<number> {
+  const bytes = decode(await new File(uri).base64());
+  const doc = await PDFDocument.load(bytes);
+  return doc.getPageCount();
+}
+
+// Replaces the leading cover page(s) of an already-merged pack with a freshly
+// rendered cover — used when the merge produced skips and the index must be
+// rebuilt to tell the truth. No re-download: operates on bytes already on disk.
+export async function replaceCoverPages(
+  mergedUri: string,
+  newCoverUri: string,
+  originalCoverPageCount: number,
+): Promise<string> {
+  const mergedDoc = await PDFDocument.load(decode(await new File(mergedUri).base64()));
+  const coverDoc = await PDFDocument.load(decode(await new File(newCoverUri).base64()));
+
+  const out = await PDFDocument.create();
+  const coverPages = await out.copyPages(coverDoc, coverDoc.getPageIndices());
+  coverPages.forEach((p) => out.addPage(p));
+  const attachIndices = mergedDoc.getPageIndices().slice(originalCoverPageCount);
+  const attachPages = await out.copyPages(mergedDoc, attachIndices);
+  attachPages.forEach((p) => out.addPage(p));
+
+  const outBase64 = await out.saveAsBase64();
+  const file = new File(Paths.cache, `AppointmentPack-${Date.now()}.pdf`);
+  file.create({ overwrite: true });
+  file.write(new Uint8Array(decode(outBase64)));
+  return file.uri;
+}
