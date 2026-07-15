@@ -3,7 +3,7 @@
 // Title/date/time/doctor are edited via the ✎ modal.
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TextInput, Linking, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, ScrollView, TextInput, Linking, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
@@ -184,8 +184,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
         }
       />
 
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 16, paddingBottom: 170 }} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 16, paddingBottom: 170 }} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
         <SectionLabel text="Details" />
         <View style={{ backgroundColor: 'white', borderRadius: 14, overflow: 'hidden', marginBottom: 18, ...Shadow.resting }}>
           <View style={detailRow}>
@@ -262,7 +261,6 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
           <Text style={{ ...Type.body, fontSize: 14, fontWeight: '500', color: '#2C5282' }}>{addDoc.isPending ? 'Adding…' : 'Add Document'}</Text>
         </PressableBase>
       </ScrollView>
-      </KeyboardAvoidingView>
 
       <View style={{ position: 'absolute', bottom: 24, left: 16, right: 16, gap: 10 }}>
         {isPlus && (
