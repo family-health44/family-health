@@ -13,7 +13,7 @@ import { createSignedUrl } from '@/features/documents/repository/documents.repos
 import type { Document } from '@/features/documents/types/documents.types';
 
 // ── Caps ─────────────────────────────────────────────────────────────────────
-export const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB per document
+export const MAX_FILE_BYTES = 100 * 1024;
 export const MAX_TOTAL_BYTES = 25 * 1024 * 1024; // 25 MB merged in total
 export const MAX_PAGES = 50; // across all attachments
 
