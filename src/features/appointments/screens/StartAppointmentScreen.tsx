@@ -8,7 +8,6 @@ import { View, Text, TextInput, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { ErrorState } from '@/design-system/components/EmptyState';
 import { formatTime, isoToDisplayDate, toISODateString } from '@/shared/utils/dates';
-import { AiTeaser } from '@/design-system/components/AiTeaser';
 import { MEDICAL_EVENT_CONFIG, MEDICAL_EVENT_TYPES } from '@/features/medical-events/types/medical-events.types';
 import { useActiveAppointment } from '../hooks/useActiveAppointment';
 import type { MedicalEventType } from '@/features/medical-events/types/medical-events.types';
@@ -201,11 +200,6 @@ export const StartAppointmentScreen = () => {
           </View>
         ) : null}
 
-        <AiTeaser
-          storageKey="ai_briefing_dismissed_at"
-          title="AI briefing"
-          body={`Get a summary of ${appointment.personName}'s history with ${appointment.doctorName ?? 'this doctor'} — past visits, notes, and current medications — before you walk in.`}
-        />
 
         {appointment.preNotes ? (
           <View style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E3E2DB', borderRadius: 12, padding: 12, marginBottom: 12 }}>

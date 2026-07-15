@@ -4,7 +4,6 @@ import { View, Text } from 'react-native';
 
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { EmptyState } from '@/design-system/components/EmptyState';
-import { AiTeaser } from '@/design-system/components/AiTeaser';
 import { formatDate, formatTime } from '@/shared/utils/dates';
 
 import { FEELING_CONFIG, doseStatusLabel } from '@/features/medication-logs/domain/medication-logs.domain';
@@ -19,11 +18,6 @@ export const MedicationLogHistoryTab = ({
   onEditLog: (log: MedicationLog) => void;
 }) => (
   <View>
-    <AiTeaser
-      storageKey="med_ai_summary_dismissed_at"
-      title="AI summary"
-      body="Pattern detection, trends, and a plain-English summary of how this medication is working — across all your logs."
-    />
 
     {isLoading ? (
       <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)', textAlign: 'center', paddingVertical: 20 }}>Loading entries...</Text>
