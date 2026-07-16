@@ -3,7 +3,7 @@
 // Title/date/time/doctor are edited via the ✎ modal.
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TextInput, Linking, Alert } from 'react-native';
+import { View, Text, ScrollView, TextInput, Linking, Alert, ActionSheetIOS } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
@@ -13,11 +13,9 @@ import { useVisitsListQuery } from '../queries/visits.queries';
 import { useUpdateVisitMutation, useDeleteVisitMutation } from '../mutations/visits.mutations';
 import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
 import { useVisitDocumentsQuery } from '@/features/documents/queries/documents.queries';
-import { useAddDocumentMutation, isStorageCapError } from '@/features/documents/mutations/documents.mutations';
-import { pickFromFiles, pickFromPhotos } from '@/features/documents/hooks/useFilePicker';
+import { useDocumentUpload } from '@/features/documents/hooks/useDocumentUpload';
 import { createSignedUrl } from '@/features/documents/repository/documents.repository';
 import { formatFileSize } from '@/features/documents/domain/documents.domain';
-import { STORAGE_FULL_MESSAGE } from '@/features/documents/types/documents.types';
 import type { Document } from '@/features/documents/types/documents.types';
 import { EditVisitModal } from '../components/EditVisitModal';
 import { formatDate, formatTime, todayISO } from '@/shared/utils/dates';
@@ -59,12 +57,13 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
   const updateVisit = useUpdateVisitMutation();
   const deleteVisit = useDeleteVisitMutation();
   const { data: visitDocuments } = useVisitDocumentsQuery(visitId);
-  const addDoc = useAddDocumentMutation(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const doctors = (doctorGroups ?? []).flatMap((g) => g.doctors);
   const isPlus = usePlus();
 
   const visit = groups?.flatMap((g) => g.visits).find((v) => v.id === visitId);
+
+  const { pick, upload, isPending: isUploading } = useDocumentUpload({ personId: visit?.personId ?? null });
 
   const [preNotes, setPreNotes] = useState('');
   const [postNotes, setPostNotes] = useState('');
@@ -89,7 +88,24 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
   const today = todayISO();
   const isUpcoming = v.visitDate >= today;
 
+  // Persist inline edits. Build the full field set from CURRENT local state, not
+  // from the query snapshot `v` — otherwise blurring one field writes stale values
+  // for its siblings (R1: last-write-wins corruption). The explicit `patch` still
+  // wins for the field being blurred. No-op guard skips writes when nothing changed.
   const persist = async (patch: Partial<Pick<Visit, 'preNotes' | 'postNotes' | 'totalCost' | 'outOfPocket'>>) => {
+    const next = {
+      preNotes: preNotes.trim() || null,
+      postNotes: postNotes.trim() || null,
+      totalCost: parseCost(totalCost),
+      outOfPocket: parseCost(outOfPocket),
+      ...patch,
+    };
+    if (
+      next.preNotes === (v.preNotes ?? null) &&
+      next.postNotes === (v.postNotes ?? null) &&
+      next.totalCost === (v.totalCost ?? null) &&
+      next.outOfPocket === (v.outOfPocket ?? null)
+    ) return;
     try {
       await updateVisit.mutateAsync({
         visitId: v.id,
@@ -97,10 +113,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
         visitDate: v.visitDate,
         visitTime: v.visitTime,
         doctorId: v.doctorId,
-        preNotes: patch.preNotes !== undefined ? patch.preNotes : v.preNotes,
-        postNotes: patch.postNotes !== undefined ? patch.postNotes : v.postNotes,
-        totalCost: patch.totalCost !== undefined ? patch.totalCost : v.totalCost,
-        outOfPocket: patch.outOfPocket !== undefined ? patch.outOfPocket : v.outOfPocket,
+        ...next,
         reminderAt: v.reminderAt,
       });
     } catch {
@@ -138,22 +151,18 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
   };
 
   const runUpload = async (source: 'files' | 'photos') => {
-    try {
-      const file = source === 'files' ? await pickFromFiles() : await pickFromPhotos();
-      if (!file) return;
-      await addDoc.mutateAsync({ file, personId: v.personId ?? null, visitId: v.id });
-    } catch (e) {
-      if (isStorageCapError(e)) Alert.alert('Storage full', STORAGE_FULL_MESSAGE);
-      else Alert.alert('Upload failed', 'Could not add the document. Please try again.');
-    }
+    const file = await pick(source);
+    if (file) await upload(file, { visitId: v.id });
   };
 
   const handleAddDocument = () => {
-    Alert.alert('Add document', 'Choose a source', [
-      { text: 'Files', onPress: () => void runUpload('files') },
-      { text: 'Photos', onPress: () => void runUpload('photos') },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
+    ActionSheetIOS.showActionSheetWithOptions(
+      { options: ['Files', 'Photos', 'Cancel'], cancelButtonIndex: 2, title: 'Add document' },
+      (i) => {
+        if (i === 0) void runUpload('files');
+        else if (i === 1) void runUpload('photos');
+      },
+    );
   };
 
   const openDocument = async (doc: Document) => {
@@ -256,9 +265,9 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
             ))}
           </View>
         ) : null}
-        <PressableBase onPress={handleAddDocument} disabled={addDoc.isPending} accessibilityRole="button" style={(pressed) => ({ opacity: addDoc.isPending ? 0.6 : 1, backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10 })}>
+        <PressableBase onPress={handleAddDocument} disabled={isUploading} accessibilityRole="button" style={(pressed) => ({ opacity: isUploading ? 0.6 : 1, backgroundColor: pressed ? '#DDE8F5' : '#E8EFF8', borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 10 })}>
           <Text style={{ fontSize: 18 }}>📄</Text>
-          <Text style={{ ...Type.body, fontSize: 14, fontWeight: '500', color: '#2C5282' }}>{addDoc.isPending ? 'Adding…' : 'Add Document'}</Text>
+          <Text style={{ ...Type.body, fontSize: 14, fontWeight: '500', color: '#2C5282' }}>{isUploading ? 'Adding…' : 'Add Document'}</Text>
         </PressableBase>
       </ScrollView>
 

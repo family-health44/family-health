@@ -113,9 +113,9 @@ export function buildVisitsSection(
   return { kind: 'list', heading: 'Recent visits', items };
 }
 
-export function buildTodosSection(todos: Todo[], personId: string): PdfSection {
+export function buildTodosSection(todos: Todo[], personId: string, visitId: string): PdfSection {
   const items: PdfListItem[] = todos
-    .filter((t) => !t.completed && t.personId === personId)
+    .filter((t) => !t.completed && (t.personId === personId || t.visitId === visitId))
     .sort((a, b) => (a.dueDate ?? '9999').localeCompare(b.dueDate ?? '9999'))
     .map((t) => ({
       primary: t.title,
@@ -199,7 +199,7 @@ export function buildPackSections(
     doctors: () => buildDoctorsSection(input.doctors),
     visits: () =>
       buildVisitsSection(input.allVisits, input.person.id, input.todayIso, input.visit.id),
-    todos: () => buildTodosSection(input.todos, input.person.id),
+    todos: () => buildTodosSection(input.todos, input.person.id, input.visit.id),
     questions: () => buildQuestionsSection(input.questions),
     documents: () => buildDocumentsSection(input.documents, input.skippedDocuments ?? new Map()),
   };

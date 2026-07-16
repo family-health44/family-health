@@ -17,6 +17,7 @@ import { AddVisitModal } from '@/features/visits/components/AddVisitModal';
 import { usePersonNotes } from '@/features/notes/hooks/usePersonNotes';
 import { useTodos } from '@/features/todos/hooks/useTodos';
 import { useVisits } from '@/features/visits/hooks/useVisits';
+import { todayISO } from '@/features/visits/domain/visits.domain';
 import { usePersonDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
 import { useDoctorsQuery } from '@/features/doctors/queries/doctors.queries';
 import { useFamilyHome } from '@/features/family/hooks/useFamilyHome';
@@ -72,7 +73,6 @@ export const PersonDetailScreen = () => {
   const medications = medicationGroups.flatMap((g) => g.medications);
   const allVisits = (listGroups ?? []).flatMap((g) => g.visits);
   const personVisits = allVisits.filter((v) => v.personId === personId);
-  const todayISO = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })();
   const personTodos = todoGroups.flatMap((g) => g.todos).filter((t) => t.personId === personId && !t.completed);
   const previewTodos = [...personTodos].sort((a, b) => {
     if (a.dueDate == null && b.dueDate == null) return 0;
@@ -81,7 +81,7 @@ export const PersonDetailScreen = () => {
     return a.dueDate < b.dueDate ? -1 : a.dueDate > b.dueDate ? 1 : 0;
   }).slice(0, 3);
   const previewVisits = personVisits
-    .filter((v) => v.visitDate >= todayISO)
+    .filter((v) => v.visitDate >= todayISO())
     .sort((a, b) => (a.visitDate < b.visitDate ? -1 : a.visitDate > b.visitDate ? 1 : (a.visitTime ?? '').localeCompare(b.visitTime ?? '')))
     .slice(0, 2);
 

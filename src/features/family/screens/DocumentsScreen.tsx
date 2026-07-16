@@ -2,8 +2,7 @@
 // Documents — list, upload (Files/Photos), view/share, delete for a person.
 
 import { useCallback, useMemo, useState } from 'react';
-import { View, Text, ScrollView, Alert, ActivityIndicator, Linking } from 'react-native';
-import { router } from 'expo-router';
+import { View, Text, ScrollView, Alert, ActivityIndicator, Linking, ActionSheetIOS } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { PressableBase } from '@/design-system/components/PressableBase';
@@ -11,26 +10,20 @@ import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { EmptyState, ErrorState } from '@/design-system/components/EmptyState';
 
 import { usePersonDocumentsQuery, useFamilyStorageUsedQuery } from '@/features/documents/queries/documents.queries';
-import {
-  useAddDocumentMutation,
-  useDeleteDocumentMutation,
-  isStorageCapError,
-} from '@/features/documents/mutations/documents.mutations';
-import { pickFromFiles, pickFromPhotos } from '@/features/documents/hooks/useFilePicker';
+import { useDeleteDocumentMutation } from '@/features/documents/mutations/documents.mutations';
+import { useDocumentUpload } from '@/features/documents/hooks/useDocumentUpload';
 import { createSignedUrl } from '@/features/documents/repository/documents.repository';
 import {
   formatFileSize,
-  totalBytes,
   kindLabel,
 } from '@/features/documents/domain/documents.domain';
 import {
   FALLBACK_STORAGE_CAP_BYTES,
   formatCapLabel,
-  storageFullMessage,
 } from '@/features/documents/types/documents.types';
 import { useFamilyHomeQuery } from '@/features/family/queries/family.queries';
 import type { Document, DocumentKind } from '@/features/documents/types/documents.types';
-import { isoToDisplayDate, formatTimestampLocalDate } from '@/shared/utils/dates';
+import { formatTimestampLocalDate } from '@/shared/utils/dates';
 import { LinkDocumentModal } from '@/features/documents/components/LinkDocumentModal';
 import type { DocumentLink } from '@/features/documents/components/LinkDocumentModal';
 import { useVisitsForCalendarQuery } from '@/features/visits/queries/visits.queries';
@@ -52,7 +45,6 @@ const KIND_ICON: Record<DocumentKind, string> = {
 export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) => {
   const insets = useSafeAreaInsets();
   const { data: documents, isLoading, isError, refetch } = usePersonDocumentsQuery(personId);
-  const addDoc = useAddDocumentMutation(personId);
   const deleteDoc = useDeleteDocumentMutation(personId);
 
   const { data: allVisits } = useVisitsForCalendarQuery();
@@ -65,6 +57,8 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
   const { data: familyHome } = useFamilyHomeQuery();
   const capBytes = familyHome?.familyGroup.storageCapBytes ?? FALLBACK_STORAGE_CAP_BYTES;
   const capLabel = formatCapLabel(capBytes);
+
+  const { pick, upload, isPending } = useDocumentUpload({ personId, capBytes });
 
   // Family-wide, not person-scoped — the cap is per family group.
   const { data: familyUsed } = useFamilyStorageUsedQuery();
@@ -80,46 +74,33 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
     [allVisits, personId],
   );
 
-  const runPick = useCallback(async (source: 'files' | 'photos') => {
-    try {
-      const file = source === 'files' ? await pickFromFiles() : await pickFromPhotos();
-      if (!file) return;
-      setPending(file);
-    } catch {
-      Alert.alert('Could not add file', 'Please try again.');
-    }
-  }, []);
+  const runPick = useCallback(
+    async (source: 'files' | 'photos') => {
+      const file = await pick(source);
+      if (file) setPending(file);
+    },
+    [pick],
+  );
 
   // Upload happens here, after the user has chosen a link (or chosen not to).
   const onConfirmLink = useCallback(
     async (link: DocumentLink) => {
       if (!pending) return;
-      try {
-        await addDoc.mutateAsync({
-          file: pending,
-          personId,
-          visitId: link.visitId,
-          doctorId: link.doctorId,
-        });
-        setPending(null);
-      } catch (error) {
-        setPending(null);
-        if (isStorageCapError(error)) {
-          Alert.alert('Storage full', storageFullMessage(capBytes));
-        } else {
-          Alert.alert('Upload failed', 'Could not add the document. Please try again.');
-        }
-      }
+      const file = pending;
+      setPending(null);
+      await upload(file, { visitId: link.visitId, doctorId: link.doctorId });
     },
-    [addDoc, personId, pending],
+    [upload, pending],
   );
 
   const onAdd = useCallback(() => {
-    Alert.alert('Add document', 'Choose a source', [
-      { text: 'Files', onPress: () => void runPick('files') },
-      { text: 'Photos', onPress: () => void runPick('photos') },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
+    ActionSheetIOS.showActionSheetWithOptions(
+      { options: ['Files', 'Photos', 'Cancel'], cancelButtonIndex: 2, title: 'Add document' },
+      (i) => {
+        if (i === 0) void runPick('files');
+        else if (i === 1) void runPick('photos');
+      },
+    );
   }, [runPick]);
 
   const onOpen = useCallback(async (doc: Document) => {
@@ -133,35 +114,44 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
     }
   }, []);
 
-  const onRowMenu = useCallback(
+  const confirmDelete = useCallback(
     (doc: Document) => {
-      Alert.alert(doc.name, undefined, [
-        { text: 'View / share', onPress: () => void onOpen(doc) },
+      Alert.alert('Delete document?', `"${doc.name}" will be permanently removed.`, [
+        { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () =>
-            Alert.alert('Delete document?', `"${doc.name}" will be permanently removed.`, [
-              { text: 'Cancel', style: 'cancel' },
-              {
-                text: 'Delete',
-                style: 'destructive',
-                onPress: () => {
-                  deleteDoc.mutate(
-                    { id: doc.id, file_path: doc.filePath },
-                    { onError: () => Alert.alert('Delete failed', 'Could not delete. Please try again.') },
-                  );
-                },
-              },
-            ]),
+          onPress: () => {
+            deleteDoc.mutate(
+              { id: doc.id, file_path: doc.filePath },
+              { onError: () => Alert.alert('Delete failed', 'Could not delete. Please try again.') },
+            );
+          },
         },
-        { text: 'Cancel', style: 'cancel' },
       ]);
     },
-    [deleteDoc, onOpen],
+    [deleteDoc],
   );
 
-  const isBusy = addDoc.isPending;
+  const onRowMenu = useCallback(
+    (doc: Document) => {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['View / share', 'Delete', 'Cancel'],
+          destructiveButtonIndex: 1,
+          cancelButtonIndex: 2,
+          title: doc.name,
+        },
+        (i) => {
+          if (i === 0) void onOpen(doc);
+          else if (i === 1) confirmDelete(doc);
+        },
+      );
+    },
+    [onOpen, confirmDelete],
+  );
+
+  const isBusy = isPending;
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F4F2EC' }}>
@@ -255,7 +245,7 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
         fileName={pending?.name ?? ''}
         visits={personVisits}
         doctors={personDoctors ?? []}
-        isSaving={addDoc.isPending}
+        isSaving={isPending}
         onConfirm={(link) => void onConfirmLink(link)}
         onDismiss={() => setPending(null)}
       />

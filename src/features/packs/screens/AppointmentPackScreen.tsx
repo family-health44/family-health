@@ -7,6 +7,7 @@
 import { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TextInput, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
+import NetInfo from '@react-native-community/netinfo';
 
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
@@ -87,6 +88,19 @@ export const AppointmentPackScreen = () => {
     setProgress(null);
     try {
       const wantsDocs = selection.documents && input.documents.length > 0;
+
+      // Attaching documents needs signed-URL downloads, which fail offline with a
+      // generic error. Check connectivity up front and tell the user plainly.
+      if (wantsDocs) {
+        const net = await NetInfo.fetch();
+        if (net.isConnected === false) {
+          Alert.alert(
+            'You’re offline',
+            'Attaching documents needs an internet connection. Connect and try again, or turn off the Documents section to create the pack without them.',
+          );
+          return;
+        }
+      }
 
       // First pass: render without knowing what will fail to merge.
       let doc = buildPackDocument({ ...input, questions, todayIso: today }, selection);
