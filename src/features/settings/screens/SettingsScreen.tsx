@@ -110,12 +110,12 @@ export const SettingsScreen = () => {
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
           <Icon name="chevron.left" size={16} color={Brand.green} />
-          <Text style={{ ...Type.caption, color: Brand.green, fontWeight: '500' }}>Back</Text>
+          <Text numberOfLines={1} style={{ ...Type.caption, color: Brand.green, fontWeight: '500' }}>Back</Text>
         </PressableBase>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4 }}>
-        <Text style={{ ...Type.display, color: TextColour.ink, marginBottom: 4 }}>Settings</Text>
+        <Text numberOfLines={1} adjustsFontSizeToFit style={{ ...Type.display, color: TextColour.ink, marginBottom: 4 }}>Settings</Text>
 
         <SectionLabel text="Family" />
         <Card>

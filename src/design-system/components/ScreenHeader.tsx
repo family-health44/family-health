@@ -45,7 +45,7 @@ export const ScreenHeader = ({ title, subtitle, right, children, bgColour, title
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         <HamburgerButton onPress={openDrawer} variant="onColour" />
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'baseline', gap: 8 }}>
-          <Text style={{ fontFamily: Fonts.serif, ...Type.display, fontSize: Type.display.fontSize * titleScale, color: t.colours.headerText }}>
+          <Text numberOfLines={1} adjustsFontSizeToFit style={{ fontFamily: Fonts.serif, ...Type.display, fontSize: Type.display.fontSize * titleScale, color: t.colours.headerText }}>
             {title}
           </Text>
           {subtitle ? (

@@ -60,7 +60,7 @@ export const DrawerMenu = ({ visible, onClose }: DrawerMenuProps) => {
             FamFiles
           </Text>
           {session?.user?.email ? (
-            <Text style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>{session.user.email}</Text>
+            <Text numberOfLines={1} style={{ fontSize: 13, color: 'rgba(23,33,28,0.55)' }}>{session.user.email}</Text>
           ) : null}
         </View>
 
@@ -83,7 +83,7 @@ export const DrawerMenu = ({ visible, onClose }: DrawerMenuProps) => {
               })}
             >
               <Text style={{ fontSize: 20 }}>{item.emoji}</Text>
-              <Text style={{ fontSize: 15, fontWeight: '500', color: item.danger ? '#B33A4A' : '#17211C' }}>
+              <Text numberOfLines={1} adjustsFontSizeToFit style={{ flexShrink: 1, fontSize: 15, fontWeight: '500', color: item.danger ? '#B33A4A' : '#17211C' }}>
                 {item.label}
               </Text>
             </PressableBase>
