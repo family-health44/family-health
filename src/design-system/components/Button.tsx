@@ -4,7 +4,7 @@
 // Inline token styles (runtime-themable); no NativeWind classes.
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, Text, type PressableProps, type ViewStyle, type TextStyle } from 'react-native';
-import { Type } from '@/design-system/tokens/typography';
+import { Type, Brand } from '@/design-system/tokens/typography';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -17,17 +17,14 @@ interface ButtonProps extends Omit<PressableProps, 'style'> {
   isFullWidth?: boolean;
 }
 
-const GREEN = '#1F5C41';
-const GREEN_PRESSED = '#17452F';
-const GREEN_TINT = '#E4EFE9';
 const RED = '#B33A4A';
 const RED_PRESSED = '#8F2E3B';
 
 const container = (variant: ButtonVariant, pressed: boolean): ViewStyle => {
   switch (variant) {
-    case 'primary':   return { backgroundColor: pressed ? GREEN_PRESSED : GREEN };
-    case 'secondary': return { backgroundColor: pressed ? GREEN_TINT : '#FFFFFF', borderWidth: 1, borderColor: '#BFD4C8' };
-    case 'ghost':     return { backgroundColor: pressed ? GREEN_TINT : 'transparent' };
+    case 'primary':   return { backgroundColor: pressed ? Brand.greenPressed : Brand.green };
+    case 'secondary': return { backgroundColor: pressed ? Brand.greenTint : '#FFFFFF', borderWidth: 1, borderColor: '#BFD4C8' };
+    case 'ghost':     return { backgroundColor: pressed ? Brand.greenTint : 'transparent' };
     case 'danger':    return { backgroundColor: pressed ? RED_PRESSED : RED };
   }
 };
@@ -35,7 +32,7 @@ const container = (variant: ButtonVariant, pressed: boolean): ViewStyle => {
 const textColour: Record<ButtonVariant, string> = {
   primary: '#FFFFFF',
   secondary: '#17452F',
-  ghost: GREEN,
+  ghost: Brand.green,
   danger: '#FFFFFF',
 };
 
@@ -52,7 +49,7 @@ const sizeText: Record<ButtonSize, TextStyle> = {
 };
 
 const spinnerColours: Record<ButtonVariant, string> = {
-  primary: '#FFFFFF', secondary: GREEN, ghost: GREEN, danger: '#FFFFFF',
+  primary: '#FFFFFF', secondary: Brand.green, ghost: Brand.green, danger: '#FFFFFF',
 };
 
 export const Button = ({

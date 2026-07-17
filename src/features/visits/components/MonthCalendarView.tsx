@@ -11,7 +11,7 @@ import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState, useEffect } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 
-import { Type, TextColour } from '@/design-system/tokens/typography';
+import { Type, TextColour, Brand } from '@/design-system/tokens/typography';
 import { buildMonthGrid, WEEK_DAY_LABELS, MONTH_NAMES, todayISO } from '../domain/visits.domain';
 import { VisitCard } from './VisitCard';
 import { getPersonColour } from '@/shared/utils/avatar';
@@ -21,7 +21,6 @@ import { Icon } from '@/design-system/components/Icon';
 
 const MAX_CHIPS = 2;
 
-const GREEN = '#1F5C41';
 const DIVIDER = 'rgba(23,33,28,0.07)';
 const TRACK = '#ECEBE5';
 const OUT_OF_MONTH = 'rgba(23,33,28,0.28)';
@@ -166,7 +165,7 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
                   lineHeight: 12,
                   textAlign: 'right',
                   fontWeight: isToday ? '700' : '500',
-                  color: isToday ? GREEN : !day.isCurrentMonth ? OUT_OF_MONTH : TextColour.secondary,
+                  color: isToday ? Brand.green : !day.isCurrentMonth ? OUT_OF_MONTH : TextColour.secondary,
                 }}>
                   {day.dayNumber}
                 </Text>
@@ -233,9 +232,9 @@ export const MonthCalendarView = ({ visits, onVisitPress, initialSelectedDate }:
                   <View style={{
                     width: 32, height: 32, borderRadius: 16,
                     alignItems: 'center', justifyContent: 'center',
-                    backgroundColor: isSelected ? GREEN : isToday ? TODAY_BG : 'transparent',
+                    backgroundColor: isSelected ? Brand.green : isToday ? TODAY_BG : 'transparent',
                     borderWidth: isToday && !isSelected ? 1 : 0,
-                    borderColor: GREEN,
+                    borderColor: Brand.green,
                   }}>
                     <Text style={{
                       ...Type.label,

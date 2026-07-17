@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { PressableBase } from '@/design-system/components/PressableBase';
-import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
+import { Type, TextColour, Shadow, Brand } from '@/design-system/tokens/typography';
 import { useAuth } from '@/core/auth/useAuth';
 import { useGroupInvitesQuery, useGroupSeatsQuery, useOrganisersQuery } from '../queries/invites.queries';
 import {
@@ -22,7 +22,6 @@ import { MAX_ORGANISERS } from '../types/invites.types';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const DIVIDER = 'rgba(23,33,28,0.07)';
-const GREEN = '#1F5C41';
 const RED = '#B33A4A';
 const AMBER = '#C9956A';
 
@@ -146,7 +145,7 @@ export const InviteFamilyMemberSection = () => {
               </PressableBase>
               <PressableBase
                 onPress={handleSend}
-                style={(pressed) => ({ flex: 1, paddingVertical: 11, borderRadius: 10, backgroundColor: GREEN, alignItems: 'center', opacity: pressed ? 0.7 : 1 })}
+                style={(pressed) => ({ flex: 1, paddingVertical: 11, borderRadius: 10, backgroundColor: Brand.green, alignItems: 'center', opacity: pressed ? 0.7 : 1 })}
               >
                 <Text style={{ ...Type.body, fontWeight: '600', color: 'white' }}>
                   {createInvite.isPending ? 'Sending…' : 'Send invite'}
@@ -159,14 +158,14 @@ export const InviteFamilyMemberSection = () => {
             onPress={() => setAdding(true)}
             style={(pressed) => ({ paddingVertical: 15, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', opacity: pressed ? 0.7 : 1 })}
           >
-            <Text style={{ ...Type.body, fontWeight: '600', color: GREEN, flex: 1 }}>+ Invite a family member</Text>
+            <Text style={{ ...Type.body, fontWeight: '600', color: Brand.green, flex: 1 }}>+ Invite a family member</Text>
             <Text style={{ ...Type.caption, color: TextColour.faint }}>{seatsUsed}/{MAX_ORGANISERS}</Text>
           </PressableBase>
         )}
       </Card>
 
       {isLoading ? (
-        <View style={{ paddingVertical: 16 }}><ActivityIndicator color={GREEN} /></View>
+        <View style={{ paddingVertical: 16 }}><ActivityIndicator color={Brand.green} /></View>
       ) : null}
 
       {pending.length > 0 ? (
@@ -199,7 +198,7 @@ export const InviteFamilyMemberSection = () => {
               <View style={{ paddingVertical: 13, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center' }}>
                 <View style={{ flex: 1 }}>
                   <Text style={{ ...Type.body, color: TextColour.ink }}>{m.email}</Text>
-                  <Text style={{ ...Type.caption, color: GREEN, marginTop: 2 }}>
+                  <Text style={{ ...Type.caption, color: Brand.green, marginTop: 2 }}>
                     {m.role === 'owner' ? 'Account holder' : 'Organiser'}
                   </Text>
                 </View>

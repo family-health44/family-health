@@ -12,7 +12,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
-import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
+import { Type, TextColour, Shadow, Brand } from '@/design-system/tokens/typography';
 import { renderPdfDocument, sharePdfFile } from '@/shared/utils/pdfShare';
 import { mergeDocumentsIntoPack, replaceCoverPages, countPdfPages } from '../domain/packMerge';
 import type { SkipReason } from '../domain/packMerge';
@@ -30,7 +30,6 @@ import type { PackSectionKey, PackSelection } from '../types/packs.types';
 import { Icon } from '@/design-system/components/Icon';
 
 const PAGE = '#F4F2EC';
-const GREEN = '#1F5C41';
 const DIVIDER = 'rgba(23,33,28,0.07)';
 
 const DividerLine = () => (
@@ -231,7 +230,7 @@ export const AppointmentPackScreen = () => {
                       borderRadius: 6,
                       borderWidth: on ? 0 : 1.5,
                       borderColor: '#D6D2CA',
-                      backgroundColor: on ? GREEN : 'transparent',
+                      backgroundColor: on ? Brand.green : 'transparent',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
@@ -305,7 +304,7 @@ export const AppointmentPackScreen = () => {
           accessibilityRole="button"
           style={(pressed) => ({
             backgroundColor:
-              includedCount === 0 ? '#C8C4BC' : pressed ? '#17452F' : GREEN,
+              includedCount === 0 ? '#C8C4BC' : pressed ? '#17452F' : Brand.green,
             borderRadius: 24,
             padding: 16,
             alignItems: 'center',

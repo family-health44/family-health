@@ -3,7 +3,7 @@
 // Ref forwarding preserved. Token styles; focus border via state.
 import { forwardRef, useState } from 'react';
 import { View, Text, TextInput, type TextInputProps } from 'react-native';
-import { Type, TextColour } from '@/design-system/tokens/typography';
+import { Type, TextColour, Brand } from '@/design-system/tokens/typography';
 
 interface InputProps extends TextInputProps {
   label: string;
@@ -12,7 +12,6 @@ interface InputProps extends TextInputProps {
   isRequired?: boolean;
 }
 
-const GREEN = '#1F5C41';
 const RED = '#B33A4A';
 const BORDER = '#C8C4BC';
 
@@ -20,7 +19,7 @@ export const Input = forwardRef<TextInput, InputProps>(
   ({ label, error, helperText, isRequired = false, onFocus, onBlur, style, ...textInputProps }, ref) => {
     const hasError = Boolean(error);
     const [focused, setFocused] = useState(false);
-    const borderColor = hasError ? RED : focused ? GREEN : BORDER;
+    const borderColor = hasError ? RED : focused ? Brand.green : BORDER;
 
     return (
       <View style={{ width: '100%', gap: 6 }}>

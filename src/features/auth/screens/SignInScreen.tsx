@@ -4,7 +4,7 @@ import { View, Text, Pressable } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
-import { Type, TextColour } from '@/design-system/tokens/typography';
+import { Type, TextColour, Brand } from '@/design-system/tokens/typography';
 import { AuthScreenShell } from '../components/AuthScreenShell';
 import { Input } from '@/design-system/components/Input';
 import { Button } from '@/design-system/components/Button';
@@ -12,7 +12,6 @@ import { useSignIn } from '../hooks/useSignIn';
 import { signInSchema } from '../types/auth.types';
 import type { SignInFormValues } from '../types/auth.types';
 
-const GREEN = '#1F5C41';
 const ERROR_BG = '#F5E8EB';
 const ERROR_TEXT = '#8F2E3B';
 
@@ -43,7 +42,7 @@ export const SignInScreen = () => {
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
           <Text style={{ ...Type.body, color: TextColour.muted }}>{"Don't have an account?"}</Text>
           <Pressable onPress={() => router.push('/(auth)/sign-up' as never)} accessibilityRole="link">
-            <Text style={{ ...Type.body, fontWeight: '600', color: GREEN }}>Sign up</Text>
+            <Text style={{ ...Type.body, fontWeight: '600', color: Brand.green }}>Sign up</Text>
           </Pressable>
         </View>
       }

@@ -7,7 +7,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
-import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
+import { Type, TextColour, Shadow, Brand } from '@/design-system/tokens/typography';
 import { usePersonDetail } from '@/features/family/hooks/usePersonDetail';
 import { useTodos } from '@/features/todos/hooks/useTodos';
 import { useVisits } from '@/features/visits/hooks/useVisits';
@@ -20,7 +20,6 @@ import { buildSnapshot, type SnapshotWindow } from '../domain/snapshot.domain';
 import { Icon } from '@/design-system/components/Icon';
 
 const RED = '#A63D2F';
-const GREEN = '#1F5C41';
 const PAGE = '#F4F2EC';
 const DIVIDER = 'rgba(23,33,28,0.07)';
 
@@ -174,7 +173,7 @@ const TodoRow = ({ title, sub, subColor, last, done, onToggle, onPress }: { titl
   <>
     <View style={{ flexDirection: 'row', alignItems: 'center', padding: 15, gap: 11 }}>
       <PressableBase onPress={onToggle} accessibilityRole="checkbox" accessibilityState={{ checked: done }} hitSlop={8}
-        style={() => ({ width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: done ? GREEN : '#C9C8C0', backgroundColor: done ? GREEN : 'transparent', alignItems: 'center', justifyContent: 'center' })}>
+        style={() => ({ width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: done ? Brand.green : '#C9C8C0', backgroundColor: done ? Brand.green : 'transparent', alignItems: 'center', justifyContent: 'center' })}>
         {done ? <Icon name="checkmark" size={12} color="#FFFFFF" /> : null}
       </PressableBase>
       <PressableBase onPress={onPress} accessibilityRole="button" style={() => ({ flex: 1 })}>

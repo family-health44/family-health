@@ -6,7 +6,7 @@ import { View, Text, ScrollView, Alert, TextInput, ActivityIndicator } from 'rea
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/core/auth/useAuth';
-import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
+import { Type, TextColour, Shadow, Brand } from '@/design-system/tokens/typography';
 import { useFamilyHomeQuery } from '@/features/family/queries/family.queries';
 import { db } from '@/lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
@@ -16,7 +16,6 @@ import { Icon } from '@/design-system/components/Icon';
 
 const PAGE = '#F4F2EC';
 const DIVIDER = 'rgba(23,33,28,0.07)';
-const GREEN = '#1F5C41';
 const RED = '#B33A4A';
 
 const SectionLabel = ({ text, danger }: { text: string; danger?: boolean }) => (
@@ -110,8 +109,8 @@ export const SettingsScreen = () => {
       )}
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <PressableBase onPress={() => router.back()} accessibilityRole="button" style={(pressed) => ({ opacity: pressed ? 0.6 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}>
-          <Icon name="chevron.left" size={16} color={GREEN} />
-          <Text style={{ ...Type.caption, color: GREEN, fontWeight: '500' }}>Back</Text>
+          <Icon name="chevron.left" size={16} color={Brand.green} />
+          <Text style={{ ...Type.caption, color: Brand.green, fontWeight: '500' }}>Back</Text>
         </PressableBase>
       </View>
 
@@ -128,13 +127,13 @@ export const SettingsScreen = () => {
                 onChangeText={setFamilyName}
                 autoFocus
                 autoCapitalize="words"
-                style={{ ...Type.body, color: TextColour.ink, borderWidth: 1, borderColor: GREEN, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8 }}
+                style={{ ...Type.body, color: TextColour.ink, borderWidth: 1, borderColor: Brand.green, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8 }}
               />
               <View style={{ flexDirection: 'row', gap: 8 }}>
                 <PressableBase onPress={() => setEditingName(false)} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#E3E2DB', alignItems: 'center', opacity: pressed ? 0.6 : 1 })}>
                   <Text style={{ ...Type.body, color: TextColour.secondary }}>Cancel</Text>
                 </PressableBase>
-                <PressableBase onPress={handleSaveFamilyName} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, backgroundColor: GREEN, alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
+                <PressableBase onPress={handleSaveFamilyName} style={(pressed) => ({ flex: 1, padding: 10, borderRadius: 8, backgroundColor: Brand.green, alignItems: 'center', opacity: pressed ? 0.7 : 1 })}>
                   <Text style={{ ...Type.body, color: 'white', fontWeight: '600' }}>{isSavingName ? 'Saving...' : 'Save'}</Text>
                 </PressableBase>
               </View>

@@ -7,7 +7,7 @@ import { View, Text, ScrollView, TextInput, Linking, Alert, ActionSheetIOS } fro
 import { router, useLocalSearchParams } from 'expo-router';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
-import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
+import { Type, TextColour, Shadow, Brand } from '@/design-system/tokens/typography';
 import { usePlus } from '@/core/entitlements/useEntitlement';
 import { useVisitsListQuery } from '../queries/visits.queries';
 import { useUpdateVisitMutation, useDeleteVisitMutation } from '../mutations/visits.mutations';
@@ -30,7 +30,6 @@ interface VisitDetailScreenProps {
 
 const PAGE = '#F4F2EC';
 const DIVIDER = 'rgba(23,33,28,0.07)';
-const GREEN = '#1F5C41';
 
 const parseCost = (raw: string): number | null => {
   const t = raw.trim();
@@ -280,7 +279,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
             style={(pressed) => ({ backgroundColor: pressed ? '#F0EEE7' : '#FFFFFF', borderRadius: 24, padding: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, ...Shadow.resting })}
           >
             <Text style={{ fontSize: 15 }}>📄</Text>
-            <Text style={{ ...Type.heading, color: GREEN }}>Appointment Pack</Text>
+            <Text style={{ ...Type.heading, color: Brand.green }}>Appointment Pack</Text>
           </PressableBase>
         )}
 
@@ -288,7 +287,7 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
           <PressableBase
             onPress={() => router.push(`/(app)/appointments?visitId=${v.id}&personId=${v.personId ?? ''}&personName=${encodeURIComponent(v.personName ?? '')}&doctorName=${encodeURIComponent(v.doctorName ?? '')}&visitDate=${v.visitDate}&preNotes=${encodeURIComponent(v.preNotes ?? '')}` as never)}
             accessibilityRole="button"
-            style={(pressed) => ({ backgroundColor: pressed ? '#17452F' : GREEN, borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, ...Shadow.raised })}
+            style={(pressed) => ({ backgroundColor: pressed ? '#17452F' : Brand.green, borderRadius: 24, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, ...Shadow.raised })}
           >
             <Text style={{ fontSize: 16, color: 'white' }}>▶</Text>
             <Text style={{ ...Type.heading, color: 'white' }}>Start Appointment</Text>

@@ -35,3 +35,8 @@ export const Shadow = {
     shadowOpacity: 0.18, shadowRadius: 24, elevation: 12,
   },
 } as const satisfies Record<string, ViewStyle>;
+export const Brand = {
+  green:        '#1F5C41',
+  greenPressed: '#17452F',
+  greenTint:    '#E4EFE9',
+} as const;

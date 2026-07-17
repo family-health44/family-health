@@ -8,7 +8,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { Icon } from '@/design-system/components/Icon';
-import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
+import { Type, TextColour, Shadow, Brand } from '@/design-system/tokens/typography';
 import { usePersonDetail } from '../hooks/usePersonDetail';
 import { usePersonMutations } from '../hooks/usePersonMutations';
 import { NoteModal } from '@/features/notes/components/NoteModal';
@@ -26,7 +26,6 @@ import { usePersonMedicationsQuery } from '@/features/medications/queries/medica
 const PAGE = '#F4F2EC';
 const DIVIDER = 'rgba(23,33,28,0.07)';
 const RED = '#A63D2F';
-const GREEN = '#1F5C41';
 
 // Per-icon accent colours (SF Symbols have no multicolour variant for these)
 const C_DOCTORS = '#2A9D8F';
@@ -170,7 +169,7 @@ export const PersonDetailScreen = () => {
 
         <PressableBase onPress={() => router.push(`/(app)/family/${person.id}/snapshot` as never)} accessibilityRole="button" accessibilityLabel="Open Snapshot" style={(pressed) => ({ backgroundColor: pressed ? '#F0EFEA' : 'white', borderRadius: 16, padding: 15, marginBottom: 14, ...Shadow.resting })}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-            <Icon name="camera" size={20} color={GREEN} />
+            <Icon name="camera" size={20} color={Brand.green} />
             <View style={{ flex: 1 }}>
               <Text style={{ ...Type.heading, color: TextColour.ink }}>Snapshot</Text>
             </View>
@@ -192,12 +191,12 @@ export const PersonDetailScreen = () => {
             </View>
             <View style={{ width: 1, backgroundColor: DIVIDER }} />
             <View style={{ flex: 1 }}>
-              <Text style={{ ...Type.micro, color: GREEN, marginBottom: 6 }}>UPCOMING VISITS{previewVisits.length ? ` · ${previewVisits.length}` : ''}</Text>
+              <Text style={{ ...Type.micro, color: Brand.green, marginBottom: 6 }}>UPCOMING VISITS{previewVisits.length ? ` · ${previewVisits.length}` : ''}</Text>
               {previewVisits.length === 0 ? (
                 <Text style={{ ...Type.caption, color: TextColour.faint }}>None</Text>
               ) : previewVisits.map((v) => (
                 <View key={v.id} style={{ flexDirection: 'row', gap: 7, marginBottom: 8 }}>
-                  <Icon name="calendar" size={15} color={GREEN} />
+                  <Icon name="calendar" size={15} color={Brand.green} />
                   <View style={{ flex: 1 }}>
                     <Text style={{ ...Type.caption, fontWeight: '500', color: TextColour.ink }} numberOfLines={2}>{v.title}</Text>
                     {v.doctorName ? <Text style={{ ...Type.caption, color: TextColour.muted }} numberOfLines={1}>{v.doctorName}</Text> : null}

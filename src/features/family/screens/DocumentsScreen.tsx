@@ -181,7 +181,7 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
         </ScrollView>
       ) : (
         <ScrollView contentContainerStyle={{ padding: 12, paddingBottom: 100 }}>
-          {documents!.map((doc) => (
+          {(documents ?? []).map((doc) => (
             <PressableBase
               key={doc.id}
               onPress={() => onRowMenu(doc)}

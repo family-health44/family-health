@@ -9,7 +9,7 @@ import { LoadingState, ErrorState } from '@/design-system/components/EmptyState'
 import { Button } from '@/design-system/components/Button';
 import { Input } from '@/design-system/components/Input';
 import { InlinePicker } from '@/design-system/components/InlinePicker';
-import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
+import { Type, TextColour, Shadow, Brand } from '@/design-system/tokens/typography';
 import { SPECIALTY_LIST, SPECIALTY_OPTIONS, OTHER_SPECIALTY } from '../domain/specialties';
 import { isoToDisplayDate } from '@/shared/utils/dates';
 import { toAppError } from '@/shared/types/errors';
@@ -27,7 +27,6 @@ interface DoctorDetailScreenProps { doctorId: string; personId: string; }
 
 const PAGE = '#F4F2EC';
 const DIVIDER = 'rgba(23,33,28,0.07)';
-const GREEN = '#1F5C41';
 
 // Accent-pill tones per doctor section (decorative grouping).
 const VISITS_TONE: SectionCardTone = { pillBg: '#E6F1FB', pillText: '#0C447C' };   // blue
@@ -121,7 +120,7 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
         <View style={{ backgroundColor: 'white', borderRadius: 14, padding: 14, marginBottom: 12, ...Shadow.resting }}>
           <PressableBase onPress={() => setShowMoreInfo(!showMoreInfo)} accessibilityRole="button" style={(pressed) => ({ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: pressed ? 0.7 : 1 })}>
             <Text style={{ ...Type.label, color: TextColour.ink }}>Contact details</Text>
-            <Text style={{ ...Type.micro, letterSpacing: 0, color: GREEN }}>{showMoreInfo ? 'Less ↑' : 'More ↓'}</Text>
+            <Text style={{ ...Type.micro, letterSpacing: 0, color: Brand.green }}>{showMoreInfo ? 'Less ↑' : 'More ↓'}</Text>
           </PressableBase>
           {showMoreInfo && (
             <View style={{ paddingTop: 10, marginTop: 10, gap: 8 }}>
@@ -135,7 +134,7 @@ export const DoctorDetailScreen = ({ doctorId, personId }: DoctorDetailScreenPro
               {doctor.phone ? (
                 <PressableBase onPress={handlePhone} accessibilityRole="button" accessibilityLabel={`Call ${doctor.phone}`} style={{ flexDirection: 'row', paddingVertical: 4 }}>
                   <Text style={{ ...Type.caption, fontWeight: '400', color: TextColour.muted, width: 60 }}>Phone</Text>
-                  <Text style={{ ...Type.caption, fontWeight: '400', color: GREEN, flex: 1, textAlign: 'right' }}>{doctor.phone}</Text>
+                  <Text style={{ ...Type.caption, fontWeight: '400', color: Brand.green, flex: 1, textAlign: 'right' }}>{doctor.phone}</Text>
                 </PressableBase>
               ) : null}
             </View>

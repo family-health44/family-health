@@ -1,7 +1,7 @@
 // app/_layout.tsx
 import '../global.css';
 import { useEffect } from 'react';
-import { View } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
@@ -16,6 +16,18 @@ import { OfflineBanner } from '@/design-system/components/OfflineBanner';
 import { DrawerProvider } from '@/design-system/components/DrawerContext';
 import { ThemeProvider } from '@/design-system/theme/ThemeProvider';
 import { initSentry, Sentry } from '@/core/config/sentry';
+
+// X1 — Dynamic Type: allow system text scaling but cap it so layouts don't break.
+const MAX_FONT_SCALE = 1.3;
+// @ts-expect-error defaultProps is the supported RN pattern for a global default
+Text.defaultProps = Text.defaultProps || {};
+// @ts-expect-error see above
+Text.defaultProps.maxFontSizeMultiplier = MAX_FONT_SCALE;
+// @ts-expect-error see above
+TextInput.defaultProps = TextInput.defaultProps || {};
+// @ts-expect-error see above
+TextInput.defaultProps.maxFontSizeMultiplier = MAX_FONT_SCALE;
+
 
 initSentry();
 

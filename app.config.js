@@ -16,7 +16,7 @@ module.exports = ({ config }) => ({
     supportsTablet: false,
     bundleIdentifier: 'app.famfiles.ios',
     developmentTeam: 'U63S68M7JJ',
-    buildNumber: '7',
+    buildNumber: '8',
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
     },

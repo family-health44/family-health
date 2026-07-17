@@ -6,14 +6,13 @@ import { useState } from 'react';
 import { View, Text, Modal, Pressable, ScrollView } from 'react-native';
 
 import { PressableBase } from '@/design-system/components/PressableBase';
-import { Type, TextColour, Shadow } from '@/design-system/tokens/typography';
+import { Type, TextColour, Shadow, Brand } from '@/design-system/tokens/typography';
 import { formatDate } from '@/shared/utils/dates';
 
 import type { Visit } from '@/features/visits/types/visits.types';
 import type { Doctor } from '@/features/doctors/types/doctors.types';
 import { Icon } from '@/design-system/components/Icon';
 
-const GREEN = '#1F5C41';
 const DIVIDER = 'rgba(23,33,28,0.07)';
 
 export interface DocumentLink {
@@ -133,7 +132,7 @@ export const LinkDocumentModal = ({
           </Text>
         ) : null}
       </View>
-      {selected ? <Icon name="checkmark" size={14} color={GREEN} /> : null}
+      {selected ? <Icon name="checkmark" size={14} color={Brand.green} /> : null}
     </PressableBase>
   );
 
@@ -245,7 +244,7 @@ export const LinkDocumentModal = ({
               disabled={!canSave || isSaving}
               accessibilityRole="button"
               style={(pressed) => ({
-                backgroundColor: !canSave ? '#C8C4BC' : pressed ? '#17452F' : GREEN,
+                backgroundColor: !canSave ? '#C8C4BC' : pressed ? '#17452F' : Brand.green,
                 borderRadius: 12,
                 padding: 15,
                 alignItems: 'center',
