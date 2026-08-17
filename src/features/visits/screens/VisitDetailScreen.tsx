@@ -3,7 +3,7 @@
 // Title/date/time/doctor are edited via the ✎ modal.
 import { PressableBase } from '@/design-system/components/PressableBase';
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TextInput, Linking, Alert, ActionSheetIOS } from 'react-native';
+import { View, Text, ScrollView, TextInput, Linking, Alert, ActionSheetIOS, Platform } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { LoadingState, ErrorState } from '@/design-system/components/EmptyState';
 import { SubScreenHeader } from '@/design-system/components/SubScreenHeader';
@@ -155,6 +155,10 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
   };
 
   const handleAddDocument = () => {
+    if (Platform.OS === 'web') {
+      void runUpload('files');
+      return;
+    }
     ActionSheetIOS.showActionSheetWithOptions(
       { options: ['Files', 'Photos', 'Cancel'], cancelButtonIndex: 2, title: 'Add document' },
       (i) => {

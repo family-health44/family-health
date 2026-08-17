@@ -2,7 +2,7 @@
 // Documents — list, upload (Files/Photos), view/share, delete for a person.
 
 import { useCallback, useMemo, useState } from 'react';
-import { View, Text, ScrollView, Alert, ActivityIndicator, Linking, ActionSheetIOS } from 'react-native';
+import { View, Text, ScrollView, Alert, ActivityIndicator, Linking, ActionSheetIOS, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { PressableBase } from '@/design-system/components/PressableBase';
@@ -94,6 +94,10 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
   );
 
   const onAdd = useCallback(() => {
+    if (Platform.OS === 'web') {
+      void runPick('files');
+      return;
+    }
     ActionSheetIOS.showActionSheetWithOptions(
       { options: ['Files', 'Photos', 'Cancel'], cancelButtonIndex: 2, title: 'Add document' },
       (i) => {
@@ -135,6 +139,15 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
 
   const onRowMenu = useCallback(
     (doc: Document) => {
+      if (Platform.OS === 'web') {
+        const del = typeof window !== 'undefined'
+          && window.confirm(`"${doc.name}"\n\nOK = View / share, Cancel = more options.`);
+        if (del) void onOpen(doc);
+        else if (typeof window !== 'undefined' && window.confirm(`Delete "${doc.name}"? This cannot be undone.`)) {
+          confirmDelete(doc);
+        }
+        return;
+      }
       ActionSheetIOS.showActionSheetWithOptions(
         {
           options: ['View / share', 'Delete', 'Cancel'],
