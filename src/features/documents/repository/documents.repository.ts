@@ -3,6 +3,7 @@
 // document data. Files live in the private 'documents' storage bucket; metadata
 // rows live in the public.documents table.
 
+import { Platform } from 'react-native';
 import { File } from 'expo-file-system';
 import { decode } from 'base64-arraybuffer';
 
@@ -106,8 +107,18 @@ export async function uploadDocument(params: UploadDocumentParams): Promise<DbDo
   try {
     // Read the picked file as base64 → ArrayBuffer. The blob()/File-web route
     // produces 0-byte uploads on iOS, so we go through base64 explicitly.
-    const base64 = await new File(params.file.uri).base64();
-    const bytes = decode(base64);
+    let bytes: ArrayBuffer;
+    if (Platform.OS === 'web') {
+      // Web: the picked URI is a blob: object URL — read it directly.
+      const resp = await fetch(params.file.uri);
+      bytes = await resp.arrayBuffer();
+      URL.revokeObjectURL(params.file.uri);
+    } else {
+      // Native: blob()/File-web route produces 0-byte uploads on iOS, so go
+      // through base64 explicitly.
+      const base64 = await new File(params.file.uri).base64();
+      bytes = decode(base64);
+    }
 
     const { error: uploadError } = await db.storage
       .from(BUCKET)
