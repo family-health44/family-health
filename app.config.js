@@ -52,6 +52,7 @@ module.exports = ({ config }) => ({
     package: 'app.famfiles.android',
   },
   web: {
+    output: 'static',
     display: 'standalone',
     name: 'FamFiles',
     shortName: 'FamFiles',
