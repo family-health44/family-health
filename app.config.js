@@ -51,6 +51,13 @@ module.exports = ({ config }) => ({
     },
     package: 'app.famfiles.android',
   },
+  web: {
+    display: 'standalone',
+    name: 'FamFiles',
+    shortName: 'FamFiles',
+    themeColor: '#1F5C41',
+    backgroundColor: '#F7F5F0',
+  },
   updates: {
     url: 'https://u.expo.dev/ba1462b3-731f-4539-9bbf-dbf563e815e0',
   },
