@@ -110,6 +110,10 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
   const onOpen = useCallback(async (doc: Document) => {
     try {
       const url = await createSignedUrl(doc.filePath);
+      if (Platform.OS === 'web') {
+        if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener');
+        return;
+      }
       const supported = await Linking.canOpenURL(url);
       if (supported) await Linking.openURL(url);
       else Alert.alert('Cannot open', 'No app is available to open this file.');
@@ -140,11 +144,14 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
   const onRowMenu = useCallback(
     (doc: Document) => {
       if (Platform.OS === 'web') {
-        const del = typeof window !== 'undefined'
-          && window.confirm(`"${doc.name}"\n\nOK = View / share, Cancel = more options.`);
-        if (del) void onOpen(doc);
-        else if (typeof window !== 'undefined' && window.confirm(`Delete "${doc.name}"? This cannot be undone.`)) {
-          confirmDelete(doc);
+        if (typeof window === 'undefined') return;
+        if (window.confirm(`Delete "${doc.name}"? This cannot be undone.\n\nOK = Delete, Cancel = View / share.`)) {
+          deleteDoc.mutate(
+            { id: doc.id, file_path: doc.filePath },
+            { onError: () => { if (typeof window !== 'undefined') window.alert('Could not delete. Please try again.'); } },
+          );
+        } else {
+          void onOpen(doc);
         }
         return;
       }

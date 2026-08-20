@@ -171,6 +171,10 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
   const openDocument = async (doc: Document) => {
     try {
       const url = await createSignedUrl(doc.filePath);
+      if (Platform.OS === 'web') {
+        if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener');
+        return;
+      }
       const supported = await Linking.canOpenURL(url);
       if (supported) await Linking.openURL(url);
       else Alert.alert('Cannot open', 'No app is available to open this file.');

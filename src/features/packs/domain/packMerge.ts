@@ -6,11 +6,34 @@
 // the UI can say so. Nothing ever vanishes silently.
 
 import { PDFDocument, degrees } from 'pdf-lib';
+import { Platform } from 'react-native';
 import { File, Paths } from 'expo-file-system';
 import { decode, encode } from 'base64-arraybuffer';
 
 import { createSignedUrl } from '@/features/documents/repository/documents.repository';
 import type { Document } from '@/features/documents/types/documents.types';
+
+// Web has no expo-file-system. On web, PDF bytes live behind blob: URLs which
+// are read via fetch() and written via URL.createObjectURL. Native keeps the
+// cache-file path. Both return/consume a `uri` string so callers are unchanged.
+const IS_WEB = Platform.OS === 'web';
+async function readPdfBase64(uri: string): Promise<string> {
+  if (IS_WEB) {
+    const res = await fetch(uri);
+    return encode(await res.arrayBuffer());
+  }
+  return new File(uri).base64();
+}
+function writePdfBytes(bytes: ArrayBuffer): string {
+  if (IS_WEB) {
+    const blob = new Blob([new Uint8Array(bytes)], { type: 'application/pdf' });
+    return URL.createObjectURL(blob);
+  }
+  const file = new File(Paths.cache, `AppointmentPack-${Date.now()}.pdf`);
+  file.create({ overwrite: true });
+  file.write(new Uint8Array(bytes));
+  return file.uri;
+}
 
 // ── Caps ─────────────────────────────────────────────────────────────────────
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;
@@ -216,7 +239,7 @@ export async function mergeDocumentsIntoPack(
     return { uri: packUri, mergedCount: 0, skipped };
   }
 
-  const packBase64 = await new File(packUri).base64();
+  const packBase64 = await readPdfBase64(packUri);
   const merged = await PDFDocument.load(decode(packBase64));
 
   let totalBytes = 0;
@@ -276,17 +299,15 @@ export async function mergeDocumentsIntoPack(
   }
 
   const outBase64 = await merged.saveAsBase64();
-  const out = new File(Paths.cache, `AppointmentPack-${Date.now()}.pdf`);
-  out.create({ overwrite: true });
-  out.write(new Uint8Array(decode(outBase64)));
+  const outUri = writePdfBytes(decode(outBase64));
 
-  return { uri: out.uri, mergedCount, skipped };
+  return { uri: outUri, mergedCount, skipped };
 }
 
 // Counts pages in a PDF already on disk. No network. Used to know how many
 // leading pages belong to the cover before attachments are appended.
 export async function countPdfPages(uri: string): Promise<number> {
-  const bytes = decode(await new File(uri).base64());
+  const bytes = decode(await readPdfBase64(uri));
   const doc = await PDFDocument.load(bytes);
   return doc.getPageCount();
 }
@@ -299,8 +320,8 @@ export async function replaceCoverPages(
   newCoverUri: string,
   originalCoverPageCount: number,
 ): Promise<string> {
-  const mergedDoc = await PDFDocument.load(decode(await new File(mergedUri).base64()));
-  const coverDoc = await PDFDocument.load(decode(await new File(newCoverUri).base64()));
+  const mergedDoc = await PDFDocument.load(decode(await readPdfBase64(mergedUri)));
+  const coverDoc = await PDFDocument.load(decode(await readPdfBase64(newCoverUri)));
 
   const out = await PDFDocument.create();
   const coverPages = await out.copyPages(coverDoc, coverDoc.getPageIndices());
@@ -310,8 +331,5 @@ export async function replaceCoverPages(
   attachPages.forEach((p) => out.addPage(p));
 
   const outBase64 = await out.saveAsBase64();
-  const file = new File(Paths.cache, `AppointmentPack-${Date.now()}.pdf`);
-  file.create({ overwrite: true });
-  file.write(new Uint8Array(decode(outBase64)));
-  return file.uri;
+  return writePdfBytes(decode(outBase64));
 }

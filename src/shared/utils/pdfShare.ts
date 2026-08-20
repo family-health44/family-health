@@ -6,7 +6,7 @@
 //   shareInfoCardPdf  — legacy single-table info card (unchanged behaviour)
 //   sharePdfDocument  — multi-section document (Appointment Packs)
 
-import { Share } from 'react-native';
+import { Platform, Share } from 'react-native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 
@@ -125,11 +125,24 @@ function buildDocumentHtml(doc: PdfDocument, footer: string): string {
   </body></html>`;
 }
 
+// ── Web ──────────────────────────────────────────────────────────────────────
+// On web there is no native share sheet and expo-print would trigger the browser
+// print dialog. printToFileAsync still runs on web and returns a blob: URL, which
+// we open in a new tab instead of printing/sharing.
+const IS_WEB = Platform.OS === 'web';
+function openInNewTab(uri: string): void {
+  if (typeof window !== 'undefined') window.open(uri, '_blank', 'noopener');
+}
+
 // ── Share ────────────────────────────────────────────────────────────────────
 
 async function renderAndShare(html: string, plainText: string): Promise<void> {
   try {
     const { uri } = await Print.printToFileAsync({ html });
+    if (IS_WEB) {
+      openInNewTab(uri);
+      return;
+    }
     if (await Sharing.isAvailableAsync()) {
       await Sharing.shareAsync(uri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf' });
     } else {
@@ -167,6 +180,10 @@ export async function renderPdfDocument(
 // Shares an already-rendered PDF file.
 export async function sharePdfFile(uri: string, plainText: string): Promise<void> {
   try {
+    if (IS_WEB) {
+      openInNewTab(uri);
+      return;
+    }
     if (await Sharing.isAvailableAsync()) {
       await Sharing.shareAsync(uri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf' });
     } else {
