@@ -1,0 +1,12 @@
+{
+  "name": "FamFiles",
+  "short_name": "FamFiles",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F7F5F0",
+  "theme_color": "#1F5C41",
+  "icons": [
+    { "src": "/icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
