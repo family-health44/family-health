@@ -145,13 +145,11 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
     (doc: Document) => {
       if (Platform.OS === 'web') {
         if (typeof window === 'undefined') return;
-        if (window.confirm(`Delete "${doc.name}"? This cannot be undone.\n\nOK = Delete, Cancel = View / share.`)) {
+        if (window.confirm(`Delete "${doc.name}"? This cannot be undone.`)) {
           deleteDoc.mutate(
             { id: doc.id, file_path: doc.filePath },
             { onError: () => { if (typeof window !== 'undefined') window.alert('Could not delete. Please try again.'); } },
           );
-        } else {
-          void onOpen(doc);
         }
         return;
       }
@@ -168,7 +166,7 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
         },
       );
     },
-    [onOpen, confirmDelete],
+    [onOpen, confirmDelete, deleteDoc],
   );
 
   const isBusy = isPending;
@@ -202,13 +200,9 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
       ) : (
         <ScrollView contentContainerStyle={{ padding: 12, paddingBottom: 100 }}>
           {(documents ?? []).map((doc) => (
-            <PressableBase
+            <View
               key={doc.id}
-              onPress={() => onRowMenu(doc)}
-              accessibilityRole="button"
-              accessibilityLabel={doc.name}
-              style={(pressed) => ({
-                opacity: pressed ? 0.7 : 1,
+              style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 10,
@@ -219,18 +213,40 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
                 paddingVertical: 10,
                 paddingHorizontal: 12,
                 marginBottom: 8,
-              })}
+              }}
             >
-              <Text style={{ fontSize: 22 }}>{KIND_ICON[doc.kind]}</Text>
-              <View style={{ flex: 1, minWidth: 0 }}>
-                <Text numberOfLines={1} style={{ fontSize: 14, color: '#17211C' }}>{doc.name}</Text>
-                <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginTop: 2 }}>
-                  {kindLabel(doc.kind)} · {formatFileSize(doc.fileSize)}
-                  {doc.uploadedAt ? ` · ${formatTimestampLocalDate(doc.uploadedAt)}` : ''}
-                </Text>
-              </View>
-              <Text accessibilityLabel="More options" accessibilityRole="button" style={{ fontSize: 18, color: 'rgba(23,33,28,0.55)' }}>⋯</Text>
-            </PressableBase>
+              <PressableBase
+                onPress={() => void onOpen(doc)}
+                accessibilityRole="button"
+                accessibilityLabel={doc.name}
+                style={(pressed) => ({
+                  opacity: pressed ? 0.7 : 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 10,
+                  flex: 1,
+                  minWidth: 0,
+                })}
+              >
+                <Text style={{ fontSize: 22 }}>{KIND_ICON[doc.kind]}</Text>
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <Text numberOfLines={1} style={{ fontSize: 14, color: '#17211C' }}>{doc.name}</Text>
+                  <Text style={{ fontSize: 11, color: 'rgba(23,33,28,0.55)', marginTop: 2 }}>
+                    {kindLabel(doc.kind)} · {formatFileSize(doc.fileSize)}
+                    {doc.uploadedAt ? ` · ${formatTimestampLocalDate(doc.uploadedAt)}` : ''}
+                  </Text>
+                </View>
+              </PressableBase>
+              <PressableBase
+                onPress={() => onRowMenu(doc)}
+                accessibilityLabel="More options"
+                accessibilityRole="button"
+                hitSlop={10}
+                style={(pressed) => ({ opacity: pressed ? 0.5 : 1, paddingHorizontal: 6, paddingVertical: 4 })}
+              >
+                <Text style={{ fontSize: 18, color: 'rgba(23,33,28,0.55)' }}>⋯</Text>
+              </PressableBase>
+            </View>
           ))}
         </ScrollView>
       )}
