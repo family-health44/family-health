@@ -13,6 +13,7 @@ import { usePersonDocumentsQuery, useFamilyStorageUsedQuery } from '@/features/d
 import { useDeleteDocumentMutation } from '@/features/documents/mutations/documents.mutations';
 import { useDocumentUpload } from '@/features/documents/hooks/useDocumentUpload';
 import { createSignedUrl } from '@/features/documents/repository/documents.repository';
+import { sharePdfFile } from '@/shared/utils/pdfShare';
 import {
   formatFileSize,
   kindLabel,
@@ -121,6 +122,17 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
       Alert.alert('Cannot open', 'Could not open the document. Please try again.');
     }
   }, []);
+  // Web share: sign the URL, then hand the file to sharePdfFile, which fetches
+  // the bytes and calls the Web Share API (real iOS share sheet in the installed
+  // PWA), falling back to opening a new tab where sharing isn't available.
+  const onShare = useCallback(async (doc: Document) => {
+    try {
+      const url = await createSignedUrl(doc.filePath);
+      await sharePdfFile(url, doc.name);
+    } catch {
+      void onOpen(doc);
+    }
+  }, [onOpen]);
 
   const confirmDelete = useCallback(
     (doc: Document) => {
@@ -145,6 +157,13 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
     (doc: Document) => {
       if (Platform.OS === 'web') {
         if (typeof window === 'undefined') return;
+        // Tapping the row opens the doc. The three-dot menu offers Share + Delete.
+        // window.confirm is two-action only: OK = share, Cancel = delete confirm.
+        // A proper two-button popover is a later polish item.
+        if (window.confirm(`"${doc.name}"\n\nOK = share \u00b7 Cancel = delete`)) {
+          void onShare(doc);
+          return;
+        }
         if (window.confirm(`Delete "${doc.name}"? This cannot be undone.`)) {
           deleteDoc.mutate(
             { id: doc.id, file_path: doc.filePath },
@@ -166,7 +185,7 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
         },
       );
     },
-    [onOpen, confirmDelete, deleteDoc],
+    [onOpen, onShare, confirmDelete, deleteDoc],
   );
 
   const isBusy = isPending;
