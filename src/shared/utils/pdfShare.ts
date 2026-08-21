@@ -7,6 +7,10 @@
 //         to opening the PDF blob in a new tab if file-sharing isn't supported.
 //         expo-print is NOT used on web — printToFileAsync there triggers the
 //         browser print dialog instead of returning a shareable file.
+//         pdf-lib is imported lazily (dynamic import) inside the web builder so
+//         its tslib dependency never loads at module-parse time — a static
+//         top-level import crashed web at import with
+//         "Cannot destructure property '__extends' of tslib.default".
 //
 // Two entry points:
 //   shareInfoCardPdf  — legacy single-table info card
@@ -15,7 +19,6 @@
 import { Platform, Share } from 'react-native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 
 function escapeHtml(s: string): string {
   return s
@@ -135,12 +138,9 @@ function buildDocumentHtml(doc: PdfDocument, footer: string): string {
 // ── pdf-lib renderer (web) ─────────────────────────────────────────────────────
 // expo-print is unusable on web (it prints instead of returning a file), so on
 // web we draw the PDF from primitives with pdf-lib and share the bytes.
+// pdf-lib is imported lazily inside this function (see file header).
 
 const A4 = { w: 595.28, h: 841.89 };
-const INK = rgb(0.09, 0.13, 0.11);
-const GREY = rgb(0.37, 0.36, 0.33);
-const GREEN = rgb(0.122, 0.361, 0.255);
-const HAIR = rgb(0.925, 0.91, 0.882);
 const MARGIN = 40;
 
 interface WebFont {
@@ -165,6 +165,13 @@ function wrapText(text: string, font: WebFont, size: number, maxW: number): stri
 }
 
 async function buildDocumentPdfBytes(doc: PdfDocument, footer: string): Promise<Uint8Array> {
+  const { PDFDocument, StandardFonts, rgb } = await import('pdf-lib');
+
+  const INK = rgb(0.09, 0.13, 0.11);
+  const GREY = rgb(0.37, 0.36, 0.33);
+  const GREEN = rgb(0.122, 0.361, 0.255);
+  const HAIR = rgb(0.925, 0.91, 0.882);
+
   const pdf = await PDFDocument.create();
   const font = await pdf.embedFont(StandardFonts.Helvetica);
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);

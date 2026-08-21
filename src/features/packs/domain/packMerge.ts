@@ -4,8 +4,13 @@
 // Hard caps exist to protect memory and battery — base64 inflates a file ~1.33x
 // and the whole thing lives in the JS heap. Anything skipped is reported back so
 // the UI can say so. Nothing ever vanishes silently.
+//
+// pdf-lib is imported lazily (dynamic import) inside each function that uses it,
+// never at module top level — a static top-level import crashed web at import
+// with "Cannot destructure property '__extends' of tslib.default". The type-only
+// import below is erased at compile time and never loads the library.
 
-import { PDFDocument, degrees } from 'pdf-lib';
+import type { PDFDocument as PDFDocumentType } from 'pdf-lib';
 import { Platform } from 'react-native';
 import { File, Paths } from 'expo-file-system';
 import { decode, encode } from 'base64-arraybuffer';
@@ -129,10 +134,12 @@ function readJpegOrientation(bytes: ArrayBuffer): number {
 }
 
 // Draws an embedded image on its own page, scaled to fit A4, honouring EXIF.
+// `degrees` is passed in so this stays free of a pdf-lib import.
 function addImagePage(
-  pdf: PDFDocument,
+  pdf: PDFDocumentType,
   img: { width: number; height: number },
   embed: unknown,
+  degrees: (angle: number) => unknown,
   orientation = 1,
 ): void {
   const margin = 36;
@@ -207,7 +214,7 @@ function addImagePage(
       break;
   }
 
-  page.drawImage(embed as never, { x, y, width, height, rotate });
+  page.drawImage(embed as never, { x, y, width, height, rotate: rotate as never });
 }
 
 export interface MergeOptions {
@@ -221,6 +228,7 @@ export async function mergeDocumentsIntoPack(
   documents: Document[],
   options: MergeOptions = {},
 ): Promise<MergeResult> {
+  const { PDFDocument, degrees } = await import('pdf-lib');
   const skipped: MergeSkip[] = [];
 
   // Pre-filter on declared size — cheaper than downloading then rejecting.
@@ -279,11 +287,11 @@ export async function mergeDocumentsIntoPack(
         pages.forEach((p) => merged.addPage(p));
       } else if (isJpg(doc)) {
         const img = await merged.embedJpg(bytes);
-        addImagePage(merged, img, img, readJpegOrientation(bytes));
+        addImagePage(merged, img, img, degrees, readJpegOrientation(bytes));
       } else {
         // PNG has no EXIF orientation.
         const img = await merged.embedPng(bytes);
-        addImagePage(merged, img, img, 1);
+        addImagePage(merged, img, img, degrees, 1);
       }
 
       totalBytes += bytes.byteLength;
@@ -307,6 +315,7 @@ export async function mergeDocumentsIntoPack(
 // Counts pages in a PDF already on disk. No network. Used to know how many
 // leading pages belong to the cover before attachments are appended.
 export async function countPdfPages(uri: string): Promise<number> {
+  const { PDFDocument } = await import('pdf-lib');
   const bytes = decode(await readPdfBase64(uri));
   const doc = await PDFDocument.load(bytes);
   return doc.getPageCount();
@@ -320,6 +329,7 @@ export async function replaceCoverPages(
   newCoverUri: string,
   originalCoverPageCount: number,
 ): Promise<string> {
+  const { PDFDocument } = await import('pdf-lib');
   const mergedDoc = await PDFDocument.load(decode(await readPdfBase64(mergedUri)));
   const coverDoc = await PDFDocument.load(decode(await readPdfBase64(newCoverUri)));
 
