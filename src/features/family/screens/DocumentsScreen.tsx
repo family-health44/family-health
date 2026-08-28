@@ -43,6 +43,8 @@ const KIND_ICON: Record<DocumentKind, string> = {
   other: '📎',
 };
 
+const IS_WEB = Platform.OS === 'web';
+
 export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) => {
   const insets = useSafeAreaInsets();
   const { data: documents, isLoading, isError, refetch } = usePersonDocumentsQuery(personId);
@@ -53,6 +55,9 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
 
   // Pending file — picked, but not uploaded until the link step is confirmed.
   const [pending, setPending] = useState<PickedFile | null>(null);
+
+  // Web ⋯ menu — which document's popover is open (null = none).
+  const [menuDoc, setMenuDoc] = useState<Document | null>(null);
 
   // The real cap lives on the family group (DB-enforced). Fall back until loaded.
   const { data: familyHome } = useFamilyHomeQuery();
@@ -95,7 +100,7 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
   );
 
   const onAdd = useCallback(() => {
-    if (Platform.OS === 'web') {
+    if (IS_WEB) {
       void runPick('files');
       return;
     }
@@ -109,12 +114,24 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
   }, [runPick]);
 
   const onOpen = useCallback(async (doc: Document) => {
+    // On iOS PWA, window.open must be called SYNCHRONOUSLY on tap — after an
+    // await the user-gesture is gone and iOS silently blocks it. So open a
+    // blank tab now, then point it at the signed URL once it resolves.
+    if (IS_WEB) {
+      if (typeof window === 'undefined') return;
+      const win = window.open('', '_blank');
+      try {
+        const url = await createSignedUrl(doc.filePath);
+        if (win) win.location.href = url;
+        else window.location.href = url; // popup blocked — navigate current tab
+      } catch {
+        if (win) win.close();
+        window.alert('Could not open the document. Please try again.');
+      }
+      return;
+    }
     try {
       const url = await createSignedUrl(doc.filePath);
-      if (Platform.OS === 'web') {
-        if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener');
-        return;
-      }
       const supported = await Linking.canOpenURL(url);
       if (supported) await Linking.openURL(url);
       else Alert.alert('Cannot open', 'No app is available to open this file.');
@@ -122,6 +139,7 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
       Alert.alert('Cannot open', 'Could not open the document. Please try again.');
     }
   }, []);
+
   // Web share: sign the URL, then hand the file to sharePdfFile, which fetches
   // the bytes and calls the Web Share API (real iOS share sheet in the installed
   // PWA), falling back to opening a new tab where sharing isn't available.
@@ -153,23 +171,23 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
     [deleteDoc],
   );
 
+  // Web delete — the popover already confirmed intent; do one final confirm.
+  const webDelete = useCallback(
+    (doc: Document) => {
+      setMenuDoc(null);
+      if (typeof window !== 'undefined' && !window.confirm(`Delete "${doc.name}"? This cannot be undone.`)) return;
+      deleteDoc.mutate(
+        { id: doc.id, file_path: doc.filePath },
+        { onError: () => { if (typeof window !== 'undefined') window.alert('Could not delete. Please try again.'); } },
+      );
+    },
+    [deleteDoc],
+  );
+
   const onRowMenu = useCallback(
     (doc: Document) => {
-      if (Platform.OS === 'web') {
-        if (typeof window === 'undefined') return;
-        // Tapping the row opens the doc. The three-dot menu offers Share + Delete.
-        // window.confirm is two-action only: OK = share, Cancel = delete confirm.
-        // A proper two-button popover is a later polish item.
-        if (window.confirm(`"${doc.name}"\n\nOK = share \u00b7 Cancel = delete`)) {
-          void onShare(doc);
-          return;
-        }
-        if (window.confirm(`Delete "${doc.name}"? This cannot be undone.`)) {
-          deleteDoc.mutate(
-            { id: doc.id, file_path: doc.filePath },
-            { onError: () => { if (typeof window !== 'undefined') window.alert('Could not delete. Please try again.'); } },
-          );
-        }
+      if (IS_WEB) {
+        setMenuDoc(doc); // open the in-app popover
         return;
       }
       ActionSheetIOS.showActionSheetWithOptions(
@@ -185,7 +203,7 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
         },
       );
     },
-    [onOpen, onShare, confirmDelete, deleteDoc],
+    [onOpen, confirmDelete],
   );
 
   const isBusy = isPending;
@@ -294,6 +312,51 @@ export const DocumentsScreen = ({ personId, personName }: DocumentsScreenProps) 
           )}
         </PressableBase>
       </View>
+
+      {/* Web ⋯ popover — Share / Delete / Cancel. Tap the scrim to dismiss. */}
+      {IS_WEB && menuDoc && (
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'flex-end' }}>
+          <PressableBase
+            onPress={() => setMenuDoc(null)}
+            accessibilityLabel="Dismiss menu"
+            style={() => ({ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.25)' })}
+          />
+          <View
+            style={{
+              backgroundColor: '#fff',
+              borderTopLeftRadius: 16,
+              borderTopRightRadius: 16,
+              paddingBottom: insets.bottom + 8,
+              paddingTop: 8,
+            }}
+          >
+            <Text numberOfLines={1} style={{ fontSize: 12, color: 'rgba(23,33,28,0.55)', textAlign: 'center', paddingVertical: 10, paddingHorizontal: 16 }}>
+              {menuDoc.name}
+            </Text>
+            <PressableBase
+              onPress={() => { const d = menuDoc; setMenuDoc(null); void onShare(d); }}
+              accessibilityRole="button"
+              style={(pressed) => ({ opacity: pressed ? 0.5 : 1, paddingVertical: 16, paddingHorizontal: 20, borderTopWidth: 0.5, borderColor: '#ECE8E1' })}
+            >
+              <Text style={{ fontSize: 16, color: '#17211C', textAlign: 'center' }}>Share</Text>
+            </PressableBase>
+            <PressableBase
+              onPress={() => webDelete(menuDoc)}
+              accessibilityRole="button"
+              style={(pressed) => ({ opacity: pressed ? 0.5 : 1, paddingVertical: 16, paddingHorizontal: 20, borderTopWidth: 0.5, borderColor: '#ECE8E1' })}
+            >
+              <Text style={{ fontSize: 16, color: '#C0392B', textAlign: 'center' }}>Delete</Text>
+            </PressableBase>
+            <PressableBase
+              onPress={() => setMenuDoc(null)}
+              accessibilityRole="button"
+              style={(pressed) => ({ opacity: pressed ? 0.5 : 1, paddingVertical: 16, paddingHorizontal: 20, borderTopWidth: 0.5, borderColor: '#ECE8E1' })}
+            >
+              <Text style={{ fontSize: 16, color: 'rgba(23,33,28,0.55)', textAlign: 'center' }}>Cancel</Text>
+            </PressableBase>
+          </View>
+        </View>
+      )}
 
       <LinkDocumentModal
         visible={pending !== null}

@@ -371,7 +371,7 @@ export async function sharePdfFile(uri: string, plainText: string): Promise<void
     try {
       const res = await fetch(uri);
       const bytes = new Uint8Array(await res.arrayBuffer());
-      await shareBytesWeb(bytes, 'AppointmentPack.pdf');
+      await shareBytesWeb(bytes, plainText.endsWith('.pdf') ? plainText : `${plainText || 'Document'}.pdf`);
     } catch {
       openInNewTab(uri);
     }
