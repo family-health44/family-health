@@ -7,7 +7,27 @@
 // Supabase auth keys can be long — we hash them to stay under the limit.
 // SecureStore does not support web — a memory fallback is provided for safety.
 
+import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+
+// On web (the PWA), SecureStore is unusable but localStorage persists across
+// cold starts / force-quits. Without this the session lands in the in-memory
+// fallback and is lost on every relaunch, booting the user to the login screen.
+const IS_WEB = Platform.OS === 'web';
+const webStore: StorageAdapter | null =
+  IS_WEB && typeof localStorage !== 'undefined'
+    ? {
+        getItem: (k) => {
+          try { return localStorage.getItem(k); } catch { return null; }
+        },
+        setItem: (k, v) => {
+          try { localStorage.setItem(k, v); } catch { /* quota / private mode */ }
+        },
+        removeItem: (k) => {
+          try { localStorage.removeItem(k); } catch { /* no-op */ }
+        },
+      }
+    : null;
 
 // Supabase storage adapter interface
 export interface StorageAdapter {
@@ -30,6 +50,7 @@ const isSecureStoreAvailable = SecureStore.isAvailableAsync !== undefined;
 
 export const secureStorageAdapter: StorageAdapter = {
   getItem: async (key: string): Promise<string | null> => {
+    if (webStore) return webStore.getItem(key);
     const sanitised = sanitiseKey(key);
     try {
       if (!isSecureStoreAvailable) return memoryFallback.get(sanitised) ?? null;
@@ -41,6 +62,7 @@ export const secureStorageAdapter: StorageAdapter = {
   },
 
   setItem: async (key: string, value: string): Promise<void> => {
+    if (webStore) { await webStore.setItem(key, value); return; }
     const sanitised = sanitiseKey(key);
     try {
       if (!isSecureStoreAvailable) {
@@ -55,6 +77,7 @@ export const secureStorageAdapter: StorageAdapter = {
   },
 
   removeItem: async (key: string): Promise<void> => {
+    if (webStore) { await webStore.removeItem(key); return; }
     const sanitised = sanitiseKey(key);
     try {
       memoryFallback.delete(sanitised);

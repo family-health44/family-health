@@ -169,12 +169,24 @@ export const VisitDetailScreen = ({ visitId }: VisitDetailScreenProps) => {
   };
 
   const openDocument = async (doc: Document) => {
+    // iOS PWA: window.open must fire synchronously on tap, before any await,
+    // or the user-gesture is gone and iOS blocks it. Open a blank tab now,
+    // then point it at the signed URL once it resolves.
+    if (Platform.OS === 'web') {
+      if (typeof window === 'undefined') return;
+      const win = window.open('', '_blank');
+      try {
+        const url = await createSignedUrl(doc.filePath);
+        if (win) win.location.href = url;
+        else window.location.href = url;
+      } catch {
+        if (win) win.close();
+        window.alert('Could not open the document. Please try again.');
+      }
+      return;
+    }
     try {
       const url = await createSignedUrl(doc.filePath);
-      if (Platform.OS === 'web') {
-        if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener');
-        return;
-      }
       const supported = await Linking.canOpenURL(url);
       if (supported) await Linking.openURL(url);
       else Alert.alert('Cannot open', 'No app is available to open this file.');

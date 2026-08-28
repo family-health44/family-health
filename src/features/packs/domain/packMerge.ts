@@ -146,77 +146,64 @@ function addImagePage(
   const maxW = A4.width - margin * 2;
   const maxH = A4.height - margin * 2;
 
-  // 5-8 rotate by 90 degrees, so the visible box is the image transposed.
+  // 5-8 transpose the image (the upright result is rotated 90 degrees from the
+  // stored pixels), so the on-page footprint swaps width and height.
   const transposed = orientation >= 5;
   const boxW = transposed ? img.height : img.width;
   const boxH = transposed ? img.width : img.height;
 
   const scale = Math.min(maxW / boxW, maxH / boxH, 1);
-  const w = img.width * scale;   // drawn width, pre-rotation
-  const h = img.height * scale;  // drawn height, pre-rotation
-  const finalW = boxW * scale;   // on-page footprint
-  const finalH = boxH * scale;
+  const dw = img.width * scale;   // drawn image width, before rotation
+  const dh = img.height * scale;  // drawn image height, before rotation
+  const footW = boxW * scale;     // upright on-page footprint
+  const footH = boxH * scale;
 
   const page = pdf.addPage([A4.width, A4.height]);
 
-  // Centre of the on-page footprint.
-  const cx = A4.width / 2;
-  const cy = A4.height / 2;
+  // Bottom-left corner of the centred upright footprint.
+  const ox = (A4.width - footW) / 2;
+  const oy = (A4.height - footH) / 2;
 
-  // pdf-lib rotates about the image's own origin (bottom-left), so each case
-  // needs its origin placed such that the rotated result lands centred.
-  // Mirrored orientations (2,4,5,7) are handled by negating a dimension.
-  let x = cx - finalW / 2;
-  let y = cy - finalH / 2;
-  let width = w;
-  let height = h;
-  let rotate = degrees(0);
+  // pdf-lib's degrees() is counter-clockwise and it rotates the image about its
+  // own bottom-left origin (x, y). For each EXIF orientation we pick the CCW
+  // angle that makes the stored pixels upright, then place (x, y) so the rotated
+  // image ends up filling the footprint. Angles are the CCW equivalents:
+  //   6 (needs 90 CW)  -> 270 ; 8 (needs 270 CW) -> 90 ; 3 (180) -> 180.
+  let x = ox;
+  let y = oy;
+  let angle = 0;
 
   switch (orientation) {
-    case 2: // mirror horizontal
-      x = cx + finalW / 2;
-      width = -w;
-      break;
     case 3: // 180
-      x = cx + finalW / 2;
-      y = cy + finalH / 2;
-      width = -w;
-      height = -h;
+      x = ox + footW;
+      y = oy + footH;
+      angle = 180;
       break;
-    case 4: // mirror vertical
-      y = cy + finalH / 2;
-      height = -h;
+    case 6: // stored pixels need 90 CW to be upright
+      x = ox + footW;
+      y = oy;
+      angle = 270;
       break;
-    case 5: // mirror horizontal + rotate 270 CW
-      x = cx - finalW / 2;
-      y = cy - finalH / 2;
-      rotate = degrees(90);
-      width = w;
-      height = -h;
+    case 8: // stored pixels need 270 CW (= 90 CCW)
+      x = ox;
+      y = oy + footH;
+      angle = 90;
       break;
-    case 6: // rotate 90 CW
-      x = cx + finalW / 2;
-      y = cy - finalH / 2;
-      rotate = degrees(90);
-      break;
-    case 7: // mirror horizontal + rotate 90 CW
-      x = cx + finalW / 2;
-      y = cy + finalH / 2;
-      rotate = degrees(90);
-      width = -w;
-      break;
-    case 8: // rotate 270 CW
-      x = cx - finalW / 2;
-      y = cy + finalH / 2;
-      rotate = degrees(270);
-      break;
-    default: // 1 — no transform
+    default: // 1 — upright already
+      x = ox;
+      y = oy;
+      angle = 0;
       break;
   }
 
-  page.drawImage(embed as never, { x, y, width, height, rotate: rotate as never });
+  page.drawImage(embed as never, {
+    x,
+    y,
+    width: dw,
+    height: dh,
+    rotate: degrees(angle) as never,
+  });
 }
-
 export interface MergeOptions {
   onProgress?: (current: number, total: number) => void;
 }

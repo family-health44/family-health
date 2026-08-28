@@ -14,6 +14,8 @@ import DateTimePicker, { type DateTimePickerEvent } from '@react-native-communit
 import { PressableBase } from './PressableBase';
 import { isoToDisplayDate } from '@/shared/utils/dates';
 
+const IS_WEB = Platform.OS === 'web';
+
 // ─── Local (non-UTC) ISO parsing/formatting — never use toISOString() (AEST drift) ──
 
 function isoToLocalDate(iso: string | null | undefined): Date {
@@ -162,12 +164,34 @@ export function DateField({
       onToggle={() => setOpen((o) => !o)}
       onClear={onClear ? () => { setOpen(false); onClear(); } : undefined}
     >
-      <DateTimePicker
-        value={isoToLocalDate(value)}
-        mode="date"
-        display={Platform.OS === 'ios' ? 'inline' : 'default'}
-        onChange={handleChange}
-      />
+      {IS_WEB ? (
+        // iOS Safari renders <input type="date"> as a native wheel picker.
+        // React Native Web passes unknown props through to the DOM node.
+        <input
+          type="date"
+          value={value ?? ''}
+          onChange={(e: { target: { value: string } }) => {
+            if (e.target.value) onChange(e.target.value); // already YYYY-MM-DD
+          }}
+          style={{
+            fontSize: 16,
+            padding: 10,
+            border: '1px solid #D8D4CC',
+            borderRadius: 10,
+            width: '100%',
+            boxSizing: 'border-box',
+            color: '#17211C',
+            background: '#fff',
+          } as never}
+        />
+      ) : (
+        <DateTimePicker
+          value={isoToLocalDate(value)}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'inline' : 'default'}
+          onChange={handleChange}
+        />
+      )}
     </FieldShell>
   );
 }
@@ -209,13 +233,33 @@ export function TimeField({
       open={open}
       onToggle={() => setOpen((o) => !o)}
     >
-      <DateTimePicker
-        value={timeStrToDate(value)}
-        mode="time"
-        is24Hour
-        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-        onChange={handleChange}
-      />
+      {IS_WEB ? (
+        <input
+          type="time"
+          value={value ?? ''}
+          onChange={(e: { target: { value: string } }) => {
+            if (e.target.value) onChange(e.target.value); // HH:MM 24h
+          }}
+          style={{
+            fontSize: 16,
+            padding: 10,
+            border: '1px solid #D8D4CC',
+            borderRadius: 10,
+            width: '100%',
+            boxSizing: 'border-box',
+            color: '#17211C',
+            background: '#fff',
+          } as never}
+        />
+      ) : (
+        <DateTimePicker
+          value={timeStrToDate(value)}
+          mode="time"
+          is24Hour
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={handleChange}
+        />
+      )}
     </FieldShell>
   );
 }
