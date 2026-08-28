@@ -135,7 +135,7 @@ export const AppointmentPackScreen = () => {
       }
 
       setProgress(null);
-      await sharePdfFile(uri, buildPackPlainText(doc));
+      await sharePdfFile(uri, buildPackPlainText(doc), `${input.person.name} Appointment Pack`);
       // Share sheet has closed (sent, saved, or dismissed) — the pack is done.
       goBack();
     } catch {

@@ -366,12 +366,13 @@ export async function renderPdfDocument(
 }
 
 // Shares an already-rendered PDF file (uri = blob URL on web, file uri native).
-export async function sharePdfFile(uri: string, plainText: string): Promise<void> {
+export async function sharePdfFile(uri: string, plainText: string, filename = 'AppointmentPack.pdf'): Promise<void> {
   if (IS_WEB) {
     try {
       const res = await fetch(uri);
       const bytes = new Uint8Array(await res.arrayBuffer());
-      await shareBytesWeb(bytes, plainText.endsWith('.pdf') ? plainText : `${plainText || 'Document'}.pdf`);
+      const name = filename.toLowerCase().endsWith('.pdf') ? filename : `${filename}.pdf`;
+      await shareBytesWeb(bytes, name);
     } catch {
       openInNewTab(uri);
     }
