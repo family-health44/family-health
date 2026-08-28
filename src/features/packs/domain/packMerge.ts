@@ -143,68 +143,46 @@ function addImagePage(
   orientation = 1,
 ): void {
   const margin = 36;
-  const maxW = A4.width - margin * 2;
-  const maxH = A4.height - margin * 2;
 
-  // 5-8 transpose the image (the upright result is rotated 90 degrees from the
-  // stored pixels), so the on-page footprint swaps width and height.
-  const transposed = orientation >= 5;
-  const boxW = transposed ? img.height : img.width;
-  const boxH = transposed ? img.width : img.height;
+  // Instead of rotating the image about a pivot (fiddly, easy to push off-page),
+  // draw it upright and rotate the whole PAGE. Viewers honour page rotation and
+  // the image can never fall outside the page because it is never transformed.
+  //
+  // The page is laid out in its UNROTATED frame. For a 90/270 rotation the
+  // rotated page presents its height as the visible width and vice-versa, so we
+  // size the unrotated page as portrait A4 and, for transposed orientations,
+  // fit the image against the swapped bounds.
+  const transposed = orientation === 6 || orientation === 8;
 
-  const scale = Math.min(maxW / boxW, maxH / boxH, 1);
-  const dw = img.width * scale;   // drawn image width, before rotation
-  const dh = img.height * scale;  // drawn image height, before rotation
-  const footW = boxW * scale;     // upright on-page footprint
-  const footH = boxH * scale;
+  // Visible page after rotation is always portrait A4.
+  const visW = transposed ? A4.height : A4.width;
+  const visH = transposed ? A4.width : A4.height;
 
-  const page = pdf.addPage([A4.width, A4.height]);
+  const maxW = visW - margin * 2;
+  const maxH = visH - margin * 2;
+  const scale = Math.min(maxW / img.width, maxH / img.height, 1);
+  const w = img.width * scale;
+  const h = img.height * scale;
 
-  // Bottom-left corner of the centred upright footprint.
-  const ox = (A4.width - footW) / 2;
-  const oy = (A4.height - footH) / 2;
+  // Unrotated page dimensions (before pdf-lib applies page rotation).
+  const pageW = transposed ? A4.height : A4.width;
+  const pageH = transposed ? A4.width : A4.height;
 
-  // pdf-lib's degrees() is counter-clockwise and it rotates the image about its
-  // own bottom-left origin (x, y). For each EXIF orientation we pick the CCW
-  // angle that makes the stored pixels upright, then place (x, y) so the rotated
-  // image ends up filling the footprint. Angles are the CCW equivalents:
-  //   6 (needs 90 CW)  -> 270 ; 8 (needs 270 CW) -> 90 ; 3 (180) -> 180.
-  let x = ox;
-  let y = oy;
+  const page = pdf.addPage([pageW, pageH]);
+
+  // Centre the upright image on the unrotated page.
+  const x = (pageW - w) / 2;
+  const y = (pageH - h) / 2;
+  page.drawImage(embed as never, { x, y, width: w, height: h });
+
+  // Rotate the page so the stored pixels display upright.
+  //   3 -> 180 ; 6 -> 90 CW ; 8 -> 270 CW. pdf-lib page.setRotation is clockwise.
   let angle = 0;
-
-  switch (orientation) {
-    case 3: // 180
-      x = ox + footW;
-      y = oy + footH;
-      angle = 180;
-      break;
-    case 6: // stored pixels need 90 CW to be upright
-      x = ox + footW;
-      y = oy;
-      angle = 270;
-      break;
-    case 8: // stored pixels need 270 CW (= 90 CCW)
-      x = ox;
-      y = oy + footH;
-      angle = 90;
-      break;
-    default: // 1 — upright already
-      x = ox;
-      y = oy;
-      angle = 0;
-      break;
-  }
-
-  page.drawImage(embed as never, {
-    x,
-    y,
-    width: dw,
-    height: dh,
-    rotate: degrees(angle) as never,
-  });
-}
-export interface MergeOptions {
+  if (orientation === 3) angle = 180;
+  else if (orientation === 6) angle = 90;
+  else if (orientation === 8) angle = 270;
+  if (angle !== 0) page.setRotation(degrees(angle) as never);
+}export interface MergeOptions {
   onProgress?: (current: number, total: number) => void;
 }
 
